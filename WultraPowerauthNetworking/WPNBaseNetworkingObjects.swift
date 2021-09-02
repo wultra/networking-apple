@@ -22,7 +22,7 @@ public class WPNRequestBase: Codable {
 
 public class WPNRequest<T: Codable>: WPNRequestBase {
     
-    var requestObject: T?
+    public var requestObject: T?
     
     private enum Keys: CodingKey {
         case requestObject
@@ -54,13 +54,13 @@ public class WPNRequest<T: Codable>: WPNRequestBase {
 
 public class WPNResponseBase: Decodable {
 
-    enum Status: String, Decodable {
+    public enum Status: String, Decodable {
         case Ok     = "OK"
         case Error  = "ERROR"
     }
     
-    var status: Status = .Error
-    var responseError: WPNRestApiError?
+    public var status: Status = .Error
+    public var responseError: WPNRestApiError?
     
     private enum Keys: CodingKey {
         case status, responseObject
@@ -81,7 +81,7 @@ public class WPNResponseBase: Decodable {
 /// With Nested object T
 public class WPNResponse<T: Decodable>: WPNResponseBase {
 
-    var responseObject: T?
+    public var responseObject: T?
 
     private enum Keys: CodingKey {
         case responseObject
@@ -101,7 +101,7 @@ public class WPNResponse<T: Decodable>: WPNResponseBase {
 /// With nested array of objects T
 public class WPNResponseArray<T: Decodable>: WPNResponseBase {
     
-    var responseObject: [T]?
+    public var responseObject: [T]?
     
     private enum Keys: CodingKey {
         case responseObject
