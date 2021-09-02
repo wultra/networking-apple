@@ -18,14 +18,14 @@ import Foundation
 import PowerAuth2
 
 /// Internal networking service for dispatching powerauth signed requests
-class WPNNetworkingService {
+public class WPNNetworkingService {
     
     private let powerAuth: PowerAuthSDK
     private let httpClient: WPNHttpClient
     private let queue = OperationQueue()
     internal var acceptLanguage = "en"
     
-    init(powerAuth: PowerAuthSDK, config: WPNConfig, serviceName: String) {
+    public init(powerAuth: PowerAuthSDK, config: WPNConfig, serviceName: String) {
         self.powerAuth = powerAuth
         self.httpClient = WPNHttpClient(sslValidation: config.sslValidation)
         queue.name = serviceName
@@ -33,7 +33,7 @@ class WPNNetworkingService {
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    func post<TReq, TResp>(_ request: WPNHttpRequest<TReq, TResp>, completion: @escaping WPNHttpRequest<TReq, TResp>.Completion) -> Operation {
+    public func post<TReq, TResp>(_ request: WPNHttpRequest<TReq, TResp>, completion: @escaping WPNHttpRequest<TReq, TResp>.Completion) -> Operation {
         
         // Setup default headers
         request.addHeaders(getDefaultHeaders())

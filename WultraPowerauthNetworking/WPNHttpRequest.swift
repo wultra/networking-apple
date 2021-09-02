@@ -24,7 +24,7 @@ private let jsonDecoder: JSONDecoder = {
     return decoder
 }()
 
-class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
+public class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
     enum BodyType: String {
         case json = "application/json"
@@ -35,7 +35,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     /// Default value is `.json`
     var responseType = BodyType.json
     
-    typealias Completion = (TResponse?, WPNError?) -> Void
+    public typealias Completion = (TResponse?, WPNError?) -> Void
     
     private(set) var url: URL
     private(set) var uriIdentifier: String?
@@ -56,13 +56,13 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     }
     
     // Not signed request
-    init(_ url: URL, requestData: TRequest) {
+    public init(_ url: URL, requestData: TRequest) {
         self.url = url
         self.buildRequestData(requestData)
     }
     
     // Signed request
-    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+    public init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest) {
         self.url = url
         self.uriIdentifier = uriId
         self.auth = auth
@@ -70,20 +70,20 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     }
     
     // Signed with token
-    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+    public init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest) {
         self.url = url
         self.tokenName = tokenName
         self.auth = auth
         self.buildRequestData(requestData)
     }
     
-    func addHeaders(_ headers: [String: String]) {
+    public func addHeaders(_ headers: [String: String]) {
         for (k, v) in headers {
             self.headers[k] = v
         }
     }
     
-    func addHeader(key: String, value: String) {
+    public func addHeader(key: String, value: String) {
         headers[key] = value
     }
     
