@@ -28,7 +28,7 @@ public class WPNRequest<T: Codable>: WPNRequestBase {
         case requestObject
     }
     
-    init(_ requestObject: T) {
+    public init(_ requestObject: T) {
         super.init()
         self.requestObject = requestObject
     }
