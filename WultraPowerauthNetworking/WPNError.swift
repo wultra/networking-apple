@@ -20,7 +20,7 @@ import PowerAuth2
 /// A class returned as Error from the library interfaces.
 public class WPNError: Error {
     
-    init(reason: WPNErrorReason, error: Error? = nil) {
+    public init(reason: WPNErrorReason, error: Error? = nil) {
         #if DEBUG
         WPNError.validateNestedError(error)
         #endif
