@@ -35,7 +35,7 @@ public class WPNNetworkingService {
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    public func post<Endpoint: WPNEndpoint>(_ data: Endpoint.RequestData, signing: Endpoint.Request.Signing, completion: @escaping Endpoint.Request.Completion) -> Operation {
+    public func post<Endpoint: WPNEndpoint>(_ data: Endpoint.RequestData, signing: WPNHttpRequestSigning, completion: @escaping Endpoint.Request.Completion) -> Operation {
         
         let request = Endpoint.request(config: config, data: data, signing: signing)
         

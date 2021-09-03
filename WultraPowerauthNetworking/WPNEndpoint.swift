@@ -25,7 +25,7 @@ public protocol WPNEndpoint {
 
 extension WPNEndpoint {
     
-    static func request(config: WPNConfig, data: Self.RequestData, signing: Self.Request.Signing) -> Self.Request {
+    static func request(config: WPNConfig, data: Self.RequestData, signing: WPNHttpRequestSigning) -> Self.Request {
         return WPNHttpRequest(config: config, requestData: data, signing: signing)
     }
 }

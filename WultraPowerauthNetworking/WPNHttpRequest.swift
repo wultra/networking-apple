@@ -24,16 +24,16 @@ private let jsonDecoder: JSONDecoder = {
     return decoder
 }()
 
+public enum WPNHttpRequestSigning {
+    case none
+    case signed(auth: PowerAuthAuthentication)
+    case signedWithToken(tokenName: String, auth: PowerAuthAuthentication)
+}
+
 public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     
     enum BodyType: String {
         case json = "application/json"
-    }
-    
-    public enum Signing {
-        case none
-        case signed(auth: PowerAuthAuthentication)
-        case signedWithToken(tokenName: String, auth: PowerAuthAuthentication)
     }
     
     /// Default value is `.json`
@@ -62,7 +62,7 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     }
     
     // Not signed request
-    init(config: WPNConfig, requestData: Endpoint.RequestData, signing: Signing) {
+    init(config: WPNConfig, requestData: Endpoint.RequestData, signing: WPNHttpRequestSigning) {
         self.url = config.buildURL(Endpoint.url)
         switch signing {
         case .none:
