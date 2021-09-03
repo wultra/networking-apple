@@ -37,7 +37,7 @@ public class WPNNetworkingService {
     @discardableResult
     public func post<Endpoint: WPNEndpoint>(_ data: Endpoint.RequestData, signing: WPNHttpRequestSigning, completion: @escaping Endpoint.Request.Completion) -> Operation {
         
-        let request = Endpoint.request(config: config, data: data, signing: signing)
+        let request: Endpoint.Request = WPNHttpRequest(config: config, requestData: data, signing: signing)
         
         // Setup default headers
         request.addHeaders(getDefaultHeaders())
