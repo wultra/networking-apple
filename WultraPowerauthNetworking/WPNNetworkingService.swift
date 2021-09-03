@@ -22,18 +22,22 @@ public class WPNNetworkingService {
     
     private let powerAuth: PowerAuthSDK
     private let httpClient: WPNHttpClient
+    private let config: WPNConfig
     private let queue = OperationQueue()
     internal var acceptLanguage = "en"
     
     public init(powerAuth: PowerAuthSDK, config: WPNConfig, serviceName: String) {
         self.powerAuth = powerAuth
         self.httpClient = WPNHttpClient(sslValidation: config.sslValidation)
+        self.config = config
         queue.name = serviceName
     }
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    public func post<Endpoint: WPNEndpoint>(_ request: Endpoint.Request, completion: @escaping Endpoint.Request.Completion) -> Operation {
+    public func post<Endpoint: WPNEndpoint>(_ data: Endpoint.RequestData, signing: Endpoint.Request.Signing, completion: @escaping Endpoint.Request.Completion) -> Operation {
+        
+        let request = Endpoint.request(config: config, data: data, signing: signing)
         
         // Setup default headers
         request.addHeaders(getDefaultHeaders())

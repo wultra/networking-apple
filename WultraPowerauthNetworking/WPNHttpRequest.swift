@@ -32,8 +32,8 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     
     public enum Signing {
         case none
-        case withToken(tokenName: String, auth: PowerAuthAuthentication)
-        case signed(uriId: String, auth: PowerAuthAuthentication)
+        case signed(auth: PowerAuthAuthentication)
+        case signedWithToken(tokenName: String, auth: PowerAuthAuthentication)
     }
     
     /// Default value is `.json`
@@ -68,10 +68,10 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
         case .none:
             // nothing to do
             break
-        case .signed(let uriId, let auth):
-            self.uriIdentifier = uriId
+        case .signed(let auth):
+            self.uriIdentifier = Endpoint.uriId
             self.auth = auth
-        case .withToken(let tokenName, let auth):
+        case .signedWithToken(let tokenName, let auth):
             self.tokenName = tokenName
             self.auth = auth
         }
