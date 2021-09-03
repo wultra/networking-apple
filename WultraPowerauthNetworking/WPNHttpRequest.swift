@@ -24,13 +24,7 @@ private let jsonDecoder: JSONDecoder = {
     return decoder
 }()
 
-public enum WPNHttpRequestSigning {
-    case none
-    case signed(auth: PowerAuthAuthentication)
-    case signedWithToken(tokenName: String, auth: PowerAuthAuthentication)
-}
-
-public class WPNHttpRequest<Endpoint: WPNEndpoint> {
+public class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
     enum BodyType: String {
         case json = "application/json"
@@ -40,8 +34,6 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     var requestType = BodyType.json
     /// Default value is `.json`
     var responseType = BodyType.json
-    
-    public typealias Completion = (Endpoint.ResponseData?, WPNError?) -> Void
     
     private(set) var url: URL
     private(set) var uriIdentifier: String?
@@ -62,19 +54,24 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     }
     
     // Not signed request
-    init(config: WPNConfig, requestData: Endpoint.RequestData, signing: WPNHttpRequestSigning) {
-        self.url = config.buildURL(Endpoint.url)
-        switch signing {
-        case .none:
-            // nothing to do
-            break
-        case .signed(let auth):
-            self.uriIdentifier = Endpoint.uriId
-            self.auth = auth
-        case .signedWithToken(let tokenName, let auth):
-            self.tokenName = tokenName
-            self.auth = auth
-        }
+    init(_ url: URL, requestData: TRequest) {
+        self.url = url
+        self.buildRequestData(requestData)
+    }
+    
+    // Signed request
+    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+        self.url = url
+        self.uriIdentifier = uriId
+        self.auth = auth
+        self.buildRequestData(requestData)
+    }
+    
+    // Signed with token
+    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+        self.url = url
+        self.tokenName = tokenName
+        self.auth = auth
         self.buildRequestData(requestData)
     }
     
@@ -105,7 +102,7 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     }
     
     /// Builds current request and sets the data to `requestData` property
-    private func buildRequestData(_ request: Endpoint.RequestData) {
+    private func buildRequestData(_ request: TRequest) {
         do {
             switch requestType {
             case .json:
@@ -117,14 +114,14 @@ public class WPNHttpRequest<Endpoint: WPNEndpoint> {
     }
     
     /// Parses given result data and sets it to `response` property
-    func processResult(data: Data) -> Endpoint.ResponseData? {
+    func processResult(data: Data) -> TResponse? {
         
-        var response: Endpoint.ResponseData?
+        var response: TResponse?
         
         do {
             switch responseType {
             case .json:
-                response = try jsonDecoder.decode(Endpoint.ResponseData.self, from: data)
+                response = try jsonDecoder.decode(TResponse.self, from: data)
             }
         } catch let error {
             D.error("failed to process result:\n\(error)")

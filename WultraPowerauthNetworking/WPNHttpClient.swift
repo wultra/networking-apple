@@ -37,7 +37,7 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         super.init()
     }
     
-    func post<Endpoint: WPNEndpoint>(request: Endpoint.Request, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase>(request: WPNHttpRequest<Req, Resp>, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
         
         let urlRequest = request.buildUrlRequest()
         

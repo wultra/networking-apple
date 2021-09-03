@@ -11,16 +11,47 @@
  */
 
 import Foundation
+import PowerAuth2
 
-public protocol WPNEndpoint {
+public class WPNEndpoint<TRequestData: WPNRequestBase, TResponseData: WPNResponseBase> {
     
-    static var url: String { get }
-    static var uriId: String { get }
+    let endpointURL: String
     
-    associatedtype RequestData: WPNRequestBase
-    associatedtype ResponseData: WPNResponseBase
+    init(endpointURL: String) {
+        self.endpointURL = endpointURL
+    }
+    
+    typealias Request = WPNHttpRequest<TRequestData, TResponseData>
+    public typealias RequestData = TRequestData
+    public typealias ResponseData = TRequestData
+    public typealias Completion = (TResponseData?, WPNError?) -> Void
 }
 
-public extension WPNEndpoint {
-    typealias Request = WPNHttpRequest<Self>
+public class WPNEndpointBasic<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
+    public override init(endpointURL: String) {
+        super.init(endpointURL: endpointURL)
+    }
+}
+
+public class WPNEndpointSigned<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
+    
+    let uriId: String
+    
+    public init(endpointURL: String, uriId: String) {
+        self.uriId = uriId
+        super.init(endpointURL: endpointURL)
+    }
+}
+
+public class WPNEndpointSignedWithToken<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
+    let tokenName: String
+    
+    public init(endpointURL: String, tokenName: String) {
+        self.tokenName = tokenName
+        super.init(endpointURL: endpointURL)
+    }
+}
+
+public extension WPNEndpointBasic {
+    
 }

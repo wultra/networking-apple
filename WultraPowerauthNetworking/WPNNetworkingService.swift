@@ -33,17 +33,53 @@ public class WPNNetworkingService {
         queue.name = serviceName
     }
     
+    @discardableResult
+    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(data: Req,
+                                                                                                        to endpoint: Endpoint,
+                                                                                                        with headers: [String: String]? = nil,
+                                                                                                        completion: @escaping Endpoint.Completion) -> Operation {
+        let url = config.buildURL(endpoint.endpointURL)
+        let request = Endpoint.Request(url, requestData: data)
+        return post(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(data: Req,
+                                                                                                         signedWith auth: PowerAuthAuthentication,
+                                                                                                         to endpoint: Endpoint,
+                                                                                                         with headers: [String: String]? = nil,
+                                                                                                         completion: @escaping Endpoint.Completion) -> Operation {
+        let url = config.buildURL(endpoint.endpointURL)
+        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
+        return  post(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(data: Req,
+                                                                                                                  signedWith auth: PowerAuthAuthentication,
+                                                                                                                  to endpoint: Endpoint,
+                                                                                                                  with headers: [String: String]? = nil,
+                                                                                                                  completion: @escaping Endpoint.Completion) -> Operation {
+        let url = config.buildURL(endpoint.endpointURL)
+        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
+        return  post(request: request, completion: completion)
+    }
+    
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    public func post<Endpoint: WPNEndpoint>(_ data: Endpoint.RequestData, signing: WPNHttpRequestSigning, completion: @escaping Endpoint.Request.Completion) -> Operation {
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(request: Endpoint.Request,
+                                                                                                 headers: [String: String]? = nil,
+                                                                                                 completion: @escaping Endpoint.Completion) -> Operation {
         
-        let request: Endpoint.Request = WPNHttpRequest(config: config, requestData: data, signing: signing)
+        if let headers = headers {
+            request.addHeaders(headers)
+        }
         
         // Setup default headers
         request.addHeaders(getDefaultHeaders())
         let op = WPNAsyncBlockOperation { operation, markFinished in
             
-            let completion: Endpoint.Request.Completion = { resp, error in
+            let completion: (Resp?, WPNError?) -> Void = { resp, error in
                 markFinished {
                     completion(resp, error)
                 }
@@ -113,7 +149,7 @@ public class WPNNetworkingService {
     }
     
     /// Calculates a signature for request. The function must be called on background thread.
-    private func bgCalculateSignature<Endpoint: WPNEndpoint>(_ request: Endpoint.Request, completion: @escaping (WPNError?) -> Void) {
+    private func bgCalculateSignature<Req: WPNRequestBase, Resp: WPNResponseBase>(_ request: WPNHttpRequest<Req, Resp>, completion: @escaping (WPNError?) -> Void) {
         do {
             guard let data = request.requestData else {
                 completion(WPNError(reason: .network_invalidRequestObject))
