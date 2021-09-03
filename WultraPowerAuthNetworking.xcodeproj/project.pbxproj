@@ -19,6 +19,7 @@
 		DC53E63226DFDFFE0076AAFF /* PowerAuthCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC53E62F26DFDFFE0076AAFF /* PowerAuthCore.xcframework */; };
 		DC53E63626DFE0350076AAFF /* WPNError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E63526DFE0350076AAFF /* WPNError.swift */; };
 		DC53E63826DFE05D0076AAFF /* WPNLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E63726DFE05D0076AAFF /* WPNLogger.swift */; };
+		DCA1529F26E232D3003AB99E /* WPNEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		DC53E62F26DFDFFE0076AAFF /* PowerAuthCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuthCore.xcframework; path = Carthage/Build/PowerAuthCore.xcframework; sourceTree = "<group>"; };
 		DC53E63526DFE0350076AAFF /* WPNError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNError.swift; sourceTree = "<group>"; };
 		DC53E63726DFE05D0076AAFF /* WPNLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNLogger.swift; sourceTree = "<group>"; };
+		DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNEndpoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				DC53E61726DFD8520076AAFF /* WultraPowerAuthNetworking.h */,
 				DC53E61826DFD8520076AAFF /* Info.plist */,
 				DC53E62B26DFDA980076AAFF /* WPNConfig.swift */,
+				DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */,
 			);
 			path = WultraPowerAuthNetworking;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				DC53E63826DFE05D0076AAFF /* WPNLogger.swift in Sources */,
 				DC53E62A26DFDA5E0076AAFF /* WPNAsyncOperation.swift in Sources */,
 				DC53E62526DFD8A50076AAFF /* WPNHttpRequest.swift in Sources */,
+				DCA1529F26E232D3003AB99E /* WPNEndpoint.swift in Sources */,
 				DC53E62726DFD8A50076AAFF /* WPNNetworkingService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -33,13 +33,13 @@ public class WPNNetworkingService {
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    public func post<TReq, TResp>(_ request: WPNHttpRequest<TReq, TResp>, completion: @escaping WPNHttpRequest<TReq, TResp>.Completion) -> Operation {
+    public func post<Endpoint: WPNEndpoint>(_ request: Endpoint.Request, completion: @escaping Endpoint.Request.Completion) -> Operation {
         
         // Setup default headers
         request.addHeaders(getDefaultHeaders())
         let op = WPNAsyncBlockOperation { operation, markFinished in
             
-            let completion: WPNHttpRequest<TReq, TResp>.Completion = { resp, error in
+            let completion: Endpoint.Request.Completion = { resp, error in
                 markFinished {
                     completion(resp, error)
                 }
@@ -109,7 +109,7 @@ public class WPNNetworkingService {
     }
     
     /// Calculates a signature for request. The function must be called on background thread.
-    private func bgCalculateSignature<TReq, TResp>(_ request: WPNHttpRequest<TReq, TResp>, completion: @escaping (WPNError?) -> Void) {
+    private func bgCalculateSignature<Endpoint: WPNEndpoint>(_ request: Endpoint.Request, completion: @escaping (WPNError?) -> Void) {
         do {
             guard let data = request.requestData else {
                 completion(WPNError(reason: .network_invalidRequestObject))
