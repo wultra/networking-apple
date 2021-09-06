@@ -37,6 +37,7 @@ xcuserdata
 *.hmap
 *.ipa
 *.framework
+*.xcframework
 
 ## App build artifacts
 build/
