@@ -1,0 +1,28 @@
+name: lint
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+
+jobs:
+  pod:
+    name: Pod Lib Lint
+    runs-on: macos-11.0
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Build the framework
+        run: ./scripts/build.sh
+      - name: Lint
+        run: pod lib lint --allow-warnings
+  swift:
+    name: Swift Lint
+    runs-on: macos-11.0
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Lint
+        run: swiftlint --strict
