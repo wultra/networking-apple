@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
+      - name: Build the framework
+        run: ./scripts/build.sh
       - name: Lint
         run: pod lib lint --allow-warnings
   swift:

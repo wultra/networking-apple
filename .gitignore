@@ -39,7 +39,7 @@ xcuserdata
 *.framework
 
 ## App build artifacts
-Build/
+build/
 
 # NPM
 node_modules

@@ -12,11 +12,26 @@ popd
 
 pushd "${SCRIPT_FOLDER}/.."
 
-xcrun xcodebuild \
+xcrun xcodebuild archive \
     -project "WultraPowerAuthNetworking.xcodeproj" \
     -scheme "WultraPowerAuthNetworking" \
     -configuration "Release" \
-    -sdk "iphonesimulator" \
-    build
+    -sdk iphoneos \
+    OBJROOT=build/iOS \
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+xcrun xcodebuild archive \
+    -project "WultraPowerAuthNetworking.xcodeproj" \
+    -scheme "WultraPowerAuthNetworking" \
+    -configuration "Release" \
+    -sdk iphonesimulator \
+     OBJROOT=build/simulator \
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+xcrun xcodebuild \
+    -create-xcframework \
+    -framework "build/iOS/UninstalledProducts/iphoneos/WultraPowerAuthNetworking.framework" \
+    -framework "build/simulator/UninstalledProducts/iphonesimulator/WultraPowerAuthNetworking.framework" \
+    -output "build/WultraPowerAuthNetworking.xcframework"
 
 popd
