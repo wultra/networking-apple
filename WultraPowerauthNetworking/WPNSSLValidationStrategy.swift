@@ -50,23 +50,4 @@ public enum WPNSSLValidationStrategy {
             completionHandler(.performDefaultHandling, nil)
         }
     }
-    
-    /// Returns PowerAuth2 compatible object for SSL validation
-    internal func createPA2ValidationStrategy() -> PowerAuthClientSslValidationStrategy {
-        return PA2ValidationStrategy(strategy: self)
-    }
-}
-
-// PowerAuth compatible wrapper for ssl strategy
-private class PA2ValidationStrategy: NSObject, PowerAuthClientSslValidationStrategy {
-    
-    private let strategy: WPNSSLValidationStrategy
-    
-    init(strategy: WPNSSLValidationStrategy) {
-        self.strategy = strategy
-    }
-    
-    func validateSsl(for session: URLSession, challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        strategy.validate(challenge: challenge, completionHandler: completionHandler)
-    }
 }

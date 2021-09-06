@@ -24,7 +24,7 @@ private let jsonDecoder: JSONDecoder = {
     return decoder
 }()
 
-public class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
+class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
     enum BodyType: String {
         case json = "application/json"
@@ -75,13 +75,13 @@ public class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase
         self.buildRequestData(requestData)
     }
     
-    public func addHeaders(_ headers: [String: String]) {
+    func addHeaders(_ headers: [String: String]) {
         for (k, v) in headers {
             self.headers[k] = v
         }
     }
     
-    public func addHeader(key: String, value: String) {
+    func addHeader(key: String, value: String) {
         headers[key] = value
     }
     

@@ -73,18 +73,10 @@
 		DC53E61626DFD8520076AAFF /* WultraPowerAuthNetworking */ = {
 			isa = PBXGroup;
 			children = (
-				DC53E63726DFE05D0076AAFF /* WPNLogger.swift */,
-				DC53E63526DFE0350076AAFF /* WPNError.swift */,
-				DC53E62926DFDA5E0076AAFF /* WPNAsyncOperation.swift */,
-				DC53E62126DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift */,
-				DC53E61F26DFD8A50076AAFF /* WPNHttpClient.swift */,
-				DC53E62026DFD8A50076AAFF /* WPNHttpRequest.swift */,
-				DC53E62226DFD8A50076AAFF /* WPNNetworkingService.swift */,
-				DC53E62326DFD8A50076AAFF /* WPNSSLValidationStrategy.swift */,
+				DC93FB8726E6086400BFB5DC /* Public */,
+				DC93FB8926E6087000BFB5DC /* Private */,
 				DC53E61726DFD8520076AAFF /* WultraPowerAuthNetworking.h */,
 				DC53E61826DFD8520076AAFF /* Info.plist */,
-				DC53E62B26DFDA980076AAFF /* WPNConfig.swift */,
-				DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */,
 			);
 			path = WultraPowerAuthNetworking;
 			sourceTree = "<group>";
@@ -96,6 +88,30 @@
 				DC53E62F26DFDFFE0076AAFF /* PowerAuthCore.xcframework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC93FB8726E6086400BFB5DC /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				DC53E62226DFD8A50076AAFF /* WPNNetworkingService.swift */,
+				DC53E62B26DFDA980076AAFF /* WPNConfig.swift */,
+				DC53E62326DFD8A50076AAFF /* WPNSSLValidationStrategy.swift */,
+				DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */,
+				DC53E62126DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift */,
+				DC53E62926DFDA5E0076AAFF /* WPNAsyncOperation.swift */,
+				DC53E63526DFE0350076AAFF /* WPNError.swift */,
+				DC53E63726DFE05D0076AAFF /* WPNLogger.swift */,
+			);
+			name = Public;
+			sourceTree = "<group>";
+		};
+		DC93FB8926E6087000BFB5DC /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				DC53E61F26DFD8A50076AAFF /* WPNHttpClient.swift */,
+				DC53E62026DFD8A50076AAFF /* WPNHttpRequest.swift */,
+			);
+			name = Private;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

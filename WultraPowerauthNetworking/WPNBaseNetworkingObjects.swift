@@ -16,12 +16,16 @@
 
 import Foundation
 
+/// Base empty request class. Every request needs to inherit from this class.
 public class WPNRequestBase: Codable {
     
 }
 
+/// Standard request, where the request payload is passed as the `requestObject`
+/// with a type defined through the generics.
 public class WPNRequest<T: Codable>: WPNRequestBase {
     
+    /// Request payload.
     public var requestObject: T?
     
     private enum Keys: CodingKey {
@@ -48,18 +52,18 @@ public class WPNRequest<T: Codable>: WPNRequestBase {
     }
 }
 
-//
-// RESPONSES
-//
-
+/// Base response class. Every response  needs to inherit from this class.
 public class WPNResponseBase: Decodable {
-
+    
+    /// Status of the response
     public enum Status: String, Decodable {
         case Ok     = "OK"
         case Error  = "ERROR"
     }
     
+    /// Status of the response
     public var status: Status = .Error
+    /// Details of the error (when the response is error)
     public var responseError: WPNRestApiError?
     
     private enum Keys: CodingKey {
@@ -78,9 +82,11 @@ public class WPNResponseBase: Decodable {
     }
 }
 
-/// With Nested object T
+/// Standard response, where the response payload is saved in the `responseObject`
+/// with a type defined through the generics.
 public class WPNResponse<T: Decodable>: WPNResponseBase {
-
+    
+    /// Response object. `nil` on error.
     public var responseObject: T?
 
     private enum Keys: CodingKey {
@@ -98,9 +104,11 @@ public class WPNResponse<T: Decodable>: WPNResponseBase {
     }
 }
 
-/// With nested array of objects T
+/// Standard response where the response payload is array passed as the `responseObject`
+/// with type of an element defined through the generics.
 public class WPNResponseArray<T: Decodable>: WPNResponseBase {
     
+    /// Response object. `nil` on error.
     public var responseObject: [T]?
     
     private enum Keys: CodingKey {
@@ -124,6 +132,7 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// General authentication failure (wrong password, wrong activation state, etc...)
     case authenticationFailure          = "POWERAUTH_AUTH_FAIL"
     
+    /// Failed to register push notifications
     case pushRegistrationFailed         = "PUSH_REGISTRATION_FAILED"
     
     /// Invalid request sent - missing request object in request
@@ -145,6 +154,7 @@ public enum WPNKnownRestApiError: String, Decodable {
     case operationExpired               = "OPERATION_EXPIRED"
 }
 
+/// Error passed in a response, when the error is returned from an endpoint.
 public struct WPNRestApiError: Codable {
     
     /// Code that identifies the type of the error
@@ -152,6 +162,7 @@ public struct WPNRestApiError: Codable {
     /// Message from the backend
     public let message: String
     
+    /// If the `code` is a known API Error, it can be resolved into as finite enum.
     public var errorCode: WPNKnownRestApiError? {
         return WPNKnownRestApiError(rawValue: code)
     }

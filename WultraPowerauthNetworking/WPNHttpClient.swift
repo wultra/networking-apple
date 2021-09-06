@@ -19,7 +19,7 @@ import PowerAuth2
 
 class WPNHttpClient: NSObject, URLSessionDelegate {
     
-    private let defaultTimeout: TimeInterval = 20
+    private let defaultTimeout: TimeInterval
     private let sslValidation: WPNSSLValidationStrategy
     
     private lazy var urlSession: URLSession = {
@@ -32,8 +32,9 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         return URLSession(configuration: configuration, delegate: self, delegateQueue: .main)
     }()
     
-    init(sslValidation: WPNSSLValidationStrategy) {
+    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval) {
         self.sslValidation = sslValidation
+        self.defaultTimeout = timeout
         super.init()
     }
     

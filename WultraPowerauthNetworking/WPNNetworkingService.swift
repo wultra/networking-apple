@@ -17,66 +17,96 @@
 import Foundation
 import PowerAuth2
 
-/// Internal networking service for dispatching powerauth signed requests
+/// Networking service for dispatching PowerAuth signed requests.
 public class WPNNetworkingService {
+    
+    /// Language sent to the server for request localized response.
+    ///
+    /// Standard accept-language format. Default value is "en".
+    public var acceptLanguage: String
     
     private let powerAuth: PowerAuthSDK
     private let httpClient: WPNHttpClient
     private let config: WPNConfig
     private let queue = OperationQueue()
-    internal var acceptLanguage = "en"
     
-    public init(powerAuth: PowerAuthSDK, config: WPNConfig, serviceName: String) {
+    public init(powerAuth: PowerAuthSDK, config: WPNConfig, serviceName: String, acceptLanguage: String = "en") {
+        self.acceptLanguage = acceptLanguage
         self.powerAuth = powerAuth
-        self.httpClient = WPNHttpClient(sslValidation: config.sslValidation)
+        self.httpClient = WPNHttpClient(sslValidation: config.sslValidation, timeout: config.timeoutIntervalForRequest)
         self.config = config
         queue.name = serviceName
     }
     
+    
+    /// Sends basic request without an authentication
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - completion: Completion handler
+    /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(data: Req,
                                                                                                         to endpoint: Endpoint,
                                                                                                         with headers: [String: String]? = nil,
                                                                                                         completion: @escaping Endpoint.Completion) -> Operation {
-        let url = config.buildURL(endpoint.endpointURL)
+        let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, requestData: data)
         return post(request: request, completion: completion)
     }
     
+    /// Sends signed request with provided authentication.
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - auth: Authentication object.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - completion: Completion handler
+    /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(data: Req,
                                                                                                          signedWith auth: PowerAuthAuthentication,
                                                                                                          to endpoint: Endpoint,
                                                                                                          with headers: [String: String]? = nil,
                                                                                                          completion: @escaping Endpoint.Completion) -> Operation {
-        let url = config.buildURL(endpoint.endpointURL)
+        let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
-        return  post(request: request, completion: completion)
+        return post(request: request, completion: completion)
     }
     
+    /// Sends signed request with provided authentication.
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - auth: Authentication object.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - completion: Completion handler
+    /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(data: Req,
                                                                                                                   signedWith auth: PowerAuthAuthentication,
                                                                                                                   to endpoint: Endpoint,
                                                                                                                   with headers: [String: String]? = nil,
                                                                                                                   completion: @escaping Endpoint.Completion) -> Operation {
-        let url = config.buildURL(endpoint.endpointURL)
+        let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
-        return  post(request: request, completion: completion)
+        return post(request: request, completion: completion)
     }
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(request: Endpoint.Request,
-                                                                                                 headers: [String: String]? = nil,
-                                                                                                 completion: @escaping Endpoint.Completion) -> Operation {
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(request: Endpoint.Request,
+                                                                                            headers: [String: String]? = nil,
+                                                                                            completion: @escaping Endpoint.Completion) -> Operation {
+        // Setup default headers
+        request.addHeaders(getDefaultHeaders())
         
+        // add additional headers (be aware that it can override the default headers)
         if let headers = headers {
             request.addHeaders(headers)
         }
         
-        // Setup default headers
-        request.addHeaders(getDefaultHeaders())
         let op = WPNAsyncBlockOperation { operation, markFinished in
             
             let completion: (Resp?, WPNError?) -> Void = { resp, error in

@@ -12,6 +12,7 @@
 
 import Foundation
 
+/// Configuration of the library.
 public struct WPNConfig {
     
     /// Base URL for service requests.
@@ -20,12 +21,16 @@ public struct WPNConfig {
     /// SSL validation strategy for the request.
     public let sslValidation: WPNSSLValidationStrategy
     
-    public init(baseUrl: URL, sslValidation: WPNSSLValidationStrategy) {
+    /// The timeout interval to use when waiting for backend data.
+    public let timeoutIntervalForRequest: TimeInterval
+    
+    public init(baseUrl: URL, sslValidation: WPNSSLValidationStrategy, timeoutIntervalForRequest: TimeInterval = 20) {
         self.baseUrl = baseUrl
         self.sslValidation = sslValidation
+        self.timeoutIntervalForRequest = timeoutIntervalForRequest
     }
     
-    public func buildURL(_ endpoint: String) -> URL {
+    func buildURL(_ endpoint: String) -> URL {
         
         var relativePath = endpoint
         var url = baseUrl

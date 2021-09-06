@@ -61,7 +61,7 @@ public class WPNError: Error {
     ///
     /// If value is not set, then it is automatically gathered from
     /// the nested error or from `URLResponse`. Also the nested error must be produced
-    /// in PowerAuth2 library and contain embedded `PA2ErrorResponse` object.
+    /// in PowerAuth2 library and contain embedded `PowerAuthRestApiErrorResponse` object.
     ///
     /// Due to internal getter optimization, the nested objects evaluation is performed only once.
     /// So if you get the value before URL response is set, then the returned value will be incorrect.
@@ -120,6 +120,7 @@ public extension WPNError {
     }
 }
 
+/// Reason of the error.
 public struct WPNErrorReason: RawRepresentable, Equatable, Hashable {
     
     public static let missingActivation = WPNErrorReason(rawValue: "missingActivation")
@@ -195,7 +196,7 @@ public extension WPNError {
         return false
     }
     
-    /// Returns `PA2ErrorResponse` if such object is embedded in nested error. This is typically useful
+    /// Returns `PowerAuthRestApiErrorResponse` if such object is embedded in nested error. This is typically useful
     /// for getting response created in the PowerAuth2 library.
     var powerAuthErrorResponse: PowerAuthRestApiErrorResponse? {
         if let responseObject = self.userInfo[PowerAuthErrorDomain] as? PowerAuthRestApiErrorResponse {
