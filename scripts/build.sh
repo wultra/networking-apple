@@ -18,6 +18,8 @@ xcrun xcodebuild archive \
     -configuration "Release" \
     -sdk iphoneos \
     -archivePath "build/ios" \
+    CODE_SIGN_IDENTITY="" \
+    CODE_SIGNING_REQUIRED=NO \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO
 
@@ -27,6 +29,8 @@ xcrun xcodebuild archive \
     -configuration "Release" \
     -sdk iphonesimulator \
     -archivePath "build/simulator" \
+    CODE_SIGN_IDENTITY="" \
+    CODE_SIGNING_REQUIRED=NO \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO
 
