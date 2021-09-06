@@ -17,21 +17,23 @@ xcrun xcodebuild archive \
     -scheme "WultraPowerAuthNetworking" \
     -configuration "Release" \
     -sdk iphoneos \
-    OBJROOT=build/iOS \
-    BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+    -archivePath "build/ios" \
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+    SKIP_INSTALL=NO
 
 xcrun xcodebuild archive \
     -project "WultraPowerAuthNetworking.xcodeproj" \
     -scheme "WultraPowerAuthNetworking" \
     -configuration "Release" \
     -sdk iphonesimulator \
-     OBJROOT=build/simulator \
-    BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+    -archivePath "build/simulator" \
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+    SKIP_INSTALL=NO
 
 xcrun xcodebuild \
     -create-xcframework \
-    -framework "build/iOS/UninstalledProducts/iphoneos/WultraPowerAuthNetworking.framework" \
-    -framework "build/simulator/UninstalledProducts/iphonesimulator/WultraPowerAuthNetworking.framework" \
+    -framework "build/ios.xcarchive/Products/Library/Frameworks/WultraPowerAuthNetworking.framework" \
+    -framework "build/simulator.xcarchive/Products/Library/Frameworks/WultraPowerAuthNetworking.framework" \
     -output "build/WultraPowerAuthNetworking.xcframework"
 
 popd
