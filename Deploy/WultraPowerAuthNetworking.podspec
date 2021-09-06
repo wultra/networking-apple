@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "WultraPowerAuthNetworking"
-  s.version             = '0.9.0'
+  s.version             = '%DEPLOY_VERSION%'
   s.summary             = "PowerAuth Networking by Wultra"
   s.homepage            = "https://www.wultra.com/"
   s.social_media_url    = 'https://twitter.com/wultra'

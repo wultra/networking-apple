@@ -1,0 +1,32 @@
+name: Release a new version
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of the library'
+        required: true
+      confirmBranch:
+        description: 'Confirm release branch'
+        required: true
+      command:
+        description: 'Library deploy command'
+        required: false
+        default: prepare push deploy -v2 --any-branch 
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Make sure we're on the proper branch
+        run: |
+          [[ $GITHUB_REF == refs/heads/${{ github.event.inputs.confirmBranch }} ]] || exit 1
+      - name: Publish the library
+        uses: wultra/library-deploy@develop
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        with:
+          script-parameters: ${{ github.event.inputs.version }} ${{ github.event.inputs.command }}

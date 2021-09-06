@@ -1,0 +1,19 @@
+name: build
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - release/*
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-11.0
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Building
+        run: ./scripts/build.sh

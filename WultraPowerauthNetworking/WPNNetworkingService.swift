@@ -38,7 +38,6 @@ public class WPNNetworkingService {
         queue.name = serviceName
     }
     
-    
     /// Sends basic request without an authentication
     /// - Parameters:
     ///   - data: Request data to send.

@@ -136,6 +136,7 @@
 				DC53E61026DFD8520076AAFF /* Sources */,
 				DC53E61126DFD8520076AAFF /* Frameworks */,
 				DC53E61226DFD8520076AAFF /* Resources */,
+				DC93FB8B26E61CE500BFB5DC /* Swift Lint */,
 			);
 			buildRules = (
 			);
@@ -187,6 +188,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DC93FB8B26E61CE500BFB5DC /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if ! [ -x \"$(command -v swiftlint)\" ]; then\n  echo 'warning: swiftlint is not installed on this computer.' >&2\n  exit 0\nfi\n\nswiftlint\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DC53E61026DFD8520076AAFF /* Sources */ = {

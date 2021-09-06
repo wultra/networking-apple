@@ -1,0 +1,3 @@
+DEPLOY_POD_NAME='WultraPowerAuthNetworking'
+DEPLOY_VERSIONING_FILES=( "Deploy/WultraPowerAuthNetworking.podspec,WultraPowerAuthNetworking.podspec" "Deploy/Info.plist,WultraPowerAuthNetworking/Info.plist" )
+DEPLOY_MODE='swift-cocoapods'
