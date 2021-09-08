@@ -16,6 +16,7 @@
 
 import Foundation
 import PowerAuth2
+import PowerAuthCore
 
 private let jsonEncoder = JSONEncoder()
 private let jsonDecoder: JSONDecoder = {
@@ -43,6 +44,8 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     private var headers = [String: String]()
     private(set) var method: String = "POST"
     
+    private let encryptor: PowerAuthCoreEciesEncryptor?
+    
     private(set) var requestData: Data?
 
     var needsSignature: Bool {
@@ -54,24 +57,27 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     }
     
     // Not signed request
-    init(_ url: URL, requestData: TRequest) {
+    init(_ url: URL, requestData: TRequest, encryptor: PowerAuthCoreEciesEncryptor? = nil) {
         self.url = url
+        self.encryptor = encryptor
         self.buildRequestData(requestData)
     }
     
     // Signed request
-    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest, encryptor: PowerAuthCoreEciesEncryptor? = nil) {
         self.url = url
         self.uriIdentifier = uriId
         self.auth = auth
+        self.encryptor = encryptor
         self.buildRequestData(requestData)
     }
     
     // Signed with token
-    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest, encryptor: PowerAuthCoreEciesEncryptor? = nil) {
         self.url = url
         self.tokenName = tokenName
         self.auth = auth
+        self.encryptor = encryptor
         self.buildRequestData(requestData)
     }
     
@@ -95,8 +101,17 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
             request.addValue(v, forHTTPHeaderField: k)
         }
         
+        var data = requestData
+        if let encryptor = encryptor {
+            if let cryptorgram = encryptor.encryptRequest(data) {
+                data = try? jsonEncoder.encode(E2EERequest(cryptogram: cryptorgram))
+            } else {
+                D.error("Failed to encrypt request with encryptor.")
+            }
+        }
+        
         request.httpMethod = method
-        request.httpBody = requestData
+        request.httpBody = data
         
         return request
     }
@@ -116,9 +131,17 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     /// Parses given result data and sets it to `response` property
     func processResult(data: Data) -> TResponse? {
         
+        var data = data
         var response: TResponse?
         
         do {
+            if let encryptor = encryptor {
+                if let respData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
+                    data = respData
+                } else {
+                    D.error("failed to decrypt response")
+                }
+            }
             switch responseType {
             case .json:
                 response = try jsonDecoder.decode(TResponse.self, from: data)
@@ -127,5 +150,31 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
             D.error("failed to process result:\n\(error)")
         }
         return response
+    }
+}
+
+private struct E2EERequest: Encodable {
+    let ephemeralPublicKey: String?
+    let encryptedData: String?
+    let mac: String?
+    let nonce: String?
+    
+    init(cryptogram: PowerAuthCoreEciesCryptogram) {
+        ephemeralPublicKey = cryptogram.keyBase64
+        encryptedData = cryptogram.bodyBase64
+        mac = cryptogram.macBase64
+        nonce = cryptogram.nonceBase64
+    }
+}
+
+private struct E2EEResponse: Decodable {
+    let encryptedData: String?
+    let mac: String?
+    
+    func toCryptorgram() -> PowerAuthCoreEciesCryptogram {
+        let cryptogram = PowerAuthCoreEciesCryptogram()
+        cryptogram.bodyBase64 = encryptedData
+        cryptogram.macBase64 = mac
+        return cryptogram
     }
 }

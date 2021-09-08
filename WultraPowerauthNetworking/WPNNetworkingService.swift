@@ -16,6 +16,7 @@
 
 import Foundation
 import PowerAuth2
+import PowerAuthCore
 
 /// Networking service for dispatching PowerAuth signed requests.
 public class WPNNetworkingService {
@@ -43,15 +44,17 @@ public class WPNNetworkingService {
     ///   - data: Request data to send.
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
+    ///   - encryptor: Optional encryptor for End to End Encryption.
     ///   - completion: Completion handler
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(data: Req,
                                                                                                         to endpoint: Endpoint,
                                                                                                         with headers: [String: String]? = nil,
+                                                                                                        encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
                                                                                                         completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, requestData: data)
+        let request = Endpoint.Request(url, requestData: data, encryptor: encryptor)
         return post(request: request, completion: completion)
     }
     
@@ -61,6 +64,7 @@ public class WPNNetworkingService {
     ///   - auth: Authentication object.
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
+    ///   - encryptor: Optional encryptor for End to End Encryption.
     ///   - completion: Completion handler
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
@@ -68,9 +72,10 @@ public class WPNNetworkingService {
                                                                                                          signedWith auth: PowerAuthAuthentication,
                                                                                                          to endpoint: Endpoint,
                                                                                                          with headers: [String: String]? = nil,
+                                                                                                         encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
                                                                                                          completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
+        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data, encryptor: encryptor)
         return post(request: request, completion: completion)
     }
     
@@ -80,6 +85,7 @@ public class WPNNetworkingService {
     ///   - auth: Authentication object.
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
+    ///   - encryptor: Optional encryptor for End to End Encryption.
     ///   - completion: Completion handler
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
@@ -87,9 +93,10 @@ public class WPNNetworkingService {
                                                                                                                   signedWith auth: PowerAuthAuthentication,
                                                                                                                   to endpoint: Endpoint,
                                                                                                                   with headers: [String: String]? = nil,
+                                                                                                                  encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
                                                                                                                   completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
+        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data, encryptor: encryptor)
         return post(request: request, completion: completion)
     }
     
