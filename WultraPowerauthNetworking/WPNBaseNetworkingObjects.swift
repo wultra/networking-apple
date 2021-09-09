@@ -17,8 +17,8 @@
 import Foundation
 
 /// Base empty request class. Every request needs to inherit from this class.
-public class WPNRequestBase: Codable {
-    
+open class WPNRequestBase: Codable {
+    public init() { }
 }
 
 /// Standard request, where the request payload is passed as the `requestObject`
@@ -53,7 +53,7 @@ public class WPNRequest<T: Codable>: WPNRequestBase {
 }
 
 /// Base response class. Every response  needs to inherit from this class.
-public class WPNResponseBase: Decodable {
+open class WPNResponseBase: Decodable {
     
     /// Status of the response
     public enum Status: String, Decodable {
