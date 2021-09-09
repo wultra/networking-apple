@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.cocoapods_version   = '>= 1.10'
   s.name                = "WultraPowerAuthNetworking"
-  s.version             = '1.0.1'
+  s.version             = '1.0.2'
   s.license             = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
   s.summary             = "PowerAuth Networking by Wultra"
   s.homepage            = "https://www.wultra.com/"
