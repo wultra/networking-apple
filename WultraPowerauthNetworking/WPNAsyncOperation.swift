@@ -75,7 +75,7 @@ public class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
         }
     }
     
-    var completionQueue: DispatchQueue?
+    public var completionQueue: DispatchQueue?
     
     // MARK: - Lifecycle of the operation
     
