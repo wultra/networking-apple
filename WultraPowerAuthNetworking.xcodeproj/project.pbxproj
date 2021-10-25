@@ -153,7 +153,7 @@
 		DC53E60B26DFD8520076AAFF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1300;
 				TargetAttributes = {
 					DC53E61326DFD8520076AAFF = {
 						CreatedOnToolsVersion = 12.5;
