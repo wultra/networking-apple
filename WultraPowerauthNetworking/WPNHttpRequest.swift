@@ -105,6 +105,10 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
         if let encryptor = encryptor {
             if let cryptorgram = encryptor.encryptRequest(data) {
                 data = try? jsonEncoder.encode(E2EERequest(cryptogram: cryptorgram))
+                // Only add E2EE headers when the endpoint is not signed
+                if !needsSignature, let metadata = encryptor.associatedMetaData {
+                    request.addValue(metadata.httpHeaderValue, forHTTPHeaderField: metadata.httpHeaderKey)
+                }
             } else {
                 D.error("Failed to encrypt request with encryptor.")
             }
