@@ -17,7 +17,7 @@ on:
 jobs:
   publish:
     name: Publish
-    runs-on: macos-latest
+    runs-on: macos-11.0
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -25,6 +25,8 @@ jobs:
         run: |
           [[ $GITHUB_REF == refs/heads/${{ github.event.inputs.confirmBranch }} ]] || exit 1
       - name: Build the framework
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/build.sh
       - name: Publish the library
         uses: wultra/library-deploy@develop
