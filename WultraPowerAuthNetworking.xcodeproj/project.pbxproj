@@ -156,8 +156,8 @@
 		OBJ_1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftMigration = 9999;
-				LastUpgradeCheck = 9999;
+				LastSwiftMigration = 1300;
+				LastUpgradeCheck = 1300;
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */;
 			compatibilityVersion = "Xcode 3.2";
