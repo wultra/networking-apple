@@ -11,10 +11,10 @@ let package = Package(
     products: [
         .library(
             name: "WultraPowerAuthNetworking",
-            targets: ["WultraPowerAuthNetworking"]),
+            targets: ["WultraPowerAuthNetworking"])
     ],
     dependencies: [
-        .package(name: "PowerAuth2", url: "https://github.com/wultra/powerauth-mobile-sdk-spm.git", .branch("develop")),
+        .package(name: "PowerAuth2", url: "https://github.com/wultra/powerauth-mobile-sdk-spm.git", .branch("develop"))
     ],
     targets: [
         .target(
