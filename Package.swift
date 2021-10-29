@@ -19,7 +19,10 @@ let package = Package(
     targets: [
         .target(
             name: "WultraPowerAuthNetworking",
-            dependencies: ["PowerAuth2", .product(name: "PowerAuthCore", package: "PowerAuth2")])
+            dependencies: ["PowerAuth2", .product(name: "PowerAuthCore", package: "PowerAuth2")],
+            // For historical reasons, the folder has a wrong case-sensitive name, so we have to force the path
+            // to get rid of swift PM warning.
+            path: "Sources/WultraPowerauthNetworking")
     ],
     swiftLanguageVersions: [.v5]
 )
