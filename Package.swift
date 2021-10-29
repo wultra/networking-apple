@@ -20,5 +20,6 @@ let package = Package(
         .target(
             name: "WultraPowerAuthNetworking",
             dependencies: ["PowerAuth2", .product(name: "PowerAuthCore", package: "PowerAuth2")])
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
