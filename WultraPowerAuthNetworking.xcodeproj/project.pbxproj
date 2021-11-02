@@ -7,248 +7,208 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DC53E61926DFD8520076AAFF /* WultraPowerAuthNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = DC53E61726DFD8520076AAFF /* WultraPowerAuthNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DC53E62426DFD8A50076AAFF /* WPNHttpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E61F26DFD8A50076AAFF /* WPNHttpClient.swift */; };
-		DC53E62526DFD8A50076AAFF /* WPNHttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E62026DFD8A50076AAFF /* WPNHttpRequest.swift */; };
-		DC53E62626DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E62126DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift */; };
-		DC53E62726DFD8A50076AAFF /* WPNNetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E62226DFD8A50076AAFF /* WPNNetworkingService.swift */; };
-		DC53E62826DFD8A50076AAFF /* WPNSSLValidationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E62326DFD8A50076AAFF /* WPNSSLValidationStrategy.swift */; };
-		DC53E62A26DFDA5E0076AAFF /* WPNAsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E62926DFDA5E0076AAFF /* WPNAsyncOperation.swift */; };
-		DC53E62C26DFDA980076AAFF /* WPNConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E62B26DFDA980076AAFF /* WPNConfig.swift */; };
-		DC53E63026DFDFFE0076AAFF /* PowerAuth2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC53E62E26DFDFFE0076AAFF /* PowerAuth2.xcframework */; };
-		DC53E63226DFDFFE0076AAFF /* PowerAuthCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC53E62F26DFDFFE0076AAFF /* PowerAuthCore.xcframework */; };
-		DC53E63626DFE0350076AAFF /* WPNError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E63526DFE0350076AAFF /* WPNError.swift */; };
-		DC53E63826DFE05D0076AAFF /* WPNLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC53E63726DFE05D0076AAFF /* WPNLogger.swift */; };
-		DCA1529F26E232D3003AB99E /* WPNEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */; };
+		BFCF34E2272AE17F00AACA07 /* PowerAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = BFCF34E1272AE17F00AACA07 /* PowerAuth2 */; };
+		BFCF34E4272AE17F00AACA07 /* PowerAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = BFCF34E3272AE17F00AACA07 /* PowerAuthCore */; };
+		OBJ_37 /* WPNAsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* WPNAsyncOperation.swift */; };
+		OBJ_38 /* WPNBaseNetworkingObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* WPNBaseNetworkingObjects.swift */; };
+		OBJ_39 /* WPNConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* WPNConfig.swift */; };
+		OBJ_40 /* WPNEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* WPNEndpoint.swift */; };
+		OBJ_41 /* WPNError.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* WPNError.swift */; };
+		OBJ_42 /* WPNHttpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* WPNHttpClient.swift */; };
+		OBJ_43 /* WPNHttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* WPNHttpRequest.swift */; };
+		OBJ_44 /* WPNLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* WPNLogger.swift */; };
+		OBJ_45 /* WPNNetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* WPNNetworkingService.swift */; };
+		OBJ_46 /* WPNSSLValidationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* WPNSSLValidationStrategy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DC53E61426DFD8520076AAFF /* WultraPowerAuthNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WultraPowerAuthNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC53E61726DFD8520076AAFF /* WultraPowerAuthNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WultraPowerAuthNetworking.h; sourceTree = "<group>"; };
-		DC53E61826DFD8520076AAFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DC53E61F26DFD8A50076AAFF /* WPNHttpClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNHttpClient.swift; sourceTree = "<group>"; };
-		DC53E62026DFD8A50076AAFF /* WPNHttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNHttpRequest.swift; sourceTree = "<group>"; };
-		DC53E62126DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNBaseNetworkingObjects.swift; sourceTree = "<group>"; };
-		DC53E62226DFD8A50076AAFF /* WPNNetworkingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNNetworkingService.swift; sourceTree = "<group>"; };
-		DC53E62326DFD8A50076AAFF /* WPNSSLValidationStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNSSLValidationStrategy.swift; sourceTree = "<group>"; };
-		DC53E62926DFDA5E0076AAFF /* WPNAsyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNAsyncOperation.swift; sourceTree = "<group>"; };
-		DC53E62B26DFDA980076AAFF /* WPNConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNConfig.swift; sourceTree = "<group>"; };
-		DC53E62E26DFDFFE0076AAFF /* PowerAuth2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuth2.xcframework; path = Carthage/Build/PowerAuth2.xcframework; sourceTree = "<group>"; };
-		DC53E62F26DFDFFE0076AAFF /* PowerAuthCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuthCore.xcframework; path = Carthage/Build/PowerAuthCore.xcframework; sourceTree = "<group>"; };
-		DC53E63526DFE0350076AAFF /* WPNError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNError.swift; sourceTree = "<group>"; };
-		DC53E63726DFE05D0076AAFF /* WPNLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPNLogger.swift; sourceTree = "<group>"; };
-		DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNEndpoint.swift; sourceTree = "<group>"; };
+		OBJ_10 /* WPNAsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNAsyncOperation.swift; sourceTree = "<group>"; };
+		OBJ_11 /* WPNBaseNetworkingObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNBaseNetworkingObjects.swift; sourceTree = "<group>"; };
+		OBJ_12 /* WPNConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNConfig.swift; sourceTree = "<group>"; };
+		OBJ_13 /* WPNEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNEndpoint.swift; sourceTree = "<group>"; };
+		OBJ_14 /* WPNError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNError.swift; sourceTree = "<group>"; };
+		OBJ_15 /* WPNHttpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNHttpClient.swift; sourceTree = "<group>"; };
+		OBJ_16 /* WPNHttpRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNHttpRequest.swift; sourceTree = "<group>"; };
+		OBJ_17 /* WPNLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNLogger.swift; sourceTree = "<group>"; };
+		OBJ_18 /* WPNNetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNNetworkingService.swift; sourceTree = "<group>"; };
+		OBJ_19 /* WPNSSLValidationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNSSLValidationStrategy.swift; sourceTree = "<group>"; };
+		OBJ_24 /* Deploy */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Deploy; sourceTree = SOURCE_ROOT; };
+		OBJ_25 /* Carthage */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Carthage; sourceTree = SOURCE_ROOT; };
+		OBJ_26 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = scripts; sourceTree = SOURCE_ROOT; };
+		OBJ_27 /* Cartfile.resolved */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
+		OBJ_28 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		OBJ_29 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		OBJ_30 /* WultraPowerAuthNetworking.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = WultraPowerAuthNetworking.podspec; sourceTree = "<group>"; };
+		OBJ_31 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		OBJ_9 /* WultraPowerAuthNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WultraPowerAuthNetworking.h; sourceTree = "<group>"; };
+		"WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = WultraPowerAuthNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DC53E61126DFD8520076AAFF /* Frameworks */ = {
+		OBJ_47 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 0;
 			files = (
-				DC53E63226DFDFFE0076AAFF /* PowerAuthCore.xcframework in Frameworks */,
-				DC53E63026DFDFFE0076AAFF /* PowerAuth2.xcframework in Frameworks */,
+				BFCF34E2272AE17F00AACA07 /* PowerAuth2 in Frameworks */,
+				BFCF34E4272AE17F00AACA07 /* PowerAuthCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DC53E60A26DFD8520076AAFF = {
+		OBJ_20 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				DC53E61626DFD8520076AAFF /* WultraPowerAuthNetworking */,
-				DC53E61526DFD8520076AAFF /* Products */,
-				DC53E62D26DFDFFE0076AAFF /* Frameworks */,
 			);
+			name = Tests;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_21 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		DC53E61526DFD8520076AAFF /* Products */ = {
+		OBJ_22 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DC53E61426DFD8520076AAFF /* WultraPowerAuthNetworking.framework */,
+				"WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */,
 			);
 			name = Products;
-			sourceTree = "<group>";
+			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		DC53E61626DFD8520076AAFF /* WultraPowerAuthNetworking */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
-				DC93FB8726E6086400BFB5DC /* Public */,
-				DC93FB8926E6087000BFB5DC /* Private */,
-				DC53E61726DFD8520076AAFF /* WultraPowerAuthNetworking.h */,
-				DC53E61826DFD8520076AAFF /* Info.plist */,
+				OBJ_6 /* Package.swift */,
+				OBJ_7 /* Sources */,
+				OBJ_20 /* Tests */,
+				OBJ_21 /* Dependencies */,
+				OBJ_22 /* Products */,
+				OBJ_24 /* Deploy */,
+				OBJ_25 /* Carthage */,
+				OBJ_26 /* scripts */,
+				OBJ_27 /* Cartfile.resolved */,
+				OBJ_28 /* LICENSE */,
+				OBJ_29 /* Cartfile */,
+				OBJ_30 /* WultraPowerAuthNetworking.podspec */,
+				OBJ_31 /* README.md */,
 			);
-			path = WultraPowerAuthNetworking;
 			sourceTree = "<group>";
 		};
-		DC53E62D26DFDFFE0076AAFF /* Frameworks */ = {
+		OBJ_7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				DC53E62E26DFDFFE0076AAFF /* PowerAuth2.xcframework */,
-				DC53E62F26DFDFFE0076AAFF /* PowerAuthCore.xcframework */,
+				OBJ_8 /* WultraPowerAuthNetworking */,
 			);
-			name = Frameworks;
-			sourceTree = "<group>";
+			name = Sources;
+			sourceTree = SOURCE_ROOT;
 		};
-		DC93FB8726E6086400BFB5DC /* Public */ = {
+		OBJ_8 /* WultraPowerAuthNetworking */ = {
 			isa = PBXGroup;
 			children = (
-				DC53E62226DFD8A50076AAFF /* WPNNetworkingService.swift */,
-				DC53E62B26DFDA980076AAFF /* WPNConfig.swift */,
-				DC53E62326DFD8A50076AAFF /* WPNSSLValidationStrategy.swift */,
-				DCA1529E26E232D3003AB99E /* WPNEndpoint.swift */,
-				DC53E62126DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift */,
-				DC53E62926DFDA5E0076AAFF /* WPNAsyncOperation.swift */,
-				DC53E63526DFE0350076AAFF /* WPNError.swift */,
-				DC53E63726DFE05D0076AAFF /* WPNLogger.swift */,
+				OBJ_9 /* WultraPowerAuthNetworking.h */,
+				OBJ_10 /* WPNAsyncOperation.swift */,
+				OBJ_11 /* WPNBaseNetworkingObjects.swift */,
+				OBJ_12 /* WPNConfig.swift */,
+				OBJ_13 /* WPNEndpoint.swift */,
+				OBJ_14 /* WPNError.swift */,
+				OBJ_15 /* WPNHttpClient.swift */,
+				OBJ_16 /* WPNHttpRequest.swift */,
+				OBJ_17 /* WPNLogger.swift */,
+				OBJ_18 /* WPNNetworkingService.swift */,
+				OBJ_19 /* WPNSSLValidationStrategy.swift */,
 			);
-			name = Public;
-			sourceTree = "<group>";
-		};
-		DC93FB8926E6087000BFB5DC /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC53E61F26DFD8A50076AAFF /* WPNHttpClient.swift */,
-				DC53E62026DFD8A50076AAFF /* WPNHttpRequest.swift */,
-			);
-			name = Private;
-			sourceTree = "<group>";
+			name = WultraPowerAuthNetworking;
+			path = Sources/WultraPowerAuthNetworking;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		DC53E60F26DFD8520076AAFF /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DC53E61926DFD8520076AAFF /* WultraPowerAuthNetworking.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		DC53E61326DFD8520076AAFF /* WultraPowerAuthNetworking */ = {
+		"WultraPowerAuthNetworking::WultraPowerAuthNetworking" /* WultraPowerAuthNetworking */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DC53E61C26DFD8520076AAFF /* Build configuration list for PBXNativeTarget "WultraPowerAuthNetworking" */;
+			buildConfigurationList = OBJ_33 /* Build configuration list for PBXNativeTarget "WultraPowerAuthNetworking" */;
 			buildPhases = (
-				DC53E60F26DFD8520076AAFF /* Headers */,
-				DC53E61026DFD8520076AAFF /* Sources */,
-				DC53E61126DFD8520076AAFF /* Frameworks */,
-				DC53E61226DFD8520076AAFF /* Resources */,
-				DC93FB8B26E61CE500BFB5DC /* Swift Lint */,
+				OBJ_36 /* Sources */,
+				OBJ_47 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = WultraPowerAuthNetworking;
+			packageProductDependencies = (
+				BFCF34E1272AE17F00AACA07 /* PowerAuth2 */,
+				BFCF34E3272AE17F00AACA07 /* PowerAuthCore */,
+			);
 			productName = WultraPowerAuthNetworking;
-			productReference = DC53E61426DFD8520076AAFF /* WultraPowerAuthNetworking.framework */;
+			productReference = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		DC53E60B26DFD8520076AAFF /* Project object */ = {
+		OBJ_1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1300;
-				TargetAttributes = {
-					DC53E61326DFD8520076AAFF = {
-						CreatedOnToolsVersion = 12.5;
-						LastSwiftMigration = 1250;
-					};
-				};
+				LastSwiftMigration = 1300;
+				LastUpgradeCheck = 1310;
 			};
-			buildConfigurationList = DC53E60E26DFD8520076AAFF /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */;
-			compatibilityVersion = "Xcode 9.3";
+			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 			);
-			mainGroup = DC53E60A26DFD8520076AAFF;
-			productRefGroup = DC53E61526DFD8520076AAFF /* Products */;
+			mainGroup = OBJ_5;
+			packageReferences = (
+				BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */,
+			);
+			productRefGroup = OBJ_22 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DC53E61326DFD8520076AAFF /* WultraPowerAuthNetworking */,
+				"WultraPowerAuthNetworking::WultraPowerAuthNetworking" /* WultraPowerAuthNetworking */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		DC53E61226DFD8520076AAFF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		DC93FB8B26E61CE500BFB5DC /* Swift Lint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Swift Lint";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if ! [ -x \"$(command -v swiftlint)\" ]; then\n  echo 'warning: swiftlint is not installed on this computer.' >&2\n  exit 0\nfi\n\nswiftlint\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		DC53E61026DFD8520076AAFF /* Sources */ = {
+		OBJ_36 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 0;
 			files = (
-				DC53E63626DFE0350076AAFF /* WPNError.swift in Sources */,
-				DC53E62626DFD8A50076AAFF /* WPNBaseNetworkingObjects.swift in Sources */,
-				DC53E62426DFD8A50076AAFF /* WPNHttpClient.swift in Sources */,
-				DC53E62826DFD8A50076AAFF /* WPNSSLValidationStrategy.swift in Sources */,
-				DC53E62C26DFDA980076AAFF /* WPNConfig.swift in Sources */,
-				DC53E63826DFE05D0076AAFF /* WPNLogger.swift in Sources */,
-				DC53E62A26DFDA5E0076AAFF /* WPNAsyncOperation.swift in Sources */,
-				DC53E62526DFD8A50076AAFF /* WPNHttpRequest.swift in Sources */,
-				DCA1529F26E232D3003AB99E /* WPNEndpoint.swift in Sources */,
-				DC53E62726DFD8A50076AAFF /* WPNNetworkingService.swift in Sources */,
+				OBJ_37 /* WPNAsyncOperation.swift in Sources */,
+				OBJ_38 /* WPNBaseNetworkingObjects.swift in Sources */,
+				OBJ_39 /* WPNConfig.swift in Sources */,
+				OBJ_40 /* WPNEndpoint.swift in Sources */,
+				OBJ_41 /* WPNError.swift in Sources */,
+				OBJ_42 /* WPNHttpClient.swift in Sources */,
+				OBJ_43 /* WPNHttpRequest.swift in Sources */,
+				OBJ_44 /* WPNLogger.swift in Sources */,
+				OBJ_45 /* WPNNetworkingService.swift in Sources */,
+				OBJ_46 /* WPNSSLValidationStrategy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		DC53E61A26DFD8520076AAFF /* Debug */ = {
+		OBJ_3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -256,64 +216,113 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
+					"SWIFT_PACKAGE=1",
+					"DEBUG=1",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				USE_HEADERMAP = NO;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
-		DC53E61B26DFD8520076AAFF /* Release */ = {
+		OBJ_34 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = WultraPowerAuthNetworking.xcodeproj/WultraPowerAuthNetworking_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = WultraPowerAuthNetworking;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = WultraPowerAuthNetworking;
+			};
+			name = Debug;
+		};
+		OBJ_35 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = WultraPowerAuthNetworking.xcodeproj/WultraPowerAuthNetworking_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = WultraPowerAuthNetworking;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = WultraPowerAuthNetworking;
+			};
+			name = Release;
+		};
+		OBJ_4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -321,115 +330,90 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"SWIFT_PACKAGE=1",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SDKROOT = iphoneos;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		DC53E61D26DFD8520076AAFF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = KTT9G859MR;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = WultraPowerAuthNetworking/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.wultra.WultraPowerAuthNetworking;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		DC53E61E26DFD8520076AAFF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = KTT9G859MR;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = WultraPowerAuthNetworking/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.wultra.WultraPowerAuthNetworking;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+				USE_HEADERMAP = NO;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DC53E60E26DFD8520076AAFF /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */ = {
+		OBJ_2 /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DC53E61A26DFD8520076AAFF /* Debug */,
-				DC53E61B26DFD8520076AAFF /* Release */,
+				OBJ_3 /* Debug */,
+				OBJ_4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DC53E61C26DFD8520076AAFF /* Build configuration list for PBXNativeTarget "WultraPowerAuthNetworking" */ = {
+		OBJ_33 /* Build configuration list for PBXNativeTarget "WultraPowerAuthNetworking" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DC53E61D26DFD8520076AAFF /* Debug */,
-				DC53E61E26DFD8520076AAFF /* Release */,
+				OBJ_34 /* Debug */,
+				OBJ_35 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/wultra/powerauth-mobile-sdk-spm.git";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BFCF34E1272AE17F00AACA07 /* PowerAuth2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */;
+			productName = PowerAuth2;
+		};
+		BFCF34E3272AE17F00AACA07 /* PowerAuthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */;
+			productName = PowerAuthCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = DC53E60B26DFD8520076AAFF /* Project object */;
+	rootObject = OBJ_1 /* Project object */;
 }

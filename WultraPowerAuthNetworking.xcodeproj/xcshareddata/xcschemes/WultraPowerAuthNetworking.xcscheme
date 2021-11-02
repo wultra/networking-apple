@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1300"
+   LastUpgradeVersion = "1310"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DC53E61326DFD8520076AAFF"
+               BlueprintIdentifier = "WultraPowerAuthNetworking::WultraPowerAuthNetworking"
                BuildableName = "WultraPowerAuthNetworking.framework"
                BlueprintName = "WultraPowerAuthNetworking"
                ReferencedContainer = "container:WultraPowerAuthNetworking.xcodeproj">
@@ -47,15 +47,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DC53E61326DFD8520076AAFF"
-            BuildableName = "WultraPowerAuthNetworking.framework"
-            BlueprintName = "WultraPowerAuthNetworking"
-            ReferencedContainer = "container:WultraPowerAuthNetworking.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
