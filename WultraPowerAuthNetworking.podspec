@@ -1,14 +1,14 @@
 Pod::Spec.new do |s|
   s.cocoapods_version   = '>= 1.10'
   s.name                = "WultraPowerAuthNetworking"
-  s.version             = '0.9.0'
+  s.version             = '1.1.0'
   s.license             = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
   s.summary             = "PowerAuth Networking by Wultra"
   s.homepage            = "https://www.wultra.com/"
   s.social_media_url    = 'https://twitter.com/wultra'
   s.author              = { 'Wultra s.r.o.' => 'support@wultra.com' }
   s.source              = { :git => 'https://github.com/wultra/networking-apple.git', :tag => s.version }
-  s.source_files        = 'WultraPowerauthNetworking/**/*.swift'
+  s.source_files        = 'Sources/WultraPowerauthNetworking/**/*.swift'
   s.platform            = :ios
   s.swift_version       = "5.0"
   s.ios.deployment_target  = '10.0'
