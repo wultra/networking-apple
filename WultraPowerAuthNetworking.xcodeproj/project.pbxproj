@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BFCF34E2272AE17F00AACA07 /* PowerAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = BFCF34E1272AE17F00AACA07 /* PowerAuth2 */; };
-		BFCF34E4272AE17F00AACA07 /* PowerAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = BFCF34E3272AE17F00AACA07 /* PowerAuthCore */; };
+		BF732288273D3CDE00DE32D7 /* PowerAuthCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */; };
+		BF732289273D3CDE00DE32D7 /* PowerAuth2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */; };
 		OBJ_37 /* WPNAsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* WPNAsyncOperation.swift */; };
 		OBJ_38 /* WPNBaseNetworkingObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* WPNBaseNetworkingObjects.swift */; };
 		OBJ_39 /* WPNConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* WPNConfig.swift */; };
@@ -22,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuthCore.xcframework; path = Carthage/Build/PowerAuthCore.xcframework; sourceTree = "<group>"; };
+		BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuth2.xcframework; path = Carthage/Build/PowerAuth2.xcframework; sourceTree = "<group>"; };
 		OBJ_10 /* WPNAsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNAsyncOperation.swift; sourceTree = "<group>"; };
 		OBJ_11 /* WPNBaseNetworkingObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNBaseNetworkingObjects.swift; sourceTree = "<group>"; };
 		OBJ_12 /* WPNConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNConfig.swift; sourceTree = "<group>"; };
@@ -32,9 +34,6 @@
 		OBJ_17 /* WPNLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNLogger.swift; sourceTree = "<group>"; };
 		OBJ_18 /* WPNNetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNNetworkingService.swift; sourceTree = "<group>"; };
 		OBJ_19 /* WPNSSLValidationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNSSLValidationStrategy.swift; sourceTree = "<group>"; };
-		OBJ_24 /* Deploy */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Deploy; sourceTree = SOURCE_ROOT; };
-		OBJ_25 /* Carthage */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Carthage; sourceTree = SOURCE_ROOT; };
-		OBJ_26 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = scripts; sourceTree = SOURCE_ROOT; };
 		OBJ_27 /* Cartfile.resolved */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
 		OBJ_28 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		OBJ_29 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
@@ -50,8 +49,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				BFCF34E2272AE17F00AACA07 /* PowerAuth2 in Frameworks */,
-				BFCF34E4272AE17F00AACA07 /* PowerAuthCore in Frameworks */,
+				BF732289273D3CDE00DE32D7 /* PowerAuth2.xcframework in Frameworks */,
+				BF732288273D3CDE00DE32D7 /* PowerAuthCore.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +67,8 @@
 		OBJ_21 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */,
+				BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -88,9 +89,6 @@
 				OBJ_20 /* Tests */,
 				OBJ_21 /* Dependencies */,
 				OBJ_22 /* Products */,
-				OBJ_24 /* Deploy */,
-				OBJ_25 /* Carthage */,
-				OBJ_26 /* scripts */,
 				OBJ_27 /* Cartfile.resolved */,
 				OBJ_28 /* LICENSE */,
 				OBJ_29 /* Cartfile */,
@@ -142,8 +140,6 @@
 			);
 			name = WultraPowerAuthNetworking;
 			packageProductDependencies = (
-				BFCF34E1272AE17F00AACA07 /* PowerAuth2 */,
-				BFCF34E3272AE17F00AACA07 /* PowerAuthCore */,
 			);
 			productName = WultraPowerAuthNetworking;
 			productReference = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */;
@@ -167,7 +163,6 @@
 			);
 			mainGroup = OBJ_5;
 			packageReferences = (
-				BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */,
 			);
 			productRefGroup = OBJ_22 /* Products */;
 			projectDirPath = "";
@@ -390,30 +385,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/wultra/powerauth-mobile-sdk-spm.git";
-			requirement = {
-				branch = develop;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		BFCF34E1272AE17F00AACA07 /* PowerAuth2 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */;
-			productName = PowerAuth2;
-		};
-		BFCF34E3272AE17F00AACA07 /* PowerAuthCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BFCF34E0272AE17F00AACA07 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */;
-			productName = PowerAuthCore;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }
