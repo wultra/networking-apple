@@ -31,6 +31,11 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
         case json = "application/json"
     }
     
+    /// The timeout interval of the request.
+    ///
+    /// Value from `WPNNetworkingService` `config` will be used when nil.
+    var timeoutInterval: TimeInterval?
+    
     /// Default value is `.json`
     var requestType = BodyType.json
     /// Default value is `.json`
@@ -94,6 +99,10 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     func buildUrlRequest() -> URLRequest {
         
         var request = URLRequest(url: url)
+        
+        if let ti = timeoutInterval {
+            request.timeoutInterval = ti
+        }
         
         let requestHeaders = headers.merging(["Accept": responseType.rawValue, "Content-Type": requestType.rawValue], uniquingKeysWith: { f, _ in f })
         
