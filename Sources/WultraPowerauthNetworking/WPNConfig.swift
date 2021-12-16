@@ -22,8 +22,18 @@ public struct WPNConfig {
     public let sslValidation: WPNSSLValidationStrategy
     
     /// The timeout interval to use when waiting for backend data.
+    ///
+    /// Value can be overridden for each `post` call in `WPNNetworkingService`.
+    /// Default value is 20.
     public let timeoutIntervalForRequest: TimeInterval
     
+    /// Create instance of the config
+    /// - Parameters:
+    ///   - baseUrl: Base URL for service requests.
+    ///   - sslValidation: SSL validation strategy for the request.
+    ///   - timeoutIntervalForRequest: The timeout interval to use when waiting for backend data.
+    ///                                Value can be overridden for each `post` call in `WPNNetworkingService`.
+    ///                                Default value is 20.
     public init(baseUrl: URL, sslValidation: WPNSSLValidationStrategy, timeoutIntervalForRequest: TimeInterval = 20) {
         self.baseUrl = baseUrl
         self.sslValidation = sslValidation

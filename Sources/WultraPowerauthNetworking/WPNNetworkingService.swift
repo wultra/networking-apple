@@ -23,14 +23,23 @@ public class WPNNetworkingService {
     
     /// Language sent to the server for request localized response.
     ///
-    /// Standard accept-language format. Default value is "en".
+    /// Compliant with standard RFC Accept-Language. Default value is "en".
     public var acceptLanguage: String
+    
+    /// Configuration of the service
+    public let config: WPNConfig
     
     private let powerAuth: PowerAuthSDK
     private let httpClient: WPNHttpClient
-    private let config: WPNConfig
     private let queue = OperationQueue()
     
+    /// Creates instance of the `WPNNetworkingService`
+    /// - Parameters:
+    ///   - powerAuth: PowerAuth instance that will be used for signing.
+    ///   - config: Configuration of the service
+    ///   - serviceName: Name of the service. Will be reflected in the OperationQueue name and logs.
+    ///   - acceptLanguage: Language sent to the server for request localized response.
+    ///                     Compliant with standard RFC Accept-Language. Default value is "en".
     public init(powerAuth: PowerAuthSDK, config: WPNConfig, serviceName: String, acceptLanguage: String = "en") {
         self.acceptLanguage = acceptLanguage
         self.powerAuth = powerAuth
@@ -45,6 +54,10 @@ public class WPNNetworkingService {
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
     ///   - encryptor: Optional encryptor for End to End Encryption.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completion: Completion handler
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
@@ -52,10 +65,13 @@ public class WPNNetworkingService {
                                                                                                         to endpoint: Endpoint,
                                                                                                         with headers: [String: String]? = nil,
                                                                                                         encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
+                                                                                                        timeoutInterval: TimeInterval? = nil,
+                                                                                                        progressCallback: ((Double) -> Void)? = nil,
                                                                                                         completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, requestData: data, encryptor: encryptor)
-        return post(request: request, completion: completion)
+        request.timeoutInterval = timeoutInterval
+        return post(request: request, headers: headers, progressCallback: progressCallback, completion: completion)
     }
     
     /// Sends signed request with provided authentication.
@@ -65,6 +81,10 @@ public class WPNNetworkingService {
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
     ///   - encryptor: Optional encryptor for End to End Encryption.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completion: Completion handler
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
@@ -73,10 +93,13 @@ public class WPNNetworkingService {
                                                                                                          to endpoint: Endpoint,
                                                                                                          with headers: [String: String]? = nil,
                                                                                                          encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
+                                                                                                         timeoutInterval: TimeInterval? = nil,
+                                                                                                         progressCallback: ((Double) -> Void)? = nil,
                                                                                                          completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data, encryptor: encryptor)
-        return post(request: request, completion: completion)
+        request.timeoutInterval = timeoutInterval
+        return post(request: request, headers: headers, progressCallback: progressCallback, completion: completion)
     }
     
     /// Sends signed request with provided authentication.
@@ -86,6 +109,10 @@ public class WPNNetworkingService {
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
     ///   - encryptor: Optional encryptor for End to End Encryption.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completion: Completion handler
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
@@ -94,16 +121,20 @@ public class WPNNetworkingService {
                                                                                                                   to endpoint: Endpoint,
                                                                                                                   with headers: [String: String]? = nil,
                                                                                                                   encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
+                                                                                                                  timeoutInterval: TimeInterval? = nil,
+                                                                                                                  progressCallback: ((Double) -> Void)? = nil,
                                                                                                                   completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data, encryptor: encryptor)
-        return post(request: request, completion: completion)
+        request.timeoutInterval = timeoutInterval
+        return post(request: request, headers: headers, progressCallback: progressCallback, completion: completion)
     }
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
     func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(request: Endpoint.Request,
                                                                                             headers: [String: String]? = nil,
+                                                                                            progressCallback: ((Double) -> Void)? = nil,
                                                                                             completion: @escaping Endpoint.Completion) -> Operation {
         // Setup default headers
         request.addHeaders(getDefaultHeaders())
@@ -128,7 +159,7 @@ public class WPNNetworkingService {
                     return
                 }
                 
-                self.httpClient.post(request: request, completion: { data, urlResponse, error in
+                self.httpClient.post(request: request, progressCallback: progressCallback, completion: { data, urlResponse, error in
                     
                     guard operation.isCancelled == false else {
                         return

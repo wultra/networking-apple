@@ -39,7 +39,7 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         super.init()
     }
     
-    func post<Req: WPNRequestBase, Resp: WPNResponseBase>(request: WPNHttpRequest<Req, Resp>, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase>(request: WPNHttpRequest<Req, Resp>, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
         
         let urlRequest = request.buildUrlRequest()
         
@@ -49,13 +49,29 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         
         urlRequest.printToConsole()
         
-        urlSession.dataTask(with: urlRequest) { responseData, response, error in
+        var observation: NSKeyValueObservation?
+        
+        let task = urlSession.dataTask(with: urlRequest) { responseData, response, error in
+            observation?.invalidate()
+            observation = nil
             assert(Thread.isMainThread) // make sure we're on the right thread
             let httpResponse = response as? HTTPURLResponse
             httpResponse?.printToConsole(withData: responseData, andError: error)
             completion(responseData, httpResponse, error)
             
-        }.resume()
+        }
+        
+        if let progressCallback = progressCallback {
+            if #available(iOS 11.0, *) {
+                observation = task.progress.observe(\.fractionCompleted) { progress, _ in
+                    progressCallback(progress.fractionCompleted)
+                }
+            } else {
+                // iOS 10 (iPhone 5 and older)
+                progressCallback(-1)
+            }
+        }
+        task.resume()
     }
     
     // URLSessionDelegate

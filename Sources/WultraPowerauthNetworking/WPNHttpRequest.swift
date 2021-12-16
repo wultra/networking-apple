@@ -31,7 +31,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
         case json = "application/json"
     }
     
-    /// The timeout interval of the request.
+    /// Timeout interval of the request.
     ///
     /// Value from `WPNNetworkingService` `config` will be used when nil.
     var timeoutInterval: TimeInterval?
