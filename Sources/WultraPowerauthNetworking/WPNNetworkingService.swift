@@ -29,9 +29,18 @@ public class WPNNetworkingService {
     /// Configuration of the service
     public let config: WPNConfig
     
+    /// Requests that should be signed with the PowerAuth signing will
+    /// be serialized in the PowerAuth serial queue when set true.
+    ///
+    /// Default value is `true`
+    ///
+    /// More about this topic can be found in the [PowerAuth documentation](
+    /// https://developers.wultra.com/components/powerauth-mobile-sdk/1.6.x/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
+    public var serializeSignedRequests: Bool = true
+    
     private let powerAuth: PowerAuthSDK
     private let httpClient: WPNHttpClient
-    private let queue = OperationQueue()
+    private let concurrentQueue = OperationQueue()
     
     /// Creates instance of the `WPNNetworkingService`
     /// - Parameters:
@@ -45,7 +54,7 @@ public class WPNNetworkingService {
         self.powerAuth = powerAuth
         self.httpClient = WPNHttpClient(sslValidation: config.sslValidation, timeout: config.timeoutIntervalForRequest)
         self.config = config
-        queue.name = serviceName
+        concurrentQueue.name = "\(serviceName)_concurrent"
     }
     
     /// Sends basic request without an authentication
@@ -204,8 +213,20 @@ public class WPNNetworkingService {
                 
             }
         }
-        op.assignCompletionDispatchQueue(.main)
-        queue.addOperation(op)
+        
+        if serializeSignedRequests && request.needsSignature {
+            // Add operation to the "signing" queue.
+            if !powerAuth.executeOperation(onSerialQueue: op) {
+                // Operation wont be added to the queue if there is a missing
+                // activation in the powerauth instance.
+                // In such case, cancel the operation and call completion with appropriate error.
+                op.cancel()
+                completion(nil, WPNError(reason: .network_signError, error: WPNSimpleError(message: "Failed to execute signed operation - PowerAuth instance without activation.")))
+            }
+        } else {
+            concurrentQueue.addOperation(op)
+        }
+        
         return op
     }
     

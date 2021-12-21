@@ -244,3 +244,13 @@ extension D {
         D.error(error().description)
     }
 }
+
+/// Simple error class to add developer comment when throwing an WPNError
+internal class WPNSimpleError: Error {
+    
+    let localizedDescription: String
+    
+    init(message: String) {
+        localizedDescription = message
+    }
+}
