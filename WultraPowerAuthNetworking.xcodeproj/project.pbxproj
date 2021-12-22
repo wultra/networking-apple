@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF732288273D3CDE00DE32D7 /* PowerAuthCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */; };
 		BF732289273D3CDE00DE32D7 /* PowerAuth2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */; };
+		DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */; };
 		OBJ_37 /* WPNAsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* WPNAsyncOperation.swift */; };
 		OBJ_38 /* WPNBaseNetworkingObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* WPNBaseNetworkingObjects.swift */; };
 		OBJ_39 /* WPNConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* WPNConfig.swift */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuthCore.xcframework; path = Carthage/Build/PowerAuthCore.xcframework; sourceTree = "<group>"; };
 		BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuth2.xcframework; path = Carthage/Build/PowerAuth2.xcframework; sourceTree = "<group>"; };
+		DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNResponseDelegate.swift; path = Sources/WultraPowerauthNetworking/WPNResponseDelegate.swift; sourceTree = SOURCE_ROOT; };
 		OBJ_10 /* WPNAsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNAsyncOperation.swift; sourceTree = "<group>"; };
 		OBJ_11 /* WPNBaseNetworkingObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNBaseNetworkingObjects.swift; sourceTree = "<group>"; };
 		OBJ_12 /* WPNConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNConfig.swift; sourceTree = "<group>"; };
@@ -109,16 +111,17 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_9 /* WultraPowerAuthNetworking.h */,
+				OBJ_18 /* WPNNetworkingService.swift */,
+				OBJ_15 /* WPNHttpClient.swift */,
+				OBJ_16 /* WPNHttpRequest.swift */,
 				OBJ_10 /* WPNAsyncOperation.swift */,
 				OBJ_11 /* WPNBaseNetworkingObjects.swift */,
 				OBJ_12 /* WPNConfig.swift */,
 				OBJ_13 /* WPNEndpoint.swift */,
 				OBJ_14 /* WPNError.swift */,
-				OBJ_15 /* WPNHttpClient.swift */,
-				OBJ_16 /* WPNHttpRequest.swift */,
 				OBJ_17 /* WPNLogger.swift */,
-				OBJ_18 /* WPNNetworkingService.swift */,
 				OBJ_19 /* WPNSSLValidationStrategy.swift */,
+				DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */,
 			);
 			name = WultraPowerAuthNetworking;
 			path = Sources/WultraPowerAuthNetworking;
@@ -185,6 +188,7 @@
 				OBJ_41 /* WPNError.swift in Sources */,
 				OBJ_42 /* WPNHttpClient.swift in Sources */,
 				OBJ_43 /* WPNHttpRequest.swift in Sources */,
+				DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */,
 				OBJ_44 /* WPNLogger.swift in Sources */,
 				OBJ_45 /* WPNNetworkingService.swift in Sources */,
 				OBJ_46 /* WPNSSLValidationStrategy.swift in Sources */,

@@ -29,16 +29,26 @@ public class WPNNetworkingService {
     /// Configuration of the service
     public let config: WPNConfig
     
+    /// Response delegate is called on each received response
+    public weak var responseDelegate: WPNResponseDelegate?
+    
     /// Requests that should be signed with the PowerAuth signing will
-    /// be serialized in the PowerAuth serial queue when set true.
+    /// be serialized in the PowerAuth serial queue when the value is `true`.
     ///
     /// Default value is `true`
     ///
-    /// More about this topic can be found in the [PowerAuth documentation](
-    /// https://developers.wultra.com/components/powerauth-mobile-sdk/1.6.x/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
+    /// With this approach, all signed requests across `WPNNetworkingService` instances using the
+    /// the same PowerAuth instance (and possibly other classes too) will be serialized into
+    /// the single serial queue. We recommend leaving this option on unless you're managing the
+    /// serialization of requests yourself.
+    ///
+    /// More about this topic can be found in the
+    /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/1.6.x/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
     public var serializeSignedRequests: Bool = true
     
-    private let powerAuth: PowerAuthSDK
+    /// PowerAuth instance that will be used for this networking.
+    public let powerAuth: PowerAuthSDK
+    
     private let httpClient: WPNHttpClient
     private let concurrentQueue = OperationQueue()
     
@@ -168,9 +178,9 @@ public class WPNNetworkingService {
                     return
                 }
                 
-                self.httpClient.post(request: request, progressCallback: progressCallback, completion: { data, urlResponse, error in
+                self.httpClient.post(request: request, progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
                     
-                    guard operation.isCancelled == false else {
+                    guard let self = self, operation.isCancelled == false else {
                         return
                     }
                     
@@ -179,8 +189,23 @@ public class WPNNetworkingService {
                     var errorResponse: WPNRestApiError?
                     
                     if let receivedData = data {
-                        // We have a data
-                        if let responseEnvelope = request.processResult(data: receivedData) {
+                        // Process data
+                        let processedResult = request.processResult(data: receivedData)
+                        
+                        var resp: Resp?
+                        
+                        switch processedResult {
+                        case .plain(let envelope):
+                            self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
+                            resp = envelope
+                        case .encrypted(let envelope, let decryptedData):
+                            self.responseDelegate?.encryptedResponseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData, decrypted: decryptedData)
+                            resp = envelope
+                        case .failed:
+                            self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
+                            resp = nil
+                        }
+                        if let responseEnvelope = resp {
                             // Valid envelope
                             if responseEnvelope.status == .Ok {
                                 // Success exit from block
