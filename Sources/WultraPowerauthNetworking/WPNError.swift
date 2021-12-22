@@ -153,8 +153,7 @@ public struct WPNErrorReason: RawRepresentable, Equatable, Hashable {
     }
 }
 
-// private helpers
-private extension WPNError {
+public extension WPNError {
     
     var code: Int {
         guard let e = nestedError as NSError? else {
