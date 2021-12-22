@@ -43,7 +43,7 @@ public class WPNNetworkingService {
     /// serialization of requests yourself.
     ///
     /// More about this topic can be found in the
-    /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/1.6.x/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
+    /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
     public var serializeSignedRequests: Bool = true
     
     /// PowerAuth instance that will be used for this networking.
