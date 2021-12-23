@@ -27,14 +27,10 @@ private let jsonDecoder: JSONDecoder = {
 
 class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
-    enum BodyType: String {
-        case json = "application/json"
-    }
-    
-    /// Default value is `.json`
-    var requestType = BodyType.json
-    /// Default value is `.json`
-    var responseType = BodyType.json
+    /// Timeout interval of the request.
+    ///
+    /// Value from `WPNNetworkingService` `config` will be used when nil.
+    var timeoutInterval: TimeInterval?
     
     private(set) var url: URL
     private(set) var uriIdentifier: String?
@@ -95,7 +91,12 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
         
         var request = URLRequest(url: url)
         
-        let requestHeaders = headers.merging(["Accept": responseType.rawValue, "Content-Type": requestType.rawValue], uniquingKeysWith: { f, _ in f })
+        if let ti = timeoutInterval {
+            request.timeoutInterval = ti
+        }
+        
+        let jsonType = "application/json"
+        let requestHeaders = headers.merging(["Accept": jsonType, "Content-Type": jsonType], uniquingKeysWith: { f, _ in f })
         
         for (k, v) in requestHeaders {
             request.addValue(v, forHTTPHeaderField: k)
@@ -123,38 +124,37 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     /// Builds current request and sets the data to `requestData` property
     private func buildRequestData(_ request: TRequest) {
         do {
-            switch requestType {
-            case .json:
-                requestData = try jsonEncoder.encode(request)
-            }
+            requestData = try jsonEncoder.encode(request)
         } catch let error {
             D.error("failed to build JSON request:\n\(error)")
         }
     }
     
     /// Parses given result data and sets it to `response` property
-    func processResult(data: Data) -> TResponse? {
-        
-        var data = data
-        var response: TResponse?
+    func processResult(data: Data) -> ProcessResultResponse<TResponse> {
         
         do {
             if let encryptor = encryptor {
-                if let respData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
-                    data = respData
+                if let decryptedData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
+                    return .encrypted(obj: try jsonDecoder.decode(TResponse.self, from: decryptedData), decryptedData: decryptedData)
                 } else {
                     D.error("failed to decrypt response")
+                    return .failed(error: WPNSimpleError(message: "failed to decrypt response"))
                 }
+            } else {
+                return .plain(obj: try jsonDecoder.decode(TResponse.self, from: data))
             }
-            switch responseType {
-            case .json:
-                response = try jsonDecoder.decode(TResponse.self, from: data)
-            }
-        } catch let error {
+        } catch {
             D.error("failed to process result:\n\(error)")
+            return .failed(error: error)
         }
-        return response
     }
+}
+
+enum ProcessResultResponse<T> {
+    case plain(obj: T)
+    case encrypted(obj: T, decryptedData: Data)
+    case failed(error: Error)
 }
 
 private struct E2EERequest: Encodable {

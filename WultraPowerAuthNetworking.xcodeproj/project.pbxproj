@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF732288273D3CDE00DE32D7 /* PowerAuthCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */; };
 		BF732289273D3CDE00DE32D7 /* PowerAuth2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */; };
+		DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */; };
 		OBJ_37 /* WPNAsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* WPNAsyncOperation.swift */; };
 		OBJ_38 /* WPNBaseNetworkingObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* WPNBaseNetworkingObjects.swift */; };
 		OBJ_39 /* WPNConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* WPNConfig.swift */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		BF732286273D3CDE00DE32D7 /* PowerAuthCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuthCore.xcframework; path = Carthage/Build/PowerAuthCore.xcframework; sourceTree = "<group>"; };
 		BF732287273D3CDE00DE32D7 /* PowerAuth2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PowerAuth2.xcframework; path = Carthage/Build/PowerAuth2.xcframework; sourceTree = "<group>"; };
+		DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNResponseDelegate.swift; path = Sources/WultraPowerauthNetworking/WPNResponseDelegate.swift; sourceTree = SOURCE_ROOT; };
 		OBJ_10 /* WPNAsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNAsyncOperation.swift; sourceTree = "<group>"; };
 		OBJ_11 /* WPNBaseNetworkingObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNBaseNetworkingObjects.swift; sourceTree = "<group>"; };
 		OBJ_12 /* WPNConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNConfig.swift; sourceTree = "<group>"; };
@@ -109,16 +111,17 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_9 /* WultraPowerAuthNetworking.h */,
+				OBJ_18 /* WPNNetworkingService.swift */,
+				OBJ_15 /* WPNHttpClient.swift */,
+				OBJ_16 /* WPNHttpRequest.swift */,
 				OBJ_10 /* WPNAsyncOperation.swift */,
 				OBJ_11 /* WPNBaseNetworkingObjects.swift */,
 				OBJ_12 /* WPNConfig.swift */,
 				OBJ_13 /* WPNEndpoint.swift */,
 				OBJ_14 /* WPNError.swift */,
-				OBJ_15 /* WPNHttpClient.swift */,
-				OBJ_16 /* WPNHttpRequest.swift */,
 				OBJ_17 /* WPNLogger.swift */,
-				OBJ_18 /* WPNNetworkingService.swift */,
 				OBJ_19 /* WPNSSLValidationStrategy.swift */,
+				DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */,
 			);
 			name = WultraPowerAuthNetworking;
 			path = Sources/WultraPowerAuthNetworking;
@@ -133,6 +136,7 @@
 			buildPhases = (
 				OBJ_36 /* Sources */,
 				OBJ_47 /* Frameworks */,
+				DC3EFA482774A55000C30F64 /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -152,7 +156,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 1300;
-				LastUpgradeCheck = 1310;
+				LastUpgradeCheck = 1320;
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -173,6 +177,27 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		DC3EFA482774A55000C30F64 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if ! [ -x \"$(command -v swiftlint)\" ]; then\n  echo 'warning: swiftlint is not installed on this computer.' >&2\n  exit 0\nfi\n\nswiftlint\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		OBJ_36 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -185,6 +210,7 @@
 				OBJ_41 /* WPNError.swift in Sources */,
 				OBJ_42 /* WPNHttpClient.swift in Sources */,
 				OBJ_43 /* WPNHttpRequest.swift in Sources */,
+				DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */,
 				OBJ_44 /* WPNLogger.swift in Sources */,
 				OBJ_45 /* WPNNetworkingService.swift in Sources */,
 				OBJ_46 /* WPNSSLValidationStrategy.swift in Sources */,
