@@ -62,7 +62,7 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         }
         
         if let progressCallback = progressCallback {
-            if #available(iOS 11.0, *) {
+            if #available(iOS 11.0, tvOS 11.0, *) {
                 observation = task.progress.observe(\.fractionCompleted) { progress, _ in
                     progressCallback(progress.fractionCompleted)
                 }
