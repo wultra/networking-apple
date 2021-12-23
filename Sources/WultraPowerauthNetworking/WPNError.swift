@@ -76,7 +76,7 @@ public class WPNError: Error {
     
     /// HTTP status code.
     ///
-    /// -1 if not available (not a HTTP error).
+    /// nil if not available (not an HTTP error).
     public var httpStatusCode: Int? {
         if let httpUrlResponse = httpUrlResponse {
             return Int(httpUrlResponse.statusCode)
@@ -90,9 +90,6 @@ public class WPNError: Error {
     /// Returns `PowerAuthRestApiErrorResponse` if such object is embedded in nested error. This is typically useful
     /// for getting error HTTP response created in the PowerAuth2 library.
     public var powerAuthRestApiError: PowerAuthRestApiErrorResponse? {
-        guard domain == PowerAuthErrorDomain else {
-            return nil
-        }
         return userInfo[PowerAuthErrorDomain] as? PowerAuthRestApiErrorResponse
     }
     
@@ -114,8 +111,8 @@ public class WPNError: Error {
     /// Returns true if the error is caused by the missing network connection.
     /// The device is typically not connected to the internet.
     public var networkIsNotReachable: Bool {
-        if self.domain == NSURLErrorDomain || self.domain == kCFErrorDomainCFNetwork as String {
-            let ec = CFNetworkErrors(rawValue: Int32(self.code))
+        if domain == NSURLErrorDomain || domain == kCFErrorDomainCFNetwork as String {
+            let ec = CFNetworkErrors(rawValue: Int32(code))
             return ec == .cfurlErrorNotConnectedToInternet ||
                 ec == .cfurlErrorInternationalRoamingOff ||
                 ec == .cfurlErrorDataNotAllowed
