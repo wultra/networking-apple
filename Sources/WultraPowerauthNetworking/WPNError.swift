@@ -54,14 +54,10 @@ public class WPNError: Error {
     /// Normally, setting `httpStatusCode` is enough for proper handling authentication errors.
     internal(set) public var httpUrlResponse: HTTPURLResponse?
     
-    
-    private var _restApiError: WPNRestApiError?
+    private var _restApiError: WPNRestApiError? // backing field
     
     /// An optional error describing details about REST API failure.
     internal(set) public var restApiError: WPNRestApiError? {
-        set {
-            _restApiError = newValue
-        }
         get {
             if let rae = _restApiError {
                 return rae
@@ -70,6 +66,9 @@ public class WPNError: Error {
                 return WPNRestApiError(code: pae.code, message: pae.message)
             }
             return nil
+        }
+        set {
+            _restApiError = newValue
         }
     }
     

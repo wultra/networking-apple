@@ -136,6 +136,7 @@
 			buildPhases = (
 				OBJ_36 /* Sources */,
 				OBJ_47 /* Frameworks */,
+				DC3EFA482774A55000C30F64 /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -155,7 +156,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 1300;
-				LastUpgradeCheck = 1310;
+				LastUpgradeCheck = 1320;
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -175,6 +176,27 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DC3EFA482774A55000C30F64 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if ! [ -x \"$(command -v swiftlint)\" ]; then\n  echo 'warning: swiftlint is not installed on this computer.' >&2\n  exit 0\nfi\n\nswiftlint\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		OBJ_36 /* Sources */ = {
