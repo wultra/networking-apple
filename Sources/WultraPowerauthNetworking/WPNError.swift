@@ -54,8 +54,24 @@ public class WPNError: Error {
     /// Normally, setting `httpStatusCode` is enough for proper handling authentication errors.
     internal(set) public var httpUrlResponse: HTTPURLResponse?
     
+    
+    private var _restApiError: WPNRestApiError?
+    
     /// An optional error describing details about REST API failure.
-    internal(set) public var restApiError: WPNRestApiError?
+    internal(set) public var restApiError: WPNRestApiError? {
+        set {
+            _restApiError = newValue
+        }
+        get {
+            if let rae = _restApiError {
+                return rae
+            }
+            if let pae = powerAuthRestApiError?.responseObject {
+                return WPNRestApiError(code: pae.code, message: pae.message)
+            }
+            return nil
+        }
+    }
     
     // MARK: - Computed properties
     

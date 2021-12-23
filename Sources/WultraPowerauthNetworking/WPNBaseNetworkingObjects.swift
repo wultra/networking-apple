@@ -143,6 +143,9 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Activation is not valid (it is different from configured activation)
     case invalidActivation              = "INVALID_ACTIVATION"
     
+    /// Error during activfation
+    case activationError              = "ERR_ACTIVATION"
+    
     /// Error in case that PowerAuth authentication fails
     case authenticationError            = "ERR_AUTHENTICATION"
     
