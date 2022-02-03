@@ -126,20 +126,41 @@ public class WPNResponseArray<T: Decodable>: WPNResponseBase {
     }
 }
 
-/// Known values of rest api errors
+/// Known values of REST API errors
 public enum WPNKnownRestApiError: String, Decodable {
+    
+    // COMMON ERRORS
+    
+    /// When unexpected error happened.
+    case genericError                  = "ERROR_GENERIC"
     
     /// General authentication failure (wrong password, wrong activation state, etc...)
     case authenticationFailure          = "POWERAUTH_AUTH_FAIL"
-    
-    /// Failed to register push notifications
-    case pushRegistrationFailed         = "PUSH_REGISTRATION_FAILED"
     
     /// Invalid request sent - missing request object in request
     case invalidRequest                 = "INVALID_REQUEST"
     
     /// Activation is not valid (it is different from configured activation)
     case invalidActivation              = "INVALID_ACTIVATION"
+    
+    /// Error during activfation
+    case activationError              = "ERR_ACTIVATION"
+    
+    /// Error in case that PowerAuth authentication fails
+    case authenticationError            = "ERR_AUTHENTICATION"
+    
+    /// Error during secure vault unlocking
+    case secureVaultError               = "ERR_SECURE_VAULT"
+    
+    /// Returned in case encryption or decryption fails
+    case encryptionError                = "ERR_ENCRYPTION"
+    
+    // PUSH ERRORS
+    
+    /// Failed to register push notifications
+    case pushRegistrationFailed         = "PUSH_REGISTRATION_FAILED"
+    
+    // OPERATIONS ERRORS
     
     /// Operation is already finished
     case operationAlreadyFinished       = "OPERATION_ALREADY_FINISHED"
@@ -152,6 +173,25 @@ public enum WPNKnownRestApiError: String, Decodable {
     
     /// Operation is expired
     case operationExpired               = "OPERATION_EXPIRED"
+    
+    // ACTIVATION SPAWN ERRORS
+    
+    /// Unable to fetch activation code.
+    case activationCodeFailed           = "ACTIVATION_CODE_FAILED"
+    
+    // IDENTITY ONBOARDING ERRORS
+    
+    /// Onboarding process failed or failed to start
+    case onboardingFailed               = "ONBOARDING_FAILED"
+    
+    /// Failed to resend onboarding OTP (probably requested too soon)
+    case onboardingOtpFailed            = "ONBOARDING_OTP_FAILED"
+    
+    /// Document is invalid
+    case invalidDocument                = "INVALID_DOCUMENT"
+    
+    /// Identity verification failed
+    case identityVerificationFailed     = "IDENTITY_VERIFICATION_FAILED"
 }
 
 /// Error passed in a response, when the error is returned from an endpoint.

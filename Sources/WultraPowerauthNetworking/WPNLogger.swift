@@ -34,11 +34,14 @@ public class WPNLogger {
     /// Current verbose level. Note that value is ignored for non-DEBUG builds.
     public static var verboseLevel: VerboseLevel = .warnings
     
+    /// Character limit for single log message. Default is 12 000. Unlimited when nil
+    public static var characterLimit: Int? = 12_000
+    
     /// Prints simple message to the debug console.
     static func print(_ message: @autoclosure () -> String) {
         #if DEBUG
         if verboseLevel == .all {
-            Swift.print("[WPN] \(message())")
+            Swift.print("[WPN] \(message().limit(characterLimit))")
         }
         #endif
     }
@@ -47,7 +50,7 @@ public class WPNLogger {
     static func warning(_ message: @autoclosure () -> String) {
         #if DEBUG
         if verboseLevel.rawValue >= VerboseLevel.warnings.rawValue {
-            Swift.print("[WPN] WARNING: \(message())")
+            Swift.print("[WPN] WARNING: \(message().limit(characterLimit))")
         }
         #endif
     }
@@ -56,7 +59,7 @@ public class WPNLogger {
     static func error(_ message: @autoclosure () -> String) {
         #if DEBUG
         if verboseLevel != .off {
-            Swift.print("[WPN] ERROR: \(message())")
+            Swift.print("[WPN] ERROR: \(message().limit(characterLimit))")
         }
         #endif
     }
@@ -82,6 +85,15 @@ public class WPNLogger {
         Swift.fatalError(message(), file: file, line: line)
     }
     #endif
+}
+
+private extension String {
+    func limit(_ characterLimit: Int?) -> String {
+        guard let cl = characterLimit else {
+            return self
+        }
+        return String(prefix(cl))
+    }
 }
 
 internal typealias D = WPNLogger
