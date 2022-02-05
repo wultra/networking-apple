@@ -11,6 +11,7 @@ let package = Package(
     products: [
         .library(
             name: "WultraPowerAuthNetworking",
+            type: .dynamic,
             targets: ["WultraPowerAuthNetworking"])
     ],
     dependencies: [
