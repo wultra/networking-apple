@@ -144,7 +144,7 @@ public enum WPNKnownRestApiError: String, Decodable {
     case invalidActivation              = "INVALID_ACTIVATION"
     
     /// Error during activfation
-    case activationError              = "ERR_ACTIVATION"
+    case activationError                = "ERR_ACTIVATION"
     
     /// Error in case that PowerAuth authentication fails
     case authenticationError            = "ERR_AUTHENTICATION"
@@ -192,6 +192,23 @@ public enum WPNKnownRestApiError: String, Decodable {
     
     /// Identity verification failed
     case identityVerificationFailed     = "IDENTITY_VERIFICATION_FAILED"
+    
+    /// Verification of documents failed
+    case documentVerificationFailed     = "DOCUMENT_VERIFICATION_FAILED"
+    
+    /// Presence check failed
+    case presenceCheckFailed            = "PRESENCE_CHECK_FAILED"
+    
+    /// Presence check is not enabled
+    case presenceCheckNotEnabled        = "PRESENCE_CHECK_NOT_ENABLED"
+    
+    /// Too many same requests
+    case tooManyRequests                = "TOO_MANY_REQUESTS"
+    
+    // OTHER
+    
+    /// Communication with remote system failed
+    case remoteCommunicationError      = "REMOTE_COMMUNICATION_ERROR"
 }
 
 /// Error passed in a response, when the error is returned from an endpoint.
