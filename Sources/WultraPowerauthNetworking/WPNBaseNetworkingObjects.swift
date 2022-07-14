@@ -184,6 +184,12 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Onboarding process failed or failed to start
     case onboardingFailed               = "ONBOARDING_FAILED"
     
+    /// An onboarding process limit reached (e.g. too many reset attempts for identity verification or maximum error score exceeded).
+    case onboardingLimitReached         = "ONBOARDING_PROCESS_LIMIT_REACHED"
+    
+    /// Too many attempts to start an onboarding process for a user.
+    case onboardingTooManyProcesses     = "TOO_MANY_ONBOARDING_PROCESSES"
+    
     /// Failed to resend onboarding OTP (probably requested too soon)
     case onboardingOtpFailed            = "ONBOARDING_OTP_FAILED"
     
@@ -193,6 +199,9 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Identity verification failed
     case identityVerificationFailed     = "IDENTITY_VERIFICATION_FAILED"
     
+    /// Identity verification limit reached (e.g. exceeded number of upload attempts).
+    case identityVerificationLimitReached = "IDENTITY_VERIFICATION_LIMIT_REACHED"
+    
     /// Verification of documents failed
     case documentVerificationFailed     = "DOCUMENT_VERIFICATION_FAILED"
     
@@ -201,6 +210,9 @@ public enum WPNKnownRestApiError: String, Decodable {
     
     /// Presence check is not enabled
     case presenceCheckNotEnabled        = "PRESENCE_CHECK_NOT_ENABLED"
+    
+    /// Maximum limit of presence check attempts was exceeded.
+    case presenceCheckLimitEached       = "PRESENCE_CHECK_LIMIT_REACHED"
     
     /// Too many same requests
     case tooManyRequests                = "TOO_MANY_REQUESTS"
