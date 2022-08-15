@@ -77,7 +77,9 @@ public class WPNNetworkingService {
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     ///                       Note that on iOS 10 it will be called once with value -1.
-    ///   - completion: Completion handler
+    ///   - completionQueue: Queue on wich the completion will be executed.
+    ///                      Default value is .main
+    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(data: Req,
@@ -86,11 +88,12 @@ public class WPNNetworkingService {
                                                                                                         encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
                                                                                                         timeoutInterval: TimeInterval? = nil,
                                                                                                         progressCallback: ((Double) -> Void)? = nil,
+                                                                                                        completionQueue: DispatchQueue = .main,
                                                                                                         completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, requestData: data, encryptor: encryptor)
         request.timeoutInterval = timeoutInterval
-        return post(request: request, headers: headers, progressCallback: progressCallback, completion: completion)
+        return post(request: request, headers: headers, progressCallback: progressCallback, completionQueue: completionQueue, completion: completion)
     }
     
     /// Sends signed request with provided authentication.
@@ -104,7 +107,9 @@ public class WPNNetworkingService {
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     ///                       Note that on iOS 10 it will be called once with value -1.
-    ///   - completion: Completion handler
+    ///   - completionQueue: Queue on wich the completion will be executed.
+    ///                      Default value is .main
+    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(data: Req,
@@ -114,11 +119,12 @@ public class WPNNetworkingService {
                                                                                                          encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
                                                                                                          timeoutInterval: TimeInterval? = nil,
                                                                                                          progressCallback: ((Double) -> Void)? = nil,
+                                                                                                         completionQueue: DispatchQueue = .main,
                                                                                                          completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data, encryptor: encryptor)
         request.timeoutInterval = timeoutInterval
-        return post(request: request, headers: headers, progressCallback: progressCallback, completion: completion)
+        return post(request: request, headers: headers, progressCallback: progressCallback, completionQueue: completionQueue, completion: completion)
     }
     
     /// Sends signed request with provided authentication.
@@ -132,7 +138,9 @@ public class WPNNetworkingService {
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     ///                       Note that on iOS 10 it will be called once with value -1.
-    ///   - completion: Completion handler
+    ///   - completionQueue: Queue on wich the completion will be executed.
+    ///                      Default value is .main
+    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
     /// - Returns: Operation for observation or operation chaining.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(data: Req,
@@ -142,18 +150,20 @@ public class WPNNetworkingService {
                                                                                                                   encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
                                                                                                                   timeoutInterval: TimeInterval? = nil,
                                                                                                                   progressCallback: ((Double) -> Void)? = nil,
+                                                                                                                  completionQueue: DispatchQueue = .main,
                                                                                                                   completion: @escaping Endpoint.Completion) -> Operation {
         let url = config.buildURL(endpoint.endpointURLPath)
         let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data, encryptor: encryptor)
         request.timeoutInterval = timeoutInterval
-        return post(request: request, headers: headers, progressCallback: progressCallback, completion: completion)
+        return post(request: request, headers: headers, progressCallback: progressCallback, completionQueue: completionQueue, completion: completion)
     }
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
     func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(request: Endpoint.Request,
-                                                                                            headers: [String: String]? = nil,
-                                                                                            progressCallback: ((Double) -> Void)? = nil,
+                                                                                            headers: [String: String]?,
+                                                                                            progressCallback: ((Double) -> Void)?,
+                                                                                            completionQueue: DispatchQueue,
                                                                                             completion: @escaping Endpoint.Completion) -> Operation {
         // Setup default headers
         request.addHeaders(getDefaultHeaders())
@@ -239,6 +249,8 @@ public class WPNNetworkingService {
             }
         }
         
+        op.completionQueue = completionQueue
+        
         if serializeSignedRequests && request.needsSignature {
             // Add operation to the "signing" queue.
             if !powerAuth.executeOperation(onSerialQueue: op) {
@@ -246,7 +258,9 @@ public class WPNNetworkingService {
                 // activation in the powerauth instance.
                 // In such case, cancel the operation and call completion with appropriate error.
                 op.cancel()
-                completion(nil, WPNError(reason: .network_signError, error: WPNSimpleError(message: "Failed to execute signed operation - PowerAuth instance without activation.")))
+                completionQueue.async {
+                    completion(nil, WPNError(reason: .network_signError, error: WPNSimpleError(message: "Failed to execute signed operation - PowerAuth instance without activation.")))
+                }
             }
         } else {
             concurrentQueue.addOperation(op)
@@ -258,7 +272,11 @@ public class WPNNetworkingService {
     // MARK: - Private functions
     
     private func getDefaultHeaders() -> [String: String] {
-        return ["Accept-Language": acceptLanguage]
+        var headers = ["Accept-Language": acceptLanguage]
+        if let userAgent = config.userAgent.getValue() {
+            headers["User-Agent"] = userAgent
+        }
+        return headers
     }
     
     /// Calculates a signature for request. The function must be called on background thread.
