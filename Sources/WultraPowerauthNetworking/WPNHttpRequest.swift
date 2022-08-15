@@ -139,6 +139,13 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
                     return .encrypted(obj: try jsonDecoder.decode(TResponse.self, from: decryptedData), decryptedData: decryptedData)
                 } else {
                     D.error("failed to decrypt response")
+                    
+                    // error responses might not be encrypted, so try to parse the response as a plain, but only for error responses
+                    if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
+                        D.error("but found plain error response")
+                        return .plain(obj: plain)
+                    }
+                    
                     return .failed(error: WPNSimpleError(message: "failed to decrypt response"))
                 }
             } else {
