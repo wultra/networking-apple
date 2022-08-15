@@ -156,7 +156,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 1300;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1340;
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "WultraPowerAuthNetworking" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -164,6 +164,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = OBJ_5;
 			packageReferences = (
