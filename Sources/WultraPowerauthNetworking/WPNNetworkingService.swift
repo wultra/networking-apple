@@ -258,7 +258,11 @@ public class WPNNetworkingService {
     // MARK: - Private functions
     
     private func getDefaultHeaders() -> [String: String] {
-        return ["Accept-Language": acceptLanguage]
+        var headers = ["Accept-Language": acceptLanguage]
+        if let userAgent = config.userAgent.getValue() {
+            headers["User-Agent"] = userAgent
+        }
+        return headers
     }
     
     /// Calculates a signature for request. The function must be called on background thread.
