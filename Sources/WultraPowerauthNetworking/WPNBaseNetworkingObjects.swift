@@ -196,6 +196,9 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Document is invalid
     case invalidDocument                = "INVALID_DOCUMENT"
     
+    /// Document submit failed
+    case documentSubmitFailed           = "DOCUMENT_SUBMIT_FAILED"
+    
     /// Identity verification failed
     case identityVerificationFailed     = "IDENTITY_VERIFICATION_FAILED"
     
