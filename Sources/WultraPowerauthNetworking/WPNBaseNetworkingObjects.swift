@@ -132,66 +132,98 @@ public enum WPNKnownRestApiError: String, Decodable {
     // COMMON ERRORS
     
     /// When unexpected error happened.
-    case genericError                  = "ERROR_GENERIC"
+    case genericError                     = "ERROR_GENERIC"
     
     /// General authentication failure (wrong password, wrong activation state, etc...)
-    case authenticationFailure          = "POWERAUTH_AUTH_FAIL"
+    case authenticationFailure            = "POWERAUTH_AUTH_FAIL"
     
     /// Invalid request sent - missing request object in request
-    case invalidRequest                 = "INVALID_REQUEST"
+    case invalidRequest                   = "INVALID_REQUEST"
     
     /// Activation is not valid (it is different from configured activation)
-    case invalidActivation              = "INVALID_ACTIVATION"
+    case invalidActivation                = "INVALID_ACTIVATION"
     
     /// Error during activfation
-    case activationError              = "ERR_ACTIVATION"
+    case activationError                  = "ERR_ACTIVATION"
     
     /// Error in case that PowerAuth authentication fails
-    case authenticationError            = "ERR_AUTHENTICATION"
+    case authenticationError              = "ERR_AUTHENTICATION"
     
     /// Error during secure vault unlocking
-    case secureVaultError               = "ERR_SECURE_VAULT"
+    case secureVaultError                 = "ERR_SECURE_VAULT"
     
     /// Returned in case encryption or decryption fails
-    case encryptionError                = "ERR_ENCRYPTION"
+    case encryptionError                  = "ERR_ENCRYPTION"
     
     // PUSH ERRORS
     
     /// Failed to register push notifications
-    case pushRegistrationFailed         = "PUSH_REGISTRATION_FAILED"
+    case pushRegistrationFailed           = "PUSH_REGISTRATION_FAILED"
     
     // OPERATIONS ERRORS
     
     /// Operation is already finished
-    case operationAlreadyFinished       = "OPERATION_ALREADY_FINISHED"
+    case operationAlreadyFinished         = "OPERATION_ALREADY_FINISHED"
     
     /// Operation is already failed
-    case operationAlreadyFailed         = "OPERATION_ALREADY_FAILED"
+    case operationAlreadyFailed           = "OPERATION_ALREADY_FAILED"
     
     /// Operation is cancelled
-    case operationAlreadyCancelled      = "OPERATION_ALREADY_CANCELED"
+    case operationAlreadyCancelled        = "OPERATION_ALREADY_CANCELED"
     
     /// Operation is expired
-    case operationExpired               = "OPERATION_EXPIRED"
+    case operationExpired                 = "OPERATION_EXPIRED"
     
     // ACTIVATION SPAWN ERRORS
     
     /// Unable to fetch activation code.
-    case activationCodeFailed           = "ACTIVATION_CODE_FAILED"
+    case activationCodeFailed             = "ACTIVATION_CODE_FAILED"
     
     // IDENTITY ONBOARDING ERRORS
     
     /// Onboarding process failed or failed to start
-    case onboardingFailed               = "ONBOARDING_FAILED"
+    case onboardingFailed                 = "ONBOARDING_FAILED"
+    
+    /// An onboarding process limit reached (e.g. too many reset attempts for identity verification or maximum error score exceeded).
+    case onboardingLimitReached           = "ONBOARDING_PROCESS_LIMIT_REACHED"
+    
+    /// Too many attempts to start an onboarding process for a user.
+    case onboardingTooManyProcesses       = "TOO_MANY_ONBOARDING_PROCESSES"
     
     /// Failed to resend onboarding OTP (probably requested too soon)
-    case onboardingOtpFailed            = "ONBOARDING_OTP_FAILED"
+    case onboardingOtpFailed              = "ONBOARDING_OTP_FAILED"
     
     /// Document is invalid
-    case invalidDocument                = "INVALID_DOCUMENT"
+    case invalidDocument                  = "INVALID_DOCUMENT"
+    
+    /// Document submit failed
+    case documentSubmitFailed             = "DOCUMENT_SUBMIT_FAILED"
     
     /// Identity verification failed
-    case identityVerificationFailed     = "IDENTITY_VERIFICATION_FAILED"
+    case identityVerificationFailed       = "IDENTITY_VERIFICATION_FAILED"
+    
+    /// Identity verification limit reached (e.g. exceeded number of upload attempts).
+    case identityVerificationLimitReached = "IDENTITY_VERIFICATION_LIMIT_REACHED"
+    
+    /// Verification of documents failed
+    case documentVerificationFailed       = "DOCUMENT_VERIFICATION_FAILED"
+    
+    /// Presence check failed
+    case presenceCheckFailed              = "PRESENCE_CHECK_FAILED"
+    
+    /// Presence check is not enabled
+    case presenceCheckNotEnabled          = "PRESENCE_CHECK_NOT_ENABLED"
+    
+    /// Maximum limit of presence check attempts was exceeded.
+    case presenceCheckLimitEached         = "PRESENCE_CHECK_LIMIT_REACHED"
+    
+    /// Too many same requests
+    case tooManyRequests                  = "TOO_MANY_REQUESTS"
+    
+    // OTHER
+    
+    /// Communication with remote system failed
+    case remoteCommunicationError         = "REMOTE_COMMUNICATION_ERROR"
 }
 
 /// Error passed in a response, when the error is returned from an endpoint.
