@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
+      - name: Set proper xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.0'
       - name: Build the framework
         run: ./scripts/build.sh
       - name: Lint
@@ -24,5 +28,9 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
+      - name: Set proper xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.0'
       - name: Lint
         run: swiftlint --strict

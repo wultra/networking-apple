@@ -1,2 +1,2 @@
-binary "https://raw.githubusercontent.com/wultra/powerauth-mobile-sdk-spm/34043c100c398fd765dd0fc7829ca5419e6adacd/PowerAuth2.json" "1.7.1"
-binary "https://raw.githubusercontent.com/wultra/powerauth-mobile-sdk-spm/34043c100c398fd765dd0fc7829ca5419e6adacd/PowerAuthCore.json" "1.7.1"
+binary "https://raw.githubusercontent.com/wultra/powerauth-mobile-sdk-spm/develop/PowerAuth2.json" "1.7.3"
+binary "https://raw.githubusercontent.com/wultra/powerauth-mobile-sdk-spm/develop/PowerAuthCore.json" "1.7.3"

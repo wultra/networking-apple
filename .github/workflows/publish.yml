@@ -24,6 +24,10 @@ jobs:
       - name: Make sure we're on the proper branch
         run: |
           [[ $GITHUB_REF == refs/heads/${{ github.event.inputs.confirmBranch }} ]] || exit 1
+      - name: Set proper xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.0'
       - name: Build the framework
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -17,5 +17,9 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
+      - name: Set proper xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.0'
       - name: Building
         run: ./scripts/build.sh
