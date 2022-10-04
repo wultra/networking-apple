@@ -1,12 +1,12 @@
-// swift-tools-version:5.4
+// swift-tools-version:5.7
 
 import PackageDescription
 
 let package = Package(
     name: "WultraPowerAuthNetworking",
     platforms: [
-        .iOS(.v10),
-        .tvOS(.v10)
+        .iOS(.v11),
+        .tvOS(.v11)
     ],
     products: [
         .library(
@@ -15,7 +15,7 @@ let package = Package(
             targets: ["WultraPowerAuthNetworking"])
     ],
     dependencies: [
-        .package(name: "PowerAuth2", url: "https://github.com/wultra/powerauth-mobile-sdk-spm.git", .upToNextMinor(from: "1.7.0"))
+        .package(name: "PowerAuth2", url: "https://github.com/wultra/powerauth-mobile-sdk-spm.git", .upToNextMinor(from: "1.7.3"))
     ],
     targets: [
         .target(
