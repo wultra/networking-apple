@@ -39,7 +39,7 @@ public class WPNLogger {
     
     /// Prints simple message to the debug console.
     static func print(_ message: @autoclosure () -> String) {
-        #if DEBUG
+        #if DEBUG || WPN_ENABLE_LOGGING
         if verboseLevel == .all {
             Swift.print("[WPN] \(message().limit(characterLimit))")
         }
@@ -48,7 +48,7 @@ public class WPNLogger {
 
     /// Prints warning message to the debug console.
     static func warning(_ message: @autoclosure () -> String) {
-        #if DEBUG
+        #if DEBUG || WPN_ENABLE_LOGGING
         if verboseLevel.rawValue >= VerboseLevel.warnings.rawValue {
             Swift.print("[WPN] WARNING: \(message().limit(characterLimit))")
         }
@@ -57,7 +57,7 @@ public class WPNLogger {
     
     /// Prints error message to the debug console.
     static func error(_ message: @autoclosure () -> String) {
-        #if DEBUG
+        #if DEBUG || WPN_ENABLE_LOGGING
         if verboseLevel != .off {
             Swift.print("[WPN] ERROR: \(message().limit(characterLimit))")
         }
