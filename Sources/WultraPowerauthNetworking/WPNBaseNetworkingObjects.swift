@@ -84,7 +84,7 @@ open class WPNResponseBase: Decodable {
 
 /// Standard response, where the response payload is saved in the `responseObject`
 /// with a type defined through the generics.
-public class WPNResponse<T: Decodable>: WPNResponseBase {
+open class WPNResponse<T: Decodable>: WPNResponseBase {
     
     /// Response object. `nil` on error.
     public var responseObject: T?
@@ -106,7 +106,7 @@ public class WPNResponse<T: Decodable>: WPNResponseBase {
 
 /// Standard response where the response payload is array passed as the `responseObject`
 /// with type of an element defined through the generics.
-public class WPNResponseArray<T: Decodable>: WPNResponseBase {
+open class WPNResponseArray<T: Decodable>: WPNResponseBase {
     
     /// Response object. `nil` on error.
     public var responseObject: [T]?
