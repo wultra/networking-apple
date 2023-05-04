@@ -21,7 +21,7 @@ import Foundation
  To properly use this class, you need to pass execution block and when the block finishes any
  asynchronous work, call `completion` block that is passed as 2nd parameter to this block.
 */
-public class WPNAsyncBlockOperation: WPNAsyncOperation {
+open class WPNAsyncBlockOperation: WPNAsyncOperation {
     
     /// Type of block that needs to be passed in init
     ///
@@ -54,7 +54,7 @@ public class WPNAsyncBlockOperation: WPNAsyncOperation {
 }
 
 /// Base class for asynchronous operations that will be put in `OperationQueue`
-public class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
+open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
     
     override final public var isAsynchronous: Bool { return true }
     override final public var isReady: Bool { return state == .isReady && dependencies.allSatisfy({ $0.isFinished }) }
