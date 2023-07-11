@@ -15,12 +15,15 @@ let package = Package(
             targets: ["WultraPowerAuthNetworking"])
     ],
     dependencies: [
-        .package(name: "PowerAuth2", url: "https://github.com/wultra/powerauth-mobile-sdk-spm.git", .upToNextMinor(from: "1.7.3"))
+        .package(url: "https://github.com/wultra/powerauth-mobile-sdk-spm.git", .upToNextMinor(from: "1.7.8"))
     ],
     targets: [
         .target(
             name: "WultraPowerAuthNetworking",
-            dependencies: ["PowerAuth2", .product(name: "PowerAuthCore", package: "PowerAuth2")],
+            dependencies: [
+                .product(name: "PowerAuth2", package: "powerauth-mobile-sdk-spm"),
+                .product(name: "PowerAuthCore", package: "powerauth-mobile-sdk-spm")
+            ],
             // For historical reasons, the folder has a wrong case-sensitive name, so we have to force the path
             // to get rid of swift PM warning.
             path: "Sources/WultraPowerauthNetworking")
