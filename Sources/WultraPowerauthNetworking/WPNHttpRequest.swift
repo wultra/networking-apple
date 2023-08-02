@@ -135,24 +135,38 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
         
         do {
             if let encryptor = encryptor {
-                if let decryptedData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
-                    return .encrypted(obj: try jsonDecoder.decode(TResponse.self, from: decryptedData), decryptedData: decryptedData)
-                } else {
-                    D.error("failed to decrypt response")
-                    
-                    // error responses might not be encrypted, so try to parse the response as a plain, but only for error responses
-                    if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
-                        D.error("but found plain error response")
-                        return .plain(obj: plain)
+                do {
+                    if let decryptedData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
+                        do {
+                            let decryptedResponse = try jsonDecoder.decode(TResponse.self, from: decryptedData)
+                            return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)
+                        } catch {
+                            D.error("failed to decode decrypted response:\n\(error)")
+                            D.error("from decryptedData: \(String(decoding: decryptedData, as: UTF8.self))")
+                            return .failed(error: error)
+                        }
+                    } else {
+                        D.error("failed to decrypt response")
+                        
+                        // error responses might not be encrypted, so try to parse the response as a plain, but only for error responses
+                        if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
+                            D.error("but found plain error response")
+                            return .plain(obj: plain)
+                        }
+                        
+                        return .failed(error: WPNSimpleError(message: "failed to decrypt response"))
                     }
-                    
-                    return .failed(error: WPNSimpleError(message: "failed to decrypt response"))
+                } catch {
+                    D.error("failed to decrypt response:\n\(error)")
+                    D.error("from data: \(String(decoding: data, as: UTF8.self))")
+                    return .failed(error: error)
                 }
             } else {
                 return .plain(obj: try jsonDecoder.decode(TResponse.self, from: data))
             }
         } catch {
             D.error("failed to process result:\n\(error)")
+            D.error("from data: \(String(decoding: data, as: UTF8.self))")
             return .failed(error: error)
         }
     }
