@@ -18,7 +18,11 @@ import Foundation
 import PowerAuth2
 import PowerAuthCore
 
-private let jsonEncoder = JSONEncoder()
+private let jsonEncoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return encoder
+}()
 private let jsonDecoder: JSONDecoder = {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
