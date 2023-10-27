@@ -136,11 +136,18 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
     /// Parses given result data and sets it to `response` property
     func processResult(data: Data) -> ProcessResultResponse<TResponse> {
-        
-        do {
-            if let encryptor = encryptor {
+
+        if let encryptor = encryptor {
+            do {
                 if let decryptedData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
-                    return .encrypted(obj: try jsonDecoder.decode(TResponse.self, from: decryptedData), decryptedData: decryptedData)
+                    do {
+                        let decryptedResponse = try jsonDecoder.decode(TResponse.self, from: decryptedData)
+                        return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)
+                    } catch {
+                        D.error("failed to decode decrypted response:\n\(error)")
+                        D.error("from decryptedData: \(decryptedData.forLog())")
+                        return .failed(error: error)
+                    }
                 } else {
                     D.error("failed to decrypt response")
                     
@@ -152,12 +159,19 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
                     
                     return .failed(error: WPNSimpleError(message: "failed to decrypt response"))
                 }
-            } else {
-                return .plain(obj: try jsonDecoder.decode(TResponse.self, from: data))
+            } catch {
+                D.error("failed to decrypt response:\n\(error)")
+                D.error("from data: \(data.forLog())")
+                return .failed(error: error)
             }
-        } catch {
-            D.error("failed to process result:\n\(error)")
-            return .failed(error: error)
+        } else {
+            do {
+                return .plain(obj: try jsonDecoder.decode(TResponse.self, from: data))
+            } catch {
+                D.error("failed to decode the response:\n\(error)")
+                D.error("from data: \(data.forLog())")
+                return .failed(error: error)
+            }
         }
     }
 }
@@ -191,5 +205,17 @@ private struct E2EEResponse: Decodable {
         cryptogram.bodyBase64 = encryptedData
         cryptogram.macBase64 = mac
         return cryptogram
+    }
+}
+
+private extension Data {
+    func forLog() -> String {
+        // If the Data instance can’t be converted to a UTF-8 string, you’ll get back an empty string.
+        let decoded = String(decoding: self, as: UTF8.self)
+        if decoded.isEmpty == false {
+            return decoded
+        } else {
+            return "Data could not be stringified. Here is a base64 encoded version of it: \(self.base64EncodedString())"
+        }
     }
 }
