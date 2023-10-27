@@ -191,6 +191,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		DC3EFA482774A55000C30F64 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -205,7 +206,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if ! [ -x \"$(command -v swiftlint)\" ]; then\n  echo 'warning: swiftlint is not installed on this computer.' >&2\n  exit 0\nfi\n\nswiftlint\n";
+			shellScript = "\"${PROJECT_DIR}/scripts/swiftlint.sh\" \"-ne\"\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
