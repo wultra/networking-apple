@@ -53,6 +53,20 @@ open class WPNAsyncBlockOperation: WPNAsyncOperation {
     }
 }
 
+public extension OperationQueue {
+    
+    
+    /// Creates an asynchonous operation with the execution block and adds to the receiver.
+    /// - Parameters:
+    ///   - completionQueue: Disatch queue that in which will be the completionblocked called
+    ///   - executionBlock: Block to execute
+    func addAsyncOperation(_ completionQueue: DispatchQueue? = nil, _ executionBlock: @escaping WPNAsyncBlockOperation.ExecutionBlock) {
+        let op = WPNAsyncBlockOperation(executionBlock)
+        op.completionQueue = completionQueue
+        addOperation(op)
+    }
+}
+
 /// Base class for asynchronous operations that will be put in `OperationQueue`
 open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
     
