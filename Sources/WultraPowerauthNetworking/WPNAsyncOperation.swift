@@ -55,7 +55,6 @@ open class WPNAsyncBlockOperation: WPNAsyncOperation {
 
 public extension OperationQueue {
     
-    
     /// Creates an asynchonous operation with the execution block and adds to the receiver.
     /// - Parameters:
     ///   - completionQueue: Disatch queue that in which will be the completionblocked called
