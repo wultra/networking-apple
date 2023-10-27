@@ -85,7 +85,6 @@ public class WPNNetworkingService {
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
@@ -115,7 +114,6 @@ public class WPNNetworkingService {
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
@@ -146,7 +144,6 @@ public class WPNNetworkingService {
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
