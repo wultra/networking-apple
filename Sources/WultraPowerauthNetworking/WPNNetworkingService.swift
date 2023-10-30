@@ -18,6 +18,24 @@ import Foundation
 import PowerAuth2
 import PowerAuthCore
 
+/// Strategy that decides if request will be put in serial or concurent queue.
+///
+/// More about this topic can be found in the
+/// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
+public enum WPNRequestConcurencyStrategy {
+    /// All requests will be put into concurent queue.
+    ///
+    /// We recommend not using this option unless you're managing theserialization of requests yourself.
+    ///
+    /// More about this topic can be found in the
+    /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
+    case concurentAll
+    /// Only request that needs PowerAuth signature will be put into serial queue.
+    case serialSigned
+    /// All requests will be put into serial queue.
+    case serialAll
+}
+
 /// Networking service for dispatching PowerAuth signed requests.
 public class WPNNetworkingService {
     
@@ -32,19 +50,10 @@ public class WPNNetworkingService {
     /// Response delegate is called on each received response
     public weak var responseDelegate: WPNResponseDelegate?
     
-    /// Requests that should be signed with the PowerAuth signing will
-    /// be serialized in the PowerAuth serial queue when the value is `true`.
+    /// Strategy that decides if request will be put in serial or concurent queue.
     ///
-    /// Default value is `true`
-    ///
-    /// With this approach, all signed requests across `WPNNetworkingService` instances using the
-    /// the same PowerAuth instance (and possibly other classes too) will be serialized into
-    /// the single serial queue. We recommend leaving this option on unless you're managing the
-    /// serialization of requests yourself.
-    ///
-    /// More about this topic can be found in the
-    /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
-    public var serializeSignedRequests: Bool = true
+    /// Default value is `serialSigned`
+    public var concurencyStrategy = WPNRequestConcurencyStrategy.serialSigned
     
     /// PowerAuth instance that will be used for this networking.
     public let powerAuth: PowerAuthSDK
@@ -76,7 +85,6 @@ public class WPNNetworkingService {
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
@@ -106,7 +114,6 @@ public class WPNNetworkingService {
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
@@ -137,7 +144,6 @@ public class WPNNetworkingService {
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///                       Note that on iOS 10 it will be called once with value -1.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
@@ -251,7 +257,7 @@ public class WPNNetworkingService {
         
         op.completionQueue = completionQueue
         
-        if serializeSignedRequests && request.needsSignature {
+        if (concurencyStrategy == .serialSigned && request.needsSignature) || concurencyStrategy == .serialAll {
             // Add operation to the "signing" queue.
             if !powerAuth.executeOperation(onSerialQueue: op) {
                 // Operation wont be added to the queue if there is a missing

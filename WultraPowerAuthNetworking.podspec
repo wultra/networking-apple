@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
   s.source              = { :git => 'https://github.com/wultra/networking-apple.git', :tag => s.version }
   s.source_files        = 'Sources/WultraPowerauthNetworking/**/*.swift'
   s.platform            = :ios
-  s.swift_version       = "5.7"
-  s.ios.deployment_target  = '11.0'
+  s.swift_version       = "5.9"
+  s.ios.deployment_target  = '12.0'
 
   s.dependency 'PowerAuth2', '>= 1.7'
 end

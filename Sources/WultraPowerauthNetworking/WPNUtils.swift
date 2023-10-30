@@ -55,13 +55,7 @@ internal class WPNConnectionMonitor {
     }
     
     var status: Status {
-        guard #available(iOS 12.0, tvOS 12.0, *), let monitor = self.monitor as? NWPathMonitor else {
-            // fallback for iOS11 and older. There is no direct way how to easily get the network status without
-            // some utility class. As this is just a metadata info, we'll do it the best effort way.
-            return .unknown
-        }
         let path = monitor.currentPath
-        
         if path.usesInterfaceType(.cellular) {
             return .cellular
         } else if path.usesInterfaceType(.wifi) {
@@ -75,23 +69,15 @@ internal class WPNConnectionMonitor {
         }
     }
     
-    private let monitor: Any?
+    private let monitor: NWPathMonitor
     
     init() {
-        if #available(iOS 12.0, tvOS 12.0, *) {
-            let m = NWPathMonitor()
-            m.start(queue: .global())
-            monitor = m
-        } else {
-            monitor = nil
-        }
+        let m = NWPathMonitor()
+        m.start(queue: .global())
+        monitor = m
     }
     
     deinit {
-        if #available(iOS 12.0, tvOS 12.0, *) {
-            if let monitor = self.monitor as? NWPathMonitor {
-                monitor.cancel()
-            }
-        }
+        monitor.cancel()
     }
 }
