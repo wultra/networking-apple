@@ -174,6 +174,9 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Operation is expired
     case operationExpired                 = "OPERATION_EXPIRED"
     
+    /// Operation authorization failed
+    case operationFailed                  = "OPERATION_FAILED"
+    
     // ACTIVATION SPAWN ERRORS
     
     /// Unable to fetch activation code.
