@@ -11,6 +11,7 @@ TOP=$(dirname $0)
 SRC_ROOT="`( cd \"$TOP/..\" && pwd )`"
 DO_COMMIT=0
 DO_PUSH=0
+DO_RELEASE=0
 VERSION=
 VERSIONING_FILES=( 
     "deploy/WultraPowerAuthNetworking.podspec,${SRC_ROOT}/WultraPowerAuthNetworking.podspec" 
@@ -29,6 +30,8 @@ function USAGE
     echo ""
     echo "  -p | --push       push commits and tags"
     echo ""
+    echo "  -r | --release    release to CocoaPods"
+    echo ""
     echo "  -h | --help       prints this help information"
     echo ""
     exit $1
@@ -46,6 +49,9 @@ do
             ;;
         -t | --tag)
             DO_TAG=1
+            ;;
+        -r | --release)
+            DO_RELEASE=1
             ;;
         *)
             VERSION=$opt
@@ -87,6 +93,8 @@ done
 
 popd
 
+pushd "${SRC_ROOT}"
+
 if [ x$DO_COMMIT == x1 ]; then
     git commit -m "Bumped version to ${VERSION}"
     git tag "${VERSION}"
@@ -95,3 +103,10 @@ fi
 if [ x$DO_PUSH == x1 ]; then
     git push --tags
 fi
+
+if [ x$DO_RELEASE == x1 ]; then
+    pod lib lint
+    pod trunk push
+fi
+
+popd
