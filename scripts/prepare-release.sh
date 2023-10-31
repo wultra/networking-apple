@@ -47,8 +47,8 @@ do
         -h | --help)
             USAGE 0
             ;;
-        -t | --tag)
-            DO_TAG=1
+        -p | --push)
+            DO_PUSH=1
             ;;
         -r | --release)
             DO_RELEASE=1
