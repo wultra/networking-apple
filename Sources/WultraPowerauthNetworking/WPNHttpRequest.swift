@@ -187,23 +187,29 @@ private struct E2EERequest: Encodable {
     let encryptedData: String?
     let mac: String?
     let nonce: String?
+    let timestamp: UInt64
     
     init(cryptogram: PowerAuthCoreEciesCryptogram) {
         ephemeralPublicKey = cryptogram.keyBase64
         encryptedData = cryptogram.bodyBase64
         mac = cryptogram.macBase64
         nonce = cryptogram.nonceBase64
+        timestamp = cryptogram.timestamp
     }
 }
 
 private struct E2EEResponse: Decodable {
     let encryptedData: String?
     let mac: String?
+    let nonce: String?
+    let timestamp: UInt64
     
     func toCryptorgram() -> PowerAuthCoreEciesCryptogram {
         let cryptogram = PowerAuthCoreEciesCryptogram()
         cryptogram.bodyBase64 = encryptedData
         cryptogram.macBase64 = mac
+        cryptogram.nonceBase64 = nonce
+        cryptogram.timestamp = timestamp
         return cryptogram
     }
 }
