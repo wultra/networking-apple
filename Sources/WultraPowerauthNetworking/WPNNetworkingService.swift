@@ -289,7 +289,7 @@ public class WPNNetworkingService {
     private func processRequest<Req: WPNRequestBase, Resp: WPNResponseBase>(_ request: WPNHttpRequest<Req, Resp>, completion: @escaping (WPNError?) -> Void) {
         // global completion queue to ensure that in case of async call to the server
         // we calculate the signature on the background queue
-        bgSynchronizeTime(request, completionQueue: .global()) { error in
+        synchronizeTime(completionQueue: .global()) { error in
             
             if let error {
                 completion(error)
@@ -301,8 +301,7 @@ public class WPNNetworkingService {
     }
     
     /// Synchronize time with the server if needed.
-    private func bgSynchronizeTime<Req: WPNRequestBase, Resp: WPNResponseBase>(
-        _ request: WPNHttpRequest<Req, Resp>,
+    private func synchronizeTime(
         completionQueue: DispatchQueue? = nil,
         completion: @escaping (WPNError?) -> Void
     ) {
