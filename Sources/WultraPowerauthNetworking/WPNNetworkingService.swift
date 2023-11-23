@@ -187,9 +187,9 @@ public class WPNNetworkingService {
                 }
             }
             
-            self.bgCalculateSignature(request) { error in
+            self.processRequest(request) { error in
                 
-                if let error = error {
+                if let error {
                     completion(nil, error)
                     return
                 }
@@ -285,6 +285,40 @@ public class WPNNetworkingService {
         return headers
     }
     
+    /// All necessary interactions with the PowerAuthSDK like request signing, token refresh and time synchronization.
+    private func processRequest<Req: WPNRequestBase, Resp: WPNResponseBase>(_ request: WPNHttpRequest<Req, Resp>, completion: @escaping (WPNError?) -> Void) {
+        // global completion queue to ensure that in case of async call to the server
+        // we calculate the signature on the background queue
+        bgSynchronizeTime(request, completionQueue: .global()) { error in
+            
+            if let error {
+                completion(error)
+                return
+            }
+            
+            self.bgCalculateSignature(request, completion: completion)
+        }
+    }
+    
+    /// Synchronize time with the server if needed.
+    private func bgSynchronizeTime<Req: WPNRequestBase, Resp: WPNResponseBase>(
+        _ request: WPNHttpRequest<Req, Resp>,
+        completionQueue: DispatchQueue? = nil,
+        completion: @escaping (WPNError?) -> Void
+    ) {
+        let timeService = powerAuth.timeSynchronizationService
+        if timeService.isTimeSynchronized {
+            completion(nil)
+        } else {
+            timeService.synchronizeTime(
+                callback: { error in
+                    completion(error != nil ? WPNError(reason: .network_generic, error: error) : nil)
+                },
+                callbackQueue: completionQueue
+            )
+        }
+    }
+    
     /// Calculates a signature for request. The function must be called on background thread.
     private func bgCalculateSignature<Req: WPNRequestBase, Resp: WPNResponseBase>(_ request: WPNHttpRequest<Req, Resp>, completion: @escaping (WPNError?) -> Void) {
         do {
@@ -295,7 +329,7 @@ public class WPNNetworkingService {
             
             if request.needsTokenSignature {
                 // authenticate with token
-                _ = powerAuth.tokenStore.requestAccessToken(withName: request.tokenName!, authentication: request.auth!) { (token, error) in
+                powerAuth.tokenStore.requestAccessToken(withName: request.tokenName!, authentication: request.auth!) { (token, error) in
                     //
                     var reportError: WPNError? = error != nil ? WPNError(reason: .network_generic, error: error) : nil
                     if let token = token {
