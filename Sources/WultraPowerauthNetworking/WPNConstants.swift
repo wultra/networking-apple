@@ -1,5 +1,5 @@
 //
-// Copyright 2022 Wultra s.r.o.
+// Copyright 2023 Wultra s.r.o.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,5 +22,5 @@ import Foundation
 
 internal class WPNConstants {
     /// Version Name of the SDK
-    static let sdkVersionName = "0.0.1-dev"
+    static let sdkVersionName = "1.3.0"
 }
