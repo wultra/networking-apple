@@ -361,7 +361,7 @@ public class WPNNetworkingService {
     }
 }
 
-/// WPN errors for networking
+/// Networking errors
 public extension WPNErrorReason {
     /// When unknown (usually logic error) happened during networking.
     static let network_unknown = WPNErrorReason(rawValue: "network_unknown")
