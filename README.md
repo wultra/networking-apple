@@ -310,7 +310,7 @@ Each `WPNError` has a `reason` property for why the error was created. Such reas
 |---|---|
 |`network_unknown`|When unknown (usually logic error) happened during networking.|
 |`network_generic`|When generic networking error happened.|
-|`network_errorStatusCode`|HTTP response code was different than 200 (success).`|
+|`network_errorStatusCode`|HTTP response code was different than 200 (success).|
 |`network_invalidResponseObject`|An unexpected response from the server.|
 |`network_invalidRequestObject`|Request is not valid. Such an object is not sent to the server.|
 |`network_signError`|When the signing of the request failed.|
