@@ -21,8 +21,8 @@ We use this SDK in our other open-source projects that you can take inspiration 
 - [Open Source Code](#open-source-code)
 - [Initialization and Configuration](#initialization-and-configuration)
 - [Endpoint Definition](#endpoint-definition)
-- [Creating an HTTP request](#Creating-an-HTTP-request)
-- [Raw Response Observer](#Raw-Response-Observer)
+- [Creating an HTTP request](#creating-an-http-request)
+- [Raw Response Observer](#raw-response-observer)
 - [Parallel Requests](#parallel-requests)
 - [SSL validation](#ssl-validation)
 - [Error Handling](#error-handling)
@@ -89,7 +89,7 @@ We recommend using Xcode version 15.0 or newer.
 
 ## Open Source Code
 
-The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/networking-apple](https://github.com/wultra/networking-apple/tree/develop)
+The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/networking-apple](https://github.com/wultra/networking-apple/#docucheck-keep-link)
 
 ## Initialization and Configuration
 
@@ -211,7 +211,7 @@ networking.post(
     // specify endpoint
     to: endpoint,
     // custom HTTP headers
-    with: ["MyCustomHeader: "Value"],
+    with: ["MyCustomHeader": "Value"],
     // encrypt with the application scope
     encryptedWith: powerAuth.eciesEncryptorForApplicationScope(),
     // only wait 10 seconds at max
@@ -283,11 +283,11 @@ Possible values are:
 
 Every error produced by this library is of a `WPNError` type. This error contains the following information:
 
-- `reason` - A specific reason, why the error happened. For more information see [WPNErrorReason chapter](#wmterrorreason).
+- `reason` - A specific reason, why the error happened. For more information see [WPNErrorReason chapter](#wpnerrorreason).
 - `nestedError` - Original exception/error (if available) that caused this error.
 - `httpStatusCode` - If the error is a networking error, this property will provide the HTTP status code of the error.
 - `httpUrlResponse` - If the error is a networking error, this will hold the original HTTP response that was received from the backend.
-- `restApiError` - If the error is a "well-known" API error, it will be filled here. For all available codes follow [the source code](https://github.com/wultra/networking-apple/blob/develop/Sources/WultraPowerauthNetworking/WPNBaseNetworkingObjects.swift#L130).
+- `restApiError` - If the error is a "well-known" API error, it will be filled here. For all available codes follow [the source code](https://github.com/wultra/networking-apple/blob/develop/Sources/WultraPowerauthNetworking/WPNBaseNetworkingObjects.swift#L130#docucheck-keep-link).
 - `networkIsNotReachable` - Convenience property, informs about a state where the network is not available (based on the error type).
 - `networkConnectionIsNotTrusted` - Convenience property, informs about a TLS error.
 - `powerAuthErrorResponse` - If the error was caused by the PowerAuth error, you can retrieve it here.
@@ -310,7 +310,7 @@ Each `WPNError` has a `reason` property for why the error was created. Such reas
 |---|---|
 |`network_unknown`|When unknown (usually logic error) happened during networking.|
 |`network_generic`|When generic networking error happened.|
-|`network_errorStatusCode`|HTTP response code was different than 200 (success).`
+|`network_errorStatusCode`|HTTP response code was different than 200 (success).|
 |`network_invalidResponseObject`|An unexpected response from the server.|
 |`network_invalidRequestObject`|Request is not valid. Such an object is not sent to the server.|
 |`network_signError`|When the signing of the request failed.|
