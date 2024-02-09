@@ -89,7 +89,7 @@ We recommend using Xcode version 15.0 or newer.
 
 ## Open Source Code
 
-The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/networking-apple](https://github.com/wultra/networking-apple/tree/develop)
+The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/networking-apple](https://github.com/wultra/networking-apple/#docucheck-keep-link)
 
 ## Initialization and Configuration
 
