@@ -283,11 +283,11 @@ Possible values are:
 
 Every error produced by this library is of a `WPNError` type. This error contains the following information:
 
-- `reason` - A specific reason, why the error happened. For more information see [WPNErrorReason chapter](#wmterrorreason).
+- `reason` - A specific reason, why the error happened. For more information see [WPNErrorReason chapter](#wpnerrorreason).
 - `nestedError` - Original exception/error (if available) that caused this error.
 - `httpStatusCode` - If the error is a networking error, this property will provide the HTTP status code of the error.
 - `httpUrlResponse` - If the error is a networking error, this will hold the original HTTP response that was received from the backend.
-- `restApiError` - If the error is a "well-known" API error, it will be filled here. For all available codes follow [the source code](https://github.com/wultra/networking-apple/blob/develop/Sources/WultraPowerauthNetworking/WPNBaseNetworkingObjects.swift#L130).
+- `restApiError` - If the error is a "well-known" API error, it will be filled here. For all available codes follow [the source code](https://github.com/wultra/networking-apple/blob/develop/Sources/WultraPowerauthNetworking/WPNBaseNetworkingObjects.swift#L130#docucheck-keep-link).
 - `networkIsNotReachable` - Convenience property, informs about a state where the network is not available (based on the error type).
 - `networkConnectionIsNotTrusted` - Convenience property, informs about a TLS error.
 - `powerAuthErrorResponse` - If the error was caused by the PowerAuth error, you can retrieve it here.
