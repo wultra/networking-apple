@@ -128,9 +128,9 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
 
         if let encryptor = encryptor {
             do {
-                if let decryptedData = encryptor.decryptResponse(try decode(E2EEResponse.self, from: data).toCryptorgram()) {
+                if let decryptedData = encryptor.decryptResponse(try customDecode(E2EEResponse.self, from: data).toCryptorgram()) {
                     do {
-                        let decryptedResponse = try decode(TResponse.self, from: decryptedData)
+                        let decryptedResponse = try customDecode(TResponse.self, from: decryptedData)
                         return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)
                     } catch {
                         D.error("failed to decode decrypted response:\n\(error)")
@@ -141,7 +141,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
                     D.error("failed to decrypt response")
                     
                     // error responses might not be encrypted, so try to parse the response as a plain, but only for error responses
-                    if let plain = try? decode(TResponse.self, from: data), plain.responseError != nil {
+                    if let plain = try? customDecode(TResponse.self, from: data), plain.responseError != nil {
                         D.error("but found plain error response")
                         return .plain(obj: plain)
                     }
@@ -155,7 +155,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
             }
         } else {
             do {
-                return .plain(obj: try decode(TResponse.self, from: data))
+                return .plain(obj: try customDecode(TResponse.self, from: data))
             } catch {
                 D.error("failed to decode the response:\n\(error)")
                 D.error("from data: \(data.forLog())")
@@ -211,11 +211,11 @@ private extension Data {
 
 // json coding
 
-private func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decodable {
+public func customDecode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable {
     do {
         return try jsonDecoder.decode(T.self, from: data)
     } catch let e {
-        D.print("Failed to decode with platform decoder.")
+        D.print("Failed to decode with platform decoder: \(e)")
         return try jsonDecoderCustom.decode(T.self, from: data)
     }
 }
@@ -236,7 +236,7 @@ private let jsonDecoderCustom: JSONDecoder = {
     formatter.calendar = Calendar(identifier: .iso8601)
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.timeZone = TimeZone(secondsFromGMT: 0)
-    decoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
+    decoder.dateDecodingStrategy = .custom { decoder in
         let container = try decoder.singleValueContainer()
         let dateStr = try container.decode(String.self)
 
@@ -249,6 +249,6 @@ private let jsonDecoderCustom: JSONDecoder = {
             return date
         }
         throw WPNError(reason: .unknown)
-    })
+    }
     return decoder
 }()
