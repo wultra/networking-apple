@@ -18,17 +18,6 @@ import Foundation
 import PowerAuth2
 import PowerAuthCore
 
-private let jsonEncoder: JSONEncoder = {
-    let encoder = JSONEncoder()
-    encoder.dateEncodingStrategy = .iso8601
-    return encoder
-}()
-private let jsonDecoder: JSONDecoder = {
-    let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .iso8601
-    return decoder
-}()
-
 class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
     /// Timeout interval of the request.
@@ -139,9 +128,9 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
 
         if let encryptor = encryptor {
             do {
-                if let decryptedData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
+                if let decryptedData = encryptor.decryptResponse(try decode(E2EEResponse.self, from: data).toCryptorgram()) {
                     do {
-                        let decryptedResponse = try jsonDecoder.decode(TResponse.self, from: decryptedData)
+                        let decryptedResponse = try decode(TResponse.self, from: decryptedData)
                         return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)
                     } catch {
                         D.error("failed to decode decrypted response:\n\(error)")
@@ -152,7 +141,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
                     D.error("failed to decrypt response")
                     
                     // error responses might not be encrypted, so try to parse the response as a plain, but only for error responses
-                    if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
+                    if let plain = try? decode(TResponse.self, from: data), plain.responseError != nil {
                         D.error("but found plain error response")
                         return .plain(obj: plain)
                     }
@@ -166,7 +155,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
             }
         } else {
             do {
-                return .plain(obj: try jsonDecoder.decode(TResponse.self, from: data))
+                return .plain(obj: try decode(TResponse.self, from: data))
             } catch {
                 D.error("failed to decode the response:\n\(error)")
                 D.error("from data: \(data.forLog())")
@@ -219,3 +208,47 @@ private extension Data {
         }
     }
 }
+
+// json coding
+
+private func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decodable {
+    do {
+        return try jsonDecoder.decode(T.self, from: data)
+    } catch let e {
+        D.print("Failed to decode with platform decoder.")
+        return try jsonDecoderCustom.decode(T.self, from: data)
+    }
+}
+
+private let jsonEncoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return encoder
+}()
+private let jsonDecoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    return decoder
+}()
+private let jsonDecoderCustom: JSONDecoder = {
+    let decoder = JSONDecoder()
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .iso8601)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    decoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
+        let container = try decoder.singleValueContainer()
+        let dateStr = try container.decode(String.self)
+
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
+        if let date = formatter.date(from: dateStr) {
+            return date
+        }
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+        if let date = formatter.date(from: dateStr) {
+            return date
+        }
+        throw WPNError(reason: .unknown)
+    })
+    return decoder
+}()
