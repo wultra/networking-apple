@@ -143,6 +143,12 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Activation is not valid (it is different from configured activation)
     case invalidActivation                = "INVALID_ACTIVATION"
     
+    /// Invalid application identifier is attempted for operation manipulation
+    case invalidApplication               = "INVALID_APPLICATION"
+    
+    /// Invalid operation identifier is attempted for operation manipulation
+    case invalidOperation                 = "INVALID_OPERATION"
+    
     /// Error during activfation
     case activationError                  = "ERR_ACTIVATION"
     
