@@ -83,7 +83,7 @@ public class WPNLogger {
     }
     
     /// Logger delegate
-    static weak var delegate: WPNLoggerDelegate?
+    public static weak var delegate: WPNLoggerDelegate?
     
     /// Current verbose level.
     public static var verboseLevel: VerboseLevel = .warnings
