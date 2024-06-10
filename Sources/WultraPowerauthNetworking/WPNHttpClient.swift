@@ -80,10 +80,10 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
 
 private extension URLRequest {
     func printToConsole() {
-        if D.enableHttpTrafficLogs {
+        if D.logHttpTraffic {
             D.info("WPNHttpClient Request")
             D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
-            D.info("- Headers: \(allHTTPHeaderFields?.betterDescription ?? "no headers")")
+            D.info("- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: allHTTPHeaderFields))")
             D.debug("- Body: \(httpBody?.utf8string ?? "empty body")")
         }
     }
@@ -91,14 +91,16 @@ private extension URLRequest {
 
 private extension HTTPURLResponse {
     func printToConsole(withData data: Data?, andError error: Error?) {
-        D.info("WPNHttpClient Response")
-        D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
-        D.info("- Status code: \(statusCode)")
-        D.info("- Headers: \(allHeaderFields.betterDescription)")
-        D.debug("- Body: \(data?.utf8string ?? "empty body")")
-        
-        if let error = error {
-            D.error("- Error: \(error.localizedDescription)")
+        if D.logHttpTraffic {
+            D.info("WPNHttpClient Response")
+            D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
+            D.info("- Status code: \(statusCode)")
+            D.info("- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: Dictionary(uniqueKeysWithValues: allHeaderFields.map { ($0.key.description, "\($0.value)") })))")
+            D.debug("- Body: \(data?.utf8string ?? "empty body")")
+            
+            if let error = error {
+                D.error("- Error: \(error.localizedDescription)")
+            }
         }
     }
 }
@@ -106,11 +108,5 @@ private extension HTTPURLResponse {
 private extension Data {
     var utf8string: String? {
         return String(bytes: self, encoding: .utf8)
-    }
-}
-
-private extension Dictionary where Key: CustomStringConvertible, Value: Any {
-    var betterDescription: String {
-        return map({($0.key.description, $0.value)}).description
     }
 }

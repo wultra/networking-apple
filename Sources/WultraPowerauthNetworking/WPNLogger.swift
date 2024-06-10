@@ -92,7 +92,9 @@ public class WPNLogger {
     ///
     /// You can use this option to stop log from the HTTP traffic when you setup your own logging logic
     /// via the `responseDelegate` and `requestDelegate` in the `WPNNetworkingService`.
-    public static var enableHttpTrafficLogs = true
+    public static var logHttpTraffic = true
+    
+    public static let httpHeadersToSkip = HeaderBlockList()
     
     /// Character limit for single log message. Default is 12 000. Unlimited when nil
     public static var characterLimit: Int? = 12_000
@@ -156,6 +158,72 @@ public class WPNLogger {
         Swift.fatalError(message(), file: file, line: line)
     }
     #endif
+}
+
+/**
+ * Headers to skip when logging.
+ *
+ * Note that all headers are transformed to lowercase variant when added.
+ *
+ * Default headers to skip are:
+ * ```
+ * "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
+ * "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
+ * ```
+ */
+public class HeaderBlockList {
+
+    private var headersToSkp = [
+        "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
+        "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
+    ]
+
+    public func add(element: String) {
+        headersToSkp.append(element.lowercased())
+    }
+
+    public func add(elements: [String]) {
+        headersToSkp.append(contentsOf: elements.map { $0.lowercased() })
+    }
+
+    public func remove(element: String) {
+        headersToSkp.removeAll { $0 == element.lowercased() }
+    }
+
+    public func removeAll(elements: [String]) {
+        elements.map { $0.lowercased() }.forEach {
+            if let idx = headersToSkp.firstIndex(of: $0) {
+                headersToSkp.remove(at: idx)
+            }
+        }
+    }
+    
+    public func removeAll() {
+        headersToSkp.removeAll()
+    }
+    
+    public func headersToSkip() -> [String] {
+        return Array(headersToSkp)
+    }
+    
+    func filterHeaders(headers: [String: String]?) -> String {
+        
+        guard let headers else {
+            return "no headers"
+        }
+        
+        var result = ""
+        var skipped = 0
+        
+        for header in headers {
+            if headersToSkp.contains(where: { $0 == header.key.lowercased() }) {
+                skipped += 1
+            } else {
+                result += "\n  - \(header.key): \(header.value)"
+            }
+        }
+        return "\(skipped) filtered out" + result
+    }
 }
 
 private extension String {
