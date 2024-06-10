@@ -120,7 +120,7 @@ public class WPNLogger {
     }
     
     private static func log(_ message: @autoclosure () -> String, level: WPNLogLevel) {
-        let levelAllowed = level.minVerboseLevel.rawValue >= verboseLevel.rawValue
+        let levelAllowed = level.minVerboseLevel.rawValue <= verboseLevel.rawValue
         let forceReport = delegate?.wpnFollowVerboseLevel == false
         guard levelAllowed || forceReport else {
             // not logging
