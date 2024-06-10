@@ -84,11 +84,7 @@ private extension URLRequest {
             D.info("WPNHttpClient Request")
             D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
             D.info("- Headers: \(allHTTPHeaderFields?.betterDescription ?? "no headers")")
-            if D.verboseLevel != .debug {
-                D.info("- Body: <available only for debug level>")
-            } else {
-                D.debug("- Body: \(httpBody?.utf8string ?? "empty body")")
-            }
+            D.debug("- Body: \(httpBody?.utf8string ?? "empty body")")
         }
     }
 }
@@ -99,11 +95,8 @@ private extension HTTPURLResponse {
         D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
         D.info("- Status code: \(statusCode)")
         D.info("- Headers: \(allHeaderFields.betterDescription)")
-        if D.verboseLevel != .debug {
-            D.info("- Body: <available only for debug level>")
-        } else {
-            D.debug("- Body: \(data?.utf8string ?? "empty body")")
-        }
+        D.debug("- Body: \(data?.utf8string ?? "empty body")")
+        
         if let error = error {
             D.error("- Error: \(error.localizedDescription)")
         }
