@@ -16,52 +16,123 @@
 
 import Foundation
 
-/// WPNLogger provides simple logging facility available for DEBUG build of the library.
+/// Level of the log
+public enum WPNLogLevel {
+    /// Debug logs. Might contain sensitive data like body of the request etc.
+    /// You should only use this level during development.
+    case debug
+    /// Regular library logic logs
+    case info
+    /// Non-critical warning
+    case warning
+    /// Error happened
+    case error
+    
+    fileprivate var minVerboseLevel: WPNLogger.VerboseLevel {
+        return switch self {
+        case .debug: .debug
+        case .info: .info
+        case .warning: .warnings
+        case .error: .errors
+        }
+    }
+    
+    fileprivate var logName: String {
+        return switch self {
+        case .debug: "DEBUG"
+        case .info: "INFO"
+        case .warning: "WARNING"
+        case .error: "ERROR"
+        }
+    }
+}
+
+/// Delegate that can further process logs from the library
+public protocol WPNLoggerDelegate: AnyObject {
+    
+    /**
+    * If the delegate should follow selected verbosity level.
+    *
+    * When set to true, then (for example) if `errors` is selected as a `verboseLevel`, only `error` logLevel will be called.
+    * When set to false, all methods might be called no matter the selected `verboseLevel`.
+    */
+    var wpnFollowVerboseLevel: Bool { get }
+    
+    /// Log was recorded
+    /// - Parameters:
+    ///   - message: Message of the log
+    ///   - logLevel: Log level
+    func wpnLog(message: String, logLevel: WPNLogLevel)
+}
+
+/// WPNLogger provides simple logging facility.
 public class WPNLogger {
     
-    /// Defines verbose level for this simple debugging facility.
+    /// Verbose level of the logger.
     public enum VerboseLevel: Int {
         /// Silences all messages.
         case off = 0
-        /// Only errors will be printed to the debug console.
+        /// Only errors will be printed to the system console.
         case errors = 1
-        /// Errors and warnings will be printed to the debug console.
+        /// Errors and warnings will be printed to the system console.
         case warnings = 2
-        /// All messages will be printed to the debug console.
-        case all = 3
+        /// Error ,warning and info messages will be printed to the system console.
+        case info = 3
+        /// All messages will be printed to the system console - including debug messages
+        case debug = 4
     }
     
-    /// Current verbose level. Note that value is ignored for non-DEBUG builds.
+    /// Logger delegate
+    static weak var delegate: WPNLoggerDelegate?
+    
+    /// Current verbose level.
     public static var verboseLevel: VerboseLevel = .warnings
+    
+    /// If HTTP traffic should be reported by this logger.
+    ///
+    /// You can use this option to stop log from the HTTP traffic when you setup your own logging logic
+    /// via the `responseDelegate` and `requestDelegate` in the `WPNNetworkingService`.
+    public static var enableHttpTrafficLogs = true
     
     /// Character limit for single log message. Default is 12 000. Unlimited when nil
     public static var characterLimit: Int? = 12_000
     
-    /// Prints simple message to the debug console.
-    static func print(_ message: @autoclosure () -> String) {
-        #if DEBUG || WPN_ENABLE_LOGGING
-        if verboseLevel == .all {
-            Swift.print("[WPN] \(message().limit(characterLimit))")
-        }
-        #endif
-    }
-
-    /// Prints warning message to the debug console.
-    static func warning(_ message: @autoclosure () -> String) {
-        #if DEBUG || WPN_ENABLE_LOGGING
-        if verboseLevel.rawValue >= VerboseLevel.warnings.rawValue {
-            Swift.print("[WPN] WARNING: \(message().limit(characterLimit))")
-        }
-        #endif
+    /// Prints simple message to the system console.
+    static func debug(_ message: @autoclosure () -> String) {
+        log(message(), level: .debug)
     }
     
-    /// Prints error message to the debug console.
+    /// Prints simple message to the system console.
+    static func info(_ message: @autoclosure () -> String) {
+        log(message(), level: .info)
+    }
+
+    /// Prints warning message to the system console.
+    static func warning(_ message: @autoclosure () -> String) {
+        log(message(), level: .warning)
+    }
+    
+    /// Prints error message to the system console.
     static func error(_ message: @autoclosure () -> String) {
-        #if DEBUG || WPN_ENABLE_LOGGING
-        if verboseLevel != .off {
-            Swift.print("[WPN] ERROR: \(message().limit(characterLimit))")
+        log(message(), level: .error)
+    }
+    
+    private static func log(_ message: @autoclosure () -> String, level: WPNLogLevel) {
+        let levelAllowed = level.minVerboseLevel.rawValue >= verboseLevel.rawValue
+        let forceReport = delegate?.wpnFollowVerboseLevel == false
+        guard levelAllowed || forceReport else {
+            // not logging
+            return
         }
-        #endif
+        
+        let msg = message().limit(characterLimit)
+        
+        if levelAllowed {
+            print("[WPN:\(level.logName)] \(msg)")
+        }
+        if levelAllowed || forceReport {
+            delegate?.wpnLog(message: msg, logLevel: level)
+        }
     }
     
     #if DEBUG

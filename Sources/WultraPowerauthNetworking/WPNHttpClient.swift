@@ -80,22 +80,32 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
 
 private extension URLRequest {
     func printToConsole() {
-        D.print("WPNHttpClient Request")
-        D.print("- URL: POST - \(url?.absoluteString ?? "no URL")")
-        D.print("- Headers: \(allHTTPHeaderFields?.betterDescription ?? "no headers")")
-        D.print("- Body: \(httpBody?.utf8string ?? "empty body")")
+        if D.enableHttpTrafficLogs {
+            D.info("WPNHttpClient Request")
+            D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
+            D.info("- Headers: \(allHTTPHeaderFields?.betterDescription ?? "no headers")")
+            if D.verboseLevel != .debug {
+                D.info("- Body: <available only for debug level>")
+            } else {
+                D.debug("- Body: \(httpBody?.utf8string ?? "empty body")")
+            }
+        }
     }
 }
 
 private extension HTTPURLResponse {
     func printToConsole(withData data: Data?, andError error: Error?) {
-        D.print("WPNHttpClient Response")
-        D.print("- URL: POST - \(url?.absoluteString ?? "no URL")")
-        D.print("- Status code: \(statusCode)")
-        D.print("- Headers: \(allHeaderFields.betterDescription)")
-        D.print("- Body: \(data?.utf8string ?? "empty body")")
+        D.info("WPNHttpClient Response")
+        D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
+        D.info("- Status code: \(statusCode)")
+        D.info("- Headers: \(allHeaderFields.betterDescription)")
+        if D.verboseLevel != .debug {
+            D.info("- Body: <available only for debug level>")
+        } else {
+            D.debug("- Body: \(data?.utf8string ?? "empty body")")
+        }
         if let error = error {
-            D.print("- Error: \(error.localizedDescription)")
+            D.error("- Error: \(error.localizedDescription)")
         }
     }
 }
