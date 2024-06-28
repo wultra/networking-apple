@@ -85,18 +85,19 @@ public class WPNLogger {
     /// Logger delegate
     public static weak var delegate: WPNLoggerDelegate?
     
-    /// Current verbose level.
+    /// Current verbose level. `warnings` by default
     public static var verboseLevel: VerboseLevel = .warnings
     
-    /// If HTTP traffic should be reported by this logger.
+    /// If HTTP traffic should be reported by this logger. `true` by default
     ///
     /// You can use this option to stop log from the HTTP traffic when you setup your own logging logic
     /// via the `responseDelegate` and `requestDelegate` in the `WPNNetworkingService`.
     public static var logHttpTraffic = true
     
+    /// Headers that won't be logged.
     public static let httpHeadersToSkip = HeaderBlockList()
     
-    /// Character limit for single log message. Default is 12 000. Unlimited when nil
+    /// Character limit for single log message. Default is `12 000`. Unlimited when nil
     public static var characterLimit: Int? = 12_000
     
     /// Prints simple message to the system console.
@@ -177,19 +178,27 @@ public class HeaderBlockList {
         "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
         "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
     ]
-
+    
+    /// Adds element to the block list.
+    /// - Parameter element: HTTP header key to block.
     public func add(element: String) {
         headersToSkp.append(element.lowercased())
     }
 
+    /// Adds elements to the block list.
+    /// - Parameter element: HTTP header keys to block.
     public func add(elements: [String]) {
         headersToSkp.append(contentsOf: elements.map { $0.lowercased() })
     }
 
+    /// Removes element from the block list.
+    /// - Parameter element: HTTP header key to remove.
     public func remove(element: String) {
         headersToSkp.removeAll { $0 == element.lowercased() }
     }
 
+    /// Removes elements from the block list.
+    /// - Parameter element: HTTP header keys to remove.
     public func removeAll(elements: [String]) {
         elements.map { $0.lowercased() }.forEach {
             if let idx = headersToSkp.firstIndex(of: $0) {
@@ -198,10 +207,13 @@ public class HeaderBlockList {
         }
     }
     
+    /// Remove all
     public func removeAll() {
         headersToSkp.removeAll()
     }
     
+    /// Returns array of headers to skip
+    /// - Returns: Headers to skip
     public func headersToSkip() -> [String] {
         return Array(headersToSkp)
     }
