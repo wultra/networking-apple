@@ -50,7 +50,6 @@ public enum WPNLogLevel {
 /// Delegate that can further process logs from the library
 public protocol WPNLoggerDelegate: AnyObject {
     
-    
     /// If the delegate should follow selected verbosity level.
     ///
     /// When set to true, then (for example) if `errors` is selected as a `verboseLevel`, only `error` logLevel will be called.
