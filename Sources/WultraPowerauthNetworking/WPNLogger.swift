@@ -50,12 +50,11 @@ public enum WPNLogLevel {
 /// Delegate that can further process logs from the library
 public protocol WPNLoggerDelegate: AnyObject {
     
-    /**
-    * If the delegate should follow selected verbosity level.
-    *
-    * When set to true, then (for example) if `errors` is selected as a `verboseLevel`, only `error` logLevel will be called.
-    * When set to false, all methods might be called no matter the selected `verboseLevel`.
-    */
+    
+    /// If the delegate should follow selected verbosity level.
+    ///
+    /// When set to true, then (for example) if `errors` is selected as a `verboseLevel`, only `error` logLevel will be called.
+    /// When set to false, all methods might be called no matter the selected `verboseLevel`.
     var wpnFollowVerboseLevel: Bool { get }
     
     /// Log was recorded
@@ -95,6 +94,15 @@ public class WPNLogger {
     public static var logHttpTraffic = true
     
     /// Headers that won't be logged.
+    ///
+    /// Default headers to skip are:
+    /// ```
+    /// "accept-language", "content-type", "content-length", 
+    /// "accept-language", "transfer-encoding", "date",
+    /// "server", "user-agent", "connection", "x-content-type-options",
+    /// "x-xss-protection", "cache-control", "pragma", "expires",
+    /// "x-frame-options", "vary"
+    /// ```
     public static let httpHeadersToSkip = HeaderBlockList()
     
     /// Character limit for single log message. Default is `12 000`. Unlimited when nil
@@ -161,17 +169,16 @@ public class WPNLogger {
     #endif
 }
 
-/**
- * Headers to skip when logging.
- *
- * Note that all headers are transformed to lowercase variant when added.
- *
- * Default headers to skip are:
- * ```
- * "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
- * "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
- * ```
- */
+/// Headers to skip when logging.
+///
+/// Note that all headers are transformed to lowercase variant when added.
+///
+/// Default headers to skip are:
+/// ```
+/// "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
+/// "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
+/// ```
+///
 public class HeaderBlockList {
 
     private var headersToSkp = [
