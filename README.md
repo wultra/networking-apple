@@ -351,10 +351,6 @@ You can limit the amount of logged information via the `verboseLevel` property.
 | `info`                 | Error, warning and info messages will be logged.  |
 | `all`                  | All messages will be logged.                      |
 
-### Traffic logs
-
-To prevent huge logs from being printed out, there is a default limit of 12,000 characters per log in place. You can change this via `WPNLogger.characterLimit`.
-
 ### Character limit
 
 To prevent huge logs from being printed out, there is a default limit of 12,000 characters per log in place. You can change this via `WPNLogger.characterLimit`.
