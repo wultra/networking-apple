@@ -215,7 +215,9 @@ public class WPNNetworkingService {
                             self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
                             resp = envelope
                         case .encrypted(let envelope, let decryptedData):
-                            D.debug("Decrypted response from \(url.absoluteString):\n\(String(data: decrypted, encoding: .utf8) ?? "empty")")
+                            if D.logHttpTraffic {
+                                D.debug("Decrypted response from \(url.absoluteString):\n\(String(data: decrypted, encoding: .utf8) ?? "empty")")
+                            }
                             self.responseDelegate?.encryptedResponseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData, decrypted: decryptedData)
                             resp = envelope
                         case .failed:
