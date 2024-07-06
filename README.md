@@ -257,13 +257,12 @@ class MyResponseDelegateLogger: WPNResponseDelegate {
 
 ## Parallel Requests
 
-By default, the SDK is serializing all signed requests. Meaning that the requests signed with the PowerAuthSDK are put into the queue and executed one by one (meaning that the HTTP request is not made until the previous one is finished). Other requests will be parallel.
+By default, the SDK is serializing all signed requests. This means that the requests signed with the PowerAuthSDK are put into the queue and executed one by one (meaning that the HTTP request is not made until the previous one is finished). Other requests will be parallel.
 
-This behavior can be changed via `WPNNetworkingService.concurencyStrategy` with the following possible values:
+This behavior can be changed via `WPNNetworkingService.concurrencyStrategy` with the following possible values:
 
-- `serialSigned` - Default behavior. Only requests that need a PowerAuth signature will be put into the serial queue.
-- `serialAll` - All requests will be put into a serial queue.
-- `concurentAll` - All requests will be put into the concurrent queue. This behavior is not recommended unless you know exactly why you want this.
+- `serialSigned` - Default behavior. Only requests that need a PowerAuth signature will be put into the serial queue that is shared with the `PowerAuthSDK` instance to ensure all signed requests are in proper order.
+- `concurrentAll` - All requests will be put into the concurrent queue. This behavior is not recommended unless you know exactly why you want this.
 
 <!-- begin box info -->
 More about this topic can be found in the [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization).

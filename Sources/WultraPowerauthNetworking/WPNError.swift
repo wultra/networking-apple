@@ -154,8 +154,12 @@ public class WPNError: Error {
 /// Reason of the error.
 public struct WPNErrorReason: RawRepresentable, Equatable, Hashable {
     
+    /// PowerAuth instance does not have a valid activation
     public static let missingActivation = WPNErrorReason(rawValue: "missingActivation")
+    /// Unknown (unrecognized) error occured.
     public static let unknown = WPNErrorReason(rawValue: "unknown")
+    /// The operation was canceled.
+    public static let canceled = WPNErrorReason(rawValue: "canceled")
     
     public typealias RawValue = String
     public var rawValue: RawValue

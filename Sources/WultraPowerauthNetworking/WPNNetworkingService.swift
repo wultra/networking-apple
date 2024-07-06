@@ -18,24 +18,25 @@ import Foundation
 import PowerAuth2
 import PowerAuthCore
 
-/// Strategy that decides if request will be put in serial or concurent queue.
+/// Strategy that decides if request will be put in serial or concurrent queue.
 ///
 /// For serial queue, `PowerAuthSDK.executeOperation` is used.
 ///
 /// More about this topic can be found in the
 /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
-public enum WPNRequestConcurencyStrategy {
-    /// All requests will be put into concurent queue.
+public enum WPNRequestConcurrencyStrategy {
+    /// All requests will be put into concurrent queue.
     ///
     /// We recommend not using this option unless you're managing theserialization of requests yourself.
     ///
     /// More about this topic can be found in the
     /// [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization)
-    case concurentAll
+    case concurrentAll
     /// Only request that needs PowerAuth signature will be put into serial queue provided by the PowerAuth library.
+    ///
+    /// Note that serial queue for signed requests is shared with the `PowerAuthSDK` instance
+    /// to ensure all signed requests are in proper order.
     case serialSigned
-    /// All requests will be put into serial queue provided by the PowerAuth library.
-    case serialAll
 }
 
 /// Networking service for dispatching PowerAuth signed requests.
@@ -52,10 +53,10 @@ public class WPNNetworkingService {
     /// Response delegate is called on each received response
     public weak var responseDelegate: WPNResponseDelegate?
     
-    /// Strategy that decides if request will be put in serial or concurent queue.
+    /// Strategy that decides if request will be put in serial or concurrent queue.
     ///
     /// Default value is `serialSigned`
-    public var concurencyStrategy = WPNRequestConcurencyStrategy.serialSigned
+    public var concurrencyStrategy = WPNRequestConcurrencyStrategy.serialSigned
     
     /// PowerAuth instance that will be used for this networking.
     public let powerAuth: PowerAuthSDK
@@ -95,7 +96,7 @@ public class WPNNetworkingService {
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
-    /// - Returns: Operation for observation or operation chaining.
+    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(
         data: Req,
@@ -133,7 +134,7 @@ public class WPNNetworkingService {
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
-    /// - Returns: Operation for observation or operation chaining.
+    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(
         data: Req,
@@ -172,7 +173,7 @@ public class WPNNetworkingService {
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
     ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
-    /// - Returns: Operation for observation or operation chaining.
+    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
     @discardableResult
     public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(
         data: Req,
@@ -224,16 +225,22 @@ public class WPNNetworkingService {
                 }
             }
             
-            self.processRequest(request) { error in
+            self.processRequest(request) { [weak self] error in
                 
                 if let error {
                     completion(nil, error)
                     return
                 }
                 
+                guard let self, operation.isCancelled == false else {
+                    completion(nil, .init(reason: .canceled))
+                    return
+                }
+                
                 self.httpClient.post(request: request, progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
                     
-                    guard let self = self, operation.isCancelled == false else {
+                    guard let self, operation.isCancelled == false else {
+                        completion(nil, .init(reason: .canceled))
                         return
                     }
                     
@@ -294,7 +301,7 @@ public class WPNNetworkingService {
         
         op.completionQueue = completionQueue
         
-        if (concurencyStrategy == .serialSigned && request.needsSignature) || concurencyStrategy == .serialAll {
+        if concurrencyStrategy == .serialSigned && request.needsSignature {
             // Add operation to the "signing" queue.
             if !powerAuth.executeOperation(onSerialQueue: op) {
                 // Operation wont be added to the queue if there is a missing
