@@ -82,6 +82,7 @@ pod 'WultraPowerAuthNetworking'
 |---|---|
 | `1.0.x` - `1.2.x` | `1.7.x` |
 | `1.3.x` | `1.8.x` |
+| `1.4.x` | `1.8.x` |
 
 ### Xcode Compatibility
 
