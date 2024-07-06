@@ -337,26 +337,32 @@ The default value is always `en`. With other languages, we use values compliant 
 
 ## Logging
 
-For logging purposes `WPNLogger` that prints to the console is used.
-
-<!-- begin box info -->
-Note that logging to the console is available only when the library is compiled with the `DEBUG` or `WPN_ENABLE_LOGGING` Swift compile condition.
-<!-- end -->
+You can set up logging for the library using the `WPNLogger` class.
 
 ### Verbosity Level
 
-You can limit the amount of logged information via `verboseLevel` property.
+You can limit the amount of logged information via the `verboseLevel` property.
 
-| Level | Description |
-| --- | --- |
-| `off` | Silences all messages. |
-| `errors` | Only errors will be printed to the debug console. |
-| `warnings` _(default)_ | Errors and warnings will be printed to the debug console. |
-| `all` | All messages will be printed to the debug console. |
+| Level                  | Description                                       |
+| ---------------------- | ------------------------------------------------- |
+| `off`                  | Silences all messages.                            |
+| `errors`               | Only errors will be logged.                       |
+| `warnings` _(default)_ | Errors and warnings will be logged.               |
+| `info`                 | Error, warning and info messages will be logged.  |
+| `all`                  | All messages will be logged.                      |
 
 ### Character limit
 
 To prevent huge logs from being printed out, there is a default limit of 12,000 characters per log in place. You can change this via `WPNLogger.characterLimit`.
+
+### HTTP traffic logs
+
+- You can turn on or off logging of the requests and responses with the `WPNLogger.logHttpTraffic` property.
+- You can filter which headers will be logged with the `WPNLogger.httpHeadersToSkip` property.
+
+### Logger Delegate
+
+In case you want to process logs on your own (for example log into a file or some cloud service), you can set `WPNLogger.delegate`.
 
 <!-- begin remove -->
 ## Web Documentation

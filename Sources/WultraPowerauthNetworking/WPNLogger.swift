@@ -16,52 +16,133 @@
 
 import Foundation
 
-/// WPNLogger provides simple logging facility available for DEBUG build of the library.
+/// Level of the log
+public enum WPNLogLevel {
+    /// Debug logs. Might contain sensitive data like body of the request etc.
+    /// You should only use this level during development.
+    case debug
+    /// Regular library logic logs
+    case info
+    /// Non-critical warning
+    case warning
+    /// Error happened
+    case error
+    
+    fileprivate var minVerboseLevel: WPNLogger.VerboseLevel {
+        return switch self {
+        case .debug: .debug
+        case .info: .info
+        case .warning: .warnings
+        case .error: .errors
+        }
+    }
+    
+    fileprivate var logName: String {
+        return switch self {
+        case .debug: "DEBUG"
+        case .info: "INFO"
+        case .warning: "WARNING"
+        case .error: "ERROR"
+        }
+    }
+}
+
+/// Delegate that can further process logs from the library
+public protocol WPNLoggerDelegate: AnyObject {
+    
+    /// If the delegate should follow selected verbosity level.
+    ///
+    /// When set to true, then (for example) if `errors` is selected as a `verboseLevel`, only `error` logLevel will be called.
+    /// When set to false, all methods might be called no matter the selected `verboseLevel`.
+    var wpnFollowVerboseLevel: Bool { get }
+    
+    /// Log was recorded
+    /// - Parameters:
+    ///   - message: Message of the log
+    ///   - logLevel: Log level
+    func wpnLog(message: String, logLevel: WPNLogLevel)
+}
+
+/// WPNLogger provides simple logging facility.
 public class WPNLogger {
     
-    /// Defines verbose level for this simple debugging facility.
+    /// Verbose level of the logger.
     public enum VerboseLevel: Int {
         /// Silences all messages.
         case off = 0
-        /// Only errors will be printed to the debug console.
+        /// Only errors will be printed to the system console.
         case errors = 1
-        /// Errors and warnings will be printed to the debug console.
+        /// Errors and warnings will be printed to the system console.
         case warnings = 2
-        /// All messages will be printed to the debug console.
-        case all = 3
+        /// Error ,warning and info messages will be printed to the system console.
+        case info = 3
+        /// All messages will be printed to the system console - including debug messages
+        case debug = 4
     }
     
-    /// Current verbose level. Note that value is ignored for non-DEBUG builds.
+    /// Logger delegate
+    public static weak var delegate: WPNLoggerDelegate?
+    
+    /// Current verbose level. `warnings` by default
     public static var verboseLevel: VerboseLevel = .warnings
     
-    /// Character limit for single log message. Default is 12 000. Unlimited when nil
+    /// If HTTP traffic should be reported by this logger. `true` by default
+    ///
+    /// You can use this option to stop log from the HTTP traffic when you setup your own logging logic
+    /// via the `responseDelegate` and `requestDelegate` in the `WPNNetworkingService`.
+    public static var logHttpTraffic = true
+    
+    /// Headers that won't be logged.
+    ///
+    /// Default headers to skip are:
+    /// ```
+    /// "accept-language", "content-type", "content-length", 
+    /// "accept-language", "transfer-encoding", "date",
+    /// "server", "user-agent", "connection", "x-content-type-options",
+    /// "x-xss-protection", "cache-control", "pragma", "expires",
+    /// "x-frame-options", "vary"
+    /// ```
+    public static let httpHeadersToSkip = HeaderBlockList()
+    
+    /// Character limit for single log message. Default is `12 000`. Unlimited when nil
     public static var characterLimit: Int? = 12_000
     
-    /// Prints simple message to the debug console.
-    static func print(_ message: @autoclosure () -> String) {
-        #if DEBUG || WPN_ENABLE_LOGGING
-        if verboseLevel == .all {
-            Swift.print("[WPN] \(message().limit(characterLimit))")
-        }
-        #endif
-    }
-
-    /// Prints warning message to the debug console.
-    static func warning(_ message: @autoclosure () -> String) {
-        #if DEBUG || WPN_ENABLE_LOGGING
-        if verboseLevel.rawValue >= VerboseLevel.warnings.rawValue {
-            Swift.print("[WPN] WARNING: \(message().limit(characterLimit))")
-        }
-        #endif
+    /// Prints simple message to the system console.
+    static func debug(_ message: @autoclosure () -> String) {
+        log(message(), level: .debug)
     }
     
-    /// Prints error message to the debug console.
+    /// Prints simple message to the system console.
+    static func info(_ message: @autoclosure () -> String) {
+        log(message(), level: .info)
+    }
+
+    /// Prints warning message to the system console.
+    static func warning(_ message: @autoclosure () -> String) {
+        log(message(), level: .warning)
+    }
+    
+    /// Prints error message to the system console.
     static func error(_ message: @autoclosure () -> String) {
-        #if DEBUG || WPN_ENABLE_LOGGING
-        if verboseLevel != .off {
-            Swift.print("[WPN] ERROR: \(message().limit(characterLimit))")
+        log(message(), level: .error)
+    }
+    
+    private static func log(_ message: @autoclosure () -> String, level: WPNLogLevel) {
+        let levelAllowed = level.minVerboseLevel.rawValue <= verboseLevel.rawValue
+        let forceReport = delegate?.wpnFollowVerboseLevel == false
+        guard levelAllowed || forceReport else {
+            // not logging
+            return
         }
-        #endif
+        
+        let msg = message().limit(characterLimit)
+        
+        if levelAllowed {
+            print("[WPN:\(level.logName)] \(msg)")
+        }
+        if levelAllowed || forceReport {
+            delegate?.wpnLog(message: msg, logLevel: level)
+        }
     }
     
     #if DEBUG
@@ -85,6 +166,82 @@ public class WPNLogger {
         Swift.fatalError(message(), file: file, line: line)
     }
     #endif
+}
+
+/// Headers to skip when logging.
+///
+/// Note that all headers are transformed to lowercase variant when added.
+///
+/// Default headers to skip are:
+/// ```
+/// "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
+/// "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
+/// ```
+///
+public class HeaderBlockList {
+
+    private var headersToSkp = [
+        "accept-language", "content-type", "content-length", "accept-language", "transfer-encoding", "date", "server", "user-agent",
+        "connection", "x-content-type-options", "x-xss-protection", "cache-control", "pragma", "expires", "x-frame-options", "vary"
+    ]
+    
+    /// Adds element to the block list.
+    /// - Parameter element: HTTP header key to block.
+    public func add(element: String) {
+        headersToSkp.append(element.lowercased())
+    }
+
+    /// Adds elements to the block list.
+    /// - Parameter element: HTTP header keys to block.
+    public func add(elements: [String]) {
+        headersToSkp.append(contentsOf: elements.map { $0.lowercased() })
+    }
+
+    /// Removes element from the block list.
+    /// - Parameter element: HTTP header key to remove.
+    public func remove(element: String) {
+        headersToSkp.removeAll { $0 == element.lowercased() }
+    }
+
+    /// Removes elements from the block list.
+    /// - Parameter element: HTTP header keys to remove.
+    public func removeAll(elements: [String]) {
+        elements.map { $0.lowercased() }.forEach {
+            if let idx = headersToSkp.firstIndex(of: $0) {
+                headersToSkp.remove(at: idx)
+            }
+        }
+    }
+    
+    /// Remove all
+    public func removeAll() {
+        headersToSkp.removeAll()
+    }
+    
+    /// Returns array of headers to skip
+    /// - Returns: Headers to skip
+    public func headersToSkip() -> [String] {
+        return Array(headersToSkp)
+    }
+    
+    func filterHeaders(headers: [String: String]?) -> String {
+        
+        guard let headers else {
+            return "no headers"
+        }
+        
+        var result = ""
+        var skipped = 0
+        
+        for header in headers {
+            if headersToSkp.contains(where: { $0 == header.key.lowercased() }) {
+                skipped += 1
+            } else {
+                result += "\n  - \(header.key): \(header.value)"
+            }
+        }
+        return "\(skipped) filtered out" + result
+    }
 }
 
 private extension String {

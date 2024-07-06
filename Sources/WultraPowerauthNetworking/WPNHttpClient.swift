@@ -80,22 +80,27 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
 
 private extension URLRequest {
     func printToConsole() {
-        D.print("WPNHttpClient Request")
-        D.print("- URL: POST - \(url?.absoluteString ?? "no URL")")
-        D.print("- Headers: \(allHTTPHeaderFields?.betterDescription ?? "no headers")")
-        D.print("- Body: \(httpBody?.utf8string ?? "empty body")")
+        if D.logHttpTraffic {
+            D.info("WPNHttpClient Request")
+            D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
+            D.info("- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: allHTTPHeaderFields))")
+            D.debug("- Body: \(httpBody?.utf8string ?? "empty body")")
+        }
     }
 }
 
 private extension HTTPURLResponse {
     func printToConsole(withData data: Data?, andError error: Error?) {
-        D.print("WPNHttpClient Response")
-        D.print("- URL: POST - \(url?.absoluteString ?? "no URL")")
-        D.print("- Status code: \(statusCode)")
-        D.print("- Headers: \(allHeaderFields.betterDescription)")
-        D.print("- Body: \(data?.utf8string ?? "empty body")")
-        if let error = error {
-            D.print("- Error: \(error.localizedDescription)")
+        if D.logHttpTraffic {
+            D.info("WPNHttpClient Response")
+            D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
+            D.info("- Status code: \(statusCode)")
+            D.info("- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: Dictionary(uniqueKeysWithValues: allHeaderFields.map { ($0.key.description, "\($0.value)") })))")
+            D.debug("- Body: \(data?.utf8string ?? "empty body")")
+            
+            if let error = error {
+                D.error("- Error: \(error.localizedDescription)")
+            }
         }
     }
 }
@@ -103,11 +108,5 @@ private extension HTTPURLResponse {
 private extension Data {
     var utf8string: String? {
         return String(bytes: self, encoding: .utf8)
-    }
-}
-
-private extension Dictionary where Key: CustomStringConvertible, Value: Any {
-    var betterDescription: String {
-        return map({($0.key.description, $0.value)}).description
     }
 }
