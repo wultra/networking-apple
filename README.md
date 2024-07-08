@@ -201,7 +201,7 @@ struct MyResponse {
 typealias MyEndpointType = WPNEndpointSigned<WPNRequest<MyRequestPayload>, WPNResponse<MyResponse>>
 var endpoint: MyEndpointType { WPNEndpointSigned(endpointURLPath: "/path/to/myendpoint", uriId: "myendpoint/identifier") }
 
-// Authentication, for example purposes, expect user PIN 1111
+// Authentication (for example purposes) expect user PIN 1111
 let auth = PowerAuthAuthentication.possessionWithPassword("1111")
             
 // WPNNetworkingService instance call
@@ -228,7 +228,7 @@ networking.post(
 
 ```
 
-We use system `URLSession` under the hood.
+We use systems `URLSession` under the hood.
 
 ## Raw Response Observer
 
@@ -257,7 +257,7 @@ class MyResponseDelegateLogger: WPNResponseDelegate {
 
 ## Parallel Requests
 
-By default, the SDK is serializing all signed requests. Meaning that the requests signed with the PowerAuthSDK are put into the queue and executed one by one (meaning that the HTTP request is not made until the previous one is finished). Other requests will be parallel.
+By default, the SDK is serializing all signed requests. This means that the requests signed with the PowerAuthSDK are put into the queue and executed one by one (meaning that the HTTP request is not made until the previous one is finished). Other requests will be parallel.
 
 This behavior can be changed via `WPNNetworkingService.concurencyStrategy` with the following possible values:
 
@@ -288,7 +288,7 @@ Every error produced by this library is of a `WPNError` type. This error contain
 - `httpStatusCode` - If the error is a networking error, this property will provide the HTTP status code of the error.
 - `httpUrlResponse` - If the error is a networking error, this will hold the original HTTP response that was received from the backend.
 - `restApiError` - If the error is a "well-known" API error, it will be filled here. For all available codes follow [the source code](https://github.com/wultra/networking-apple/blob/develop/Sources/WultraPowerauthNetworking/WPNBaseNetworkingObjects.swift#L130#docucheck-keep-link).
-- `networkIsNotReachable` - Convenience property, informs about a state where the network is not available (based on the error type).
+- `networkIsNotReachable` - Convenience property, informs about a state where the network is unavailable (based on the error type).
 - `networkConnectionIsNotTrusted` - Convenience property, informs about a TLS error.
 - `powerAuthErrorResponse` - If the error was caused by the PowerAuth error, you can retrieve it here.
 - `powerAuthRestApiErrorCode` - If the error was caused by the PowerAuth error, the error code of the original error will be available here.
@@ -345,11 +345,11 @@ You can limit the amount of logged information via the `verboseLevel` property.
 
 | Level                  | Description                                       |
 | ---------------------- | ------------------------------------------------- |
-| `off`                  | Silences all messages.                            |
+| `off`                  | Silences all logs.                                |
 | `errors`               | Only errors will be logged.                       |
 | `warnings` _(default)_ | Errors and warnings will be logged.               |
 | `info`                 | Error, warning and info messages will be logged.  |
-| `all`                  | All messages will be logged.                      |
+| `debug`                | All messages will be logged.                      |
 
 ### Character limit
 
@@ -357,7 +357,7 @@ To prevent huge logs from being printed out, there is a default limit of 12,000 
 
 ### HTTP traffic logs
 
-- You can turn on or off logging of the requests and responses with the `WPNLogger.logHttpTraffic` property.
+- You can turn on or off logging of HTTP requests and responses with the `WPNLogger.logHttpTraffic` property.
 - You can filter which headers will be logged with the `WPNLogger.httpHeadersToSkip` property.
 
 ### Logger Delegate
