@@ -68,15 +68,15 @@ public class WPNLogger {
     
     /// Verbose level of the logger.
     public enum VerboseLevel: Int {
-        /// Silences all messages.
+        /// Silences all logs.
         case off = 0
-        /// Only errors will be printed to the system console.
+        /// Only errors will be logged.
         case errors = 1
-        /// Errors and warnings will be printed to the system console.
+        /// Errors and warnings will be logged.
         case warnings = 2
-        /// Error ,warning and info messages will be printed to the system console.
+        /// Error, warning and info messages will be logged.
         case info = 3
-        /// All messages will be printed to the system console - including debug messages
+        /// All messages will be logged - including debug messages
         case debug = 4
     }
     
