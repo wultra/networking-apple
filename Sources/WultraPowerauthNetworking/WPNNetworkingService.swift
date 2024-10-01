@@ -225,7 +225,7 @@ public class WPNNetworkingService {
                 }
             }
             
-            self.processRequest(request) { [weak self] error in
+            self.bgCalculateSignature(request) { [weak self] error in
                 
                 if let error {
                     completion(nil, error)
@@ -260,7 +260,7 @@ public class WPNNetworkingService {
                             resp = envelope
                         case .encrypted(let envelope, let decryptedData):
                             if D.logHttpTraffic {
-                                D.debug("Decrypted response from \(request.url.absoluteString):\n\(String(decoding: decryptedData, as: UTF8.self) ?? "empty")")
+                                D.debug("Decrypted response from \(request.url.absoluteString):\n\(String(decoding: decryptedData, as: UTF8.self))")
                             }
                             self.responseDelegate?.encryptedResponseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData, decrypted: decryptedData)
                             resp = envelope
@@ -330,42 +330,6 @@ public class WPNNetworkingService {
             headers["User-Agent"] = userAgent
         }
         return headers
-    }
-    
-    /// All necessary interactions with the PowerAuthSDK like request signing, token refresh and time synchronization.
-    private func processRequest<Req: WPNRequestBase, Resp: WPNResponseBase>(
-        _ request: WPNHttpRequest<Req, Resp>,
-        completion: @escaping (WPNError?) -> Void
-    ) {
-        // global completion queue to ensure that in case of async call to the server
-        // we calculate the signature on the background queue
-        synchronizeTime(completionQueue: .global()) { error in
-            
-            if let error {
-                completion(error)
-                return
-            }
-            
-            self.bgCalculateSignature(request, completion: completion)
-        }
-    }
-    
-    /// Synchronize time with the server if needed.
-    private func synchronizeTime(
-        completionQueue: DispatchQueue? = nil,
-        completion: @escaping (WPNError?) -> Void
-    ) {
-        let timeService = powerAuth.timeSynchronizationService
-        if timeService.isTimeSynchronized {
-            completion(nil)
-        } else {
-            timeService.synchronizeTime(
-                callback: { error in
-                    completion(error != nil ? WPNError(reason: .network_generic, error: error) : nil)
-                },
-                callbackQueue: completionQueue
-            )
-        }
     }
     
     /// Calculates a signature for request. The function must be called on background thread.

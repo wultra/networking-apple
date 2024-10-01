@@ -183,6 +183,7 @@ enum ProcessResultResponse<T> {
 }
 
 private struct E2EERequest: Encodable {
+    let temporaryKeyId: String?
     let ephemeralPublicKey: String?
     let encryptedData: String?
     let mac: String?
@@ -190,6 +191,7 @@ private struct E2EERequest: Encodable {
     let timestamp: UInt64
     
     init(cryptogram: PowerAuthCoreEciesCryptogram) {
+        temporaryKeyId = cryptogram.temporaryKeyId
         ephemeralPublicKey = cryptogram.keyBase64
         encryptedData = cryptogram.bodyBase64
         mac = cryptogram.macBase64

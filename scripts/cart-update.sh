@@ -7,5 +7,5 @@ TOP=$(dirname $0)
 SRC_ROOT="`( cd \"$TOP/..\" && pwd )`"
 
 pushd "$SRC_ROOT"
-carthage bootstrap --platform ios --platform tvos --use-xcframeworks
+carthage update --platform ios --platform tvos --use-xcframeworks
 popd
