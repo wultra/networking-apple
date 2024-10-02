@@ -39,8 +39,11 @@ public enum WPNRequestConcurrencyStrategy {
     case serialSigned
 }
 
-/// Method that asynchronously fetches PowerAuth encryptor
-public typealias PowerAuthEncryptorProvider = ((PowerAuthCoreEciesEncryptor?, Error?) -> Void) -> PowerAuthOperationTask?
+public enum WPNPowerAuthEncryptor {
+    case application
+    case activation
+    case custom(PowerAuthCoreEciesEncryptor)
+}
 
 /// Networking service for dispatching PowerAuth signed requests.
 public class WPNNetworkingService {
@@ -92,7 +95,6 @@ public class WPNNetworkingService {
     ///   - data: Request data to send.
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
-    ///   - encryptor: Optional encryptor for End to End Encryption.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
@@ -105,7 +107,6 @@ public class WPNNetworkingService {
         data: Req,
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
-        encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
         timeoutInterval: TimeInterval? = nil,
         progressCallback: ((Double) -> Void)? = nil,
         completionQueue: DispatchQueue = .main,
@@ -116,47 +117,9 @@ public class WPNNetworkingService {
         let request = Endpoint.Request(url, requestData: data)
         request.timeoutInterval = timeoutInterval
         return post(
+            endpoint: endpoint,
             request: request,
             headers: headers,
-            encryptorProvider: EcryptorProvider(encryptor),
-            progressCallback: progressCallback,
-            completionQueue: completionQueue,
-            completion: completion
-        )
-    }
-    
-    /// Sends basic request without an authentication
-    /// - Parameters:
-    ///   - data: Request data to send.
-    ///   - endpoint: Server endpoint.
-    ///   - headers: Custom headers to send along.
-    ///   - encryptorProvider: Optional encryptor fetcher for End to End Encryption. You can directly use reference to the desired PowerAuthSDK method.
-    ///   - timeoutInterval: Timeout interval of the request.
-    ///                      Value from `config` will be used when nil.
-    ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///   - completionQueue: Queue on wich the completion will be executed.
-    ///                      Default value is .main
-    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
-    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
-    @discardableResult
-    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(
-        data: Req,
-        to endpoint: Endpoint,
-        with headers: [String: String]? = nil,
-        encryptorProvider: PowerAuthEncryptorProvider? = nil,
-        timeoutInterval: TimeInterval? = nil,
-        progressCallback: ((Double) -> Void)? = nil,
-        completionQueue: DispatchQueue = .main,
-        completion: @escaping Endpoint.Completion
-    ) -> Operation {
-        
-        let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, requestData: data)
-        request.timeoutInterval = timeoutInterval
-        return post(
-            request: request,
-            headers: headers,
-            encryptorProvider: EcryptorProvider(encryptorProvider),
             progressCallback: progressCallback,
             completionQueue: completionQueue,
             completion: completion
@@ -169,7 +132,6 @@ public class WPNNetworkingService {
     ///   - auth: Authentication object.
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
-    ///   - encryptor: Optional encryptor for End to End Encryption.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
@@ -183,7 +145,6 @@ public class WPNNetworkingService {
         signedWith auth: PowerAuthAuthentication,
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
-        encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
         timeoutInterval: TimeInterval? = nil,
         progressCallback: ((Double) -> Void)? = nil,
         completionQueue: DispatchQueue = .main,
@@ -194,9 +155,9 @@ public class WPNNetworkingService {
         let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
         request.timeoutInterval = timeoutInterval
         return post(
+            endpoint: endpoint,
             request: request,
             headers: headers,
-            encryptorProvider: EcryptorProvider(encryptor),
             progressCallback: progressCallback,
             completionQueue: completionQueue,
             completion: completion
@@ -209,47 +170,6 @@ public class WPNNetworkingService {
     ///   - auth: Authentication object.
     ///   - endpoint: Server endpoint.
     ///   - headers: Custom headers to send along.
-    ///   - encryptorProvider: Optional encryptor fetcher for End to End Encryption. You can directly use reference to the desired PowerAuthSDK method.
-    ///   - timeoutInterval: Timeout interval of the request.
-    ///                      Value from `config` will be used when nil.
-    ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///   - completionQueue: Queue on wich the completion will be executed.
-    ///                      Default value is .main
-    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
-    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
-    @discardableResult
-    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(
-        data: Req,
-        signedWith auth: PowerAuthAuthentication,
-        to endpoint: Endpoint,
-        with headers: [String: String]? = nil,
-        encryptorProvider: PowerAuthEncryptorProvider? = nil,
-        timeoutInterval: TimeInterval? = nil,
-        progressCallback: ((Double) -> Void)? = nil,
-        completionQueue: DispatchQueue = .main,
-        completion: @escaping Endpoint.Completion
-    ) -> Operation {
-        
-        let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
-        request.timeoutInterval = timeoutInterval
-        return post(
-            request: request,
-            headers: headers,
-            encryptorProvider: EcryptorProvider(encryptorProvider),
-            progressCallback: progressCallback,
-            completionQueue: completionQueue,
-            completion: completion
-        )
-    }
-    
-    /// Sends signed request with provided authentication.
-    /// - Parameters:
-    ///   - data: Request data to send.
-    ///   - auth: Authentication object.
-    ///   - endpoint: Server endpoint.
-    ///   - headers: Custom headers to send along.
-    ///   - encryptor: Optional encryptor for End to End Encryption.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
@@ -263,7 +183,6 @@ public class WPNNetworkingService {
         signedWith auth: PowerAuthAuthentication,
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
-        encryptedWith encryptor: PowerAuthCoreEciesEncryptor? = nil,
         timeoutInterval: TimeInterval? = nil,
         progressCallback: ((Double) -> Void)? = nil,
         completionQueue: DispatchQueue = .main,
@@ -274,96 +193,23 @@ public class WPNNetworkingService {
         let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
         request.timeoutInterval = timeoutInterval
         return post(
+            endpoint: endpoint,
             request: request,
             headers: headers,
-            encryptorProvider: EcryptorProvider(encryptor),
             progressCallback: progressCallback,
             completionQueue: completionQueue,
             completion: completion
         )
     }
     
-    /// Sends signed request with provided authentication.
-    /// - Parameters:
-    ///   - data: Request data to send.
-    ///   - auth: Authentication object.
-    ///   - endpoint: Server endpoint.
-    ///   - headers: Custom headers to send along.
-    ///   - encryptorProvider: Optional encryptor fetcher for End to End Encryption. You can directly use reference to the desired PowerAuthSDK method.
-    ///   - timeoutInterval: Timeout interval of the request.
-    ///                      Value from `config` will be used when nil.
-    ///   - progressCallback: Reports fraction of how much data was already transferred.
-    ///   - completionQueue: Queue on wich the completion will be executed.
-    ///                      Default value is .main
-    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
-    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
-    @discardableResult
-    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(
-        data: Req,
-        signedWith auth: PowerAuthAuthentication,
-        to endpoint: Endpoint,
-        with headers: [String: String]? = nil,
-        encryptorProvider: PowerAuthEncryptorProvider? = nil,
-        timeoutInterval: TimeInterval? = nil,
-        progressCallback: ((Double) -> Void)? = nil,
-        completionQueue: DispatchQueue = .main,
-        completion: @escaping Endpoint.Completion
-    ) -> Operation {
-        
-        let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
-        request.timeoutInterval = timeoutInterval
-        return post(
-            request: request,
-            headers: headers,
-            encryptorProvider: EcryptorProvider(encryptorProvider),
-            progressCallback: progressCallback,
-            completionQueue: completionQueue,
-            completion: completion
-        )
-    }
-    
-    private class EcryptorProvider {
-        
-        private let encryptor: PowerAuthCoreEciesEncryptor?
-        private let encryptorProvider: PowerAuthEncryptorProvider?
-        
-        init(_ encryptorProvider: PowerAuthEncryptorProvider?) {
-            self.encryptorProvider = encryptorProvider
-            self.encryptor = nil
-        }
-        
-        init(_ encryptor: PowerAuthCoreEciesEncryptor?) {
-            self.encryptor = encryptor
-            self.encryptorProvider = nil
-        }
-        
-        @discardableResult
-        func provide(completion: @escaping (PowerAuthCoreEciesEncryptor?, Error?) -> Void) -> PowerAuthOperationTask? {
-            if let encryptor {
-                completion(encryptor, nil)
-                return nil
-            } else if let encryptorProvider {
-                return encryptorProvider { fetchedEncryptor, error in
-                    if let fetchedEncryptor {
-                        completion(fetchedEncryptor, nil)
-                    } else {
-                        completion(nil, error!)
-                    }
-                }
-            } else {
-                completion(nil, nil)
-                return nil
-            }
-        }
-    }
+    // MARK: - Private functions
     
     /// Adds a HTTP post request to the request queue.
     @discardableResult
     private func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(
+        endpoint: Endpoint,
         request: Endpoint.Request,
         headers: [String: String]?,
-        encryptorProvider: EcryptorProvider,
         progressCallback: ((Double) -> Void)?,
         completionQueue: DispatchQueue,
         completion: @escaping Endpoint.Completion
@@ -397,7 +243,8 @@ public class WPNNetworkingService {
                     return
                 }
                 
-                encryptorProvider.provide { [weak self] encryptor, error in
+                self.getEncryptor(endpoint: endpoint) { [weak self] encryptor, error in
+                    
                     if let error {
                         completion(nil, WPNError(reason: .network_generic, error: error))
                         return
@@ -488,7 +335,16 @@ public class WPNNetworkingService {
         return op
     }
     
-    // MARK: - Private functions
+    private func getEncryptor<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(endpoint: Endpoint, completion: @escaping (PowerAuthCoreEciesEncryptor?, Error?) -> Void) {
+        switch endpoint.e2ee {
+        case .activationScope:
+            powerAuth.eciesEncryptorForActivationScope(callback: completion)
+        case .applicationScope:
+            powerAuth.eciesEncryptorForApplicationScope(callback: completion)
+        case .notEncrypted:
+            completion(nil, nil)
+        }
+    }
     
     private func getDefaultHeaders() -> [String: String] {
         var headers = ["Accept-Language": acceptLanguage]

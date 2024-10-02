@@ -24,8 +24,16 @@ public class WPNEndpoint<TRequestData: WPNRequestBase, TResponseData: WPNRespons
     /// For example "/my/custom/endpoint"
     public let endpointURLPath: String
     
-    init(endpointURLPath: String) {
+    /// End to end encryption configuration
+    public let e2ee: WPNE2EEConfiguration
+    
+    /// /// Class that describes a server endpoint.
+    /// - Parameters:
+    ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
+    ///   - e2ee: End to end encryption configuration.
+    init(endpointURLPath: String, e2ee: WPNE2EEConfiguration) {
         self.endpointURLPath = endpointURLPath
+        self.e2ee = e2ee
     }
     
     typealias Request = WPNHttpRequest<TRequestData, TResponseData>
@@ -37,32 +45,48 @@ public class WPNEndpoint<TRequestData: WPNRequestBase, TResponseData: WPNRespons
     public typealias Completion = (TResponseData?, WPNError?) -> Void
 }
 
-/// Basic endpoint - not signed.
+/// Basic endpoint - not signed with PowerAuth
 public class WPNEndpointBasic<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
-    public override init(endpointURLPath: String) {
-        super.init(endpointURLPath: endpointURLPath)
+    
+    /// /// Basic endpoint - not signed with PowerAuth
+    /// - Parameters:
+    ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
+    ///   - e2ee: End to end encryption configuration. `.notEncrypted` by default
+    public override init(endpointURLPath: String, e2ee: WPNE2EEConfiguration = .notEncrypted) {
+        super.init(endpointURLPath: endpointURLPath, e2ee: e2ee)
     }
 }
 
+/// Endpoint signed with PowerAuth signature
 public class WPNEndpointSigned<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
     
-    let uriId: String
+    /// Endpoint ID. Note that this is different from endpoint URL
+    public let uriId: String
     
-    public init(endpointURLPath: String, uriId: String) {
+    /// Endpoint signed with PowerAuth signature
+    /// - Parameters:
+    ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
+    ///   - uriId: Endpoint ID. Note that this is different from endpoint URL.
+    ///   - e2ee: End to end encryption configuration. `.notEncrypted` by default
+    public init(endpointURLPath: String, uriId: String, e2ee: WPNE2EEConfiguration = .notEncrypted) {
         self.uriId = uriId
-        super.init(endpointURLPath: endpointURLPath)
+        super.init(endpointURLPath: endpointURLPath, e2ee: e2ee)
     }
 }
 
+/// Endpoint signed with PowerAuth Token signature
 public class WPNEndpointSignedWithToken<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
-    let tokenName: String
     
-    public init(endpointURLPath: String, tokenName: String) {
+    /// Name of the token used for signature.
+    public let tokenName: String
+    
+    /// Endpoint signed with PowerAuth Token signature
+    /// - Parameters:
+    ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
+    ///   - tokenName: Name of the token used for signature.
+    ///   - e2ee: End to end encryption configuration. `.notEncrypted` by default
+    public init(endpointURLPath: String, tokenName: String, e2ee: WPNE2EEConfiguration = .notEncrypted) {
         self.tokenName = tokenName
-        super.init(endpointURLPath: endpointURLPath)
+        super.init(endpointURLPath: endpointURLPath, e2ee: e2ee)
     }
-}
-
-public extension WPNEndpointBasic {
-    
 }
