@@ -39,6 +39,9 @@ public enum WPNRequestConcurrencyStrategy {
     case serialSigned
 }
 
+/// Method that asynchronously fetches PowerAuth encryptor
+public typealias PowerAuthEncryptorProvider = ((PowerAuthCoreEciesEncryptor?, Error?) -> Void) -> PowerAuthOperationTask?
+
 /// Networking service for dispatching PowerAuth signed requests.
 public class WPNNetworkingService {
     
@@ -110,11 +113,50 @@ public class WPNNetworkingService {
     ) -> Operation {
         
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, requestData: data, encryptor: encryptor)
+        let request = Endpoint.Request(url, requestData: data)
         request.timeoutInterval = timeoutInterval
         return post(
             request: request,
             headers: headers,
+            encryptorProvider: EcryptorProvider(encryptor),
+            progressCallback: progressCallback,
+            completionQueue: completionQueue,
+            completion: completion
+        )
+    }
+    
+    /// Sends basic request without an authentication
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - encryptorProvider: Optional encryptor fetcher for End to End Encryption. You can directly use reference to the desired PowerAuthSDK method.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    ///   - completionQueue: Queue on wich the completion will be executed.
+    ///                      Default value is .main
+    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
+    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
+    @discardableResult
+    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(
+        data: Req,
+        to endpoint: Endpoint,
+        with headers: [String: String]? = nil,
+        encryptorProvider: PowerAuthEncryptorProvider? = nil,
+        timeoutInterval: TimeInterval? = nil,
+        progressCallback: ((Double) -> Void)? = nil,
+        completionQueue: DispatchQueue = .main,
+        completion: @escaping Endpoint.Completion
+    ) -> Operation {
+        
+        let url = config.buildURL(endpoint.endpointURLPath)
+        let request = Endpoint.Request(url, requestData: data)
+        request.timeoutInterval = timeoutInterval
+        return post(
+            request: request,
+            headers: headers,
+            encryptorProvider: EcryptorProvider(encryptorProvider),
             progressCallback: progressCallback,
             completionQueue: completionQueue,
             completion: completion
@@ -149,11 +191,52 @@ public class WPNNetworkingService {
     ) -> Operation {
         
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data, encryptor: encryptor)
+        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
         request.timeoutInterval = timeoutInterval
         return post(
             request: request,
             headers: headers,
+            encryptorProvider: EcryptorProvider(encryptor),
+            progressCallback: progressCallback,
+            completionQueue: completionQueue,
+            completion: completion
+        )
+    }
+    
+    /// Sends signed request with provided authentication.
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - auth: Authentication object.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - encryptorProvider: Optional encryptor fetcher for End to End Encryption. You can directly use reference to the desired PowerAuthSDK method.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    ///   - completionQueue: Queue on wich the completion will be executed.
+    ///                      Default value is .main
+    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
+    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
+    @discardableResult
+    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(
+        data: Req,
+        signedWith auth: PowerAuthAuthentication,
+        to endpoint: Endpoint,
+        with headers: [String: String]? = nil,
+        encryptorProvider: PowerAuthEncryptorProvider? = nil,
+        timeoutInterval: TimeInterval? = nil,
+        progressCallback: ((Double) -> Void)? = nil,
+        completionQueue: DispatchQueue = .main,
+        completion: @escaping Endpoint.Completion
+    ) -> Operation {
+        
+        let url = config.buildURL(endpoint.endpointURLPath)
+        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
+        request.timeoutInterval = timeoutInterval
+        return post(
+            request: request,
+            headers: headers,
+            encryptorProvider: EcryptorProvider(encryptorProvider),
             progressCallback: progressCallback,
             completionQueue: completionQueue,
             completion: completion
@@ -188,22 +271,99 @@ public class WPNNetworkingService {
     ) -> Operation {
         
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data, encryptor: encryptor)
+        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
         request.timeoutInterval = timeoutInterval
         return post(
             request: request,
             headers: headers,
+            encryptorProvider: EcryptorProvider(encryptor),
             progressCallback: progressCallback,
             completionQueue: completionQueue,
             completion: completion
         )
     }
     
+    /// Sends signed request with provided authentication.
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - auth: Authentication object.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - encryptorProvider: Optional encryptor fetcher for End to End Encryption. You can directly use reference to the desired PowerAuthSDK method.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    ///   - completionQueue: Queue on wich the completion will be executed.
+    ///                      Default value is .main
+    ///   - completion: Completion handler. This callback is executed on the queue defined in `completionQueue` parameter.
+    /// - Returns: Operation for observation or operation chaining. This operation is placed into an internal queue - do not execute it on your own.
+    @discardableResult
+    public func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(
+        data: Req,
+        signedWith auth: PowerAuthAuthentication,
+        to endpoint: Endpoint,
+        with headers: [String: String]? = nil,
+        encryptorProvider: PowerAuthEncryptorProvider? = nil,
+        timeoutInterval: TimeInterval? = nil,
+        progressCallback: ((Double) -> Void)? = nil,
+        completionQueue: DispatchQueue = .main,
+        completion: @escaping Endpoint.Completion
+    ) -> Operation {
+        
+        let url = config.buildURL(endpoint.endpointURLPath)
+        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
+        request.timeoutInterval = timeoutInterval
+        return post(
+            request: request,
+            headers: headers,
+            encryptorProvider: EcryptorProvider(encryptorProvider),
+            progressCallback: progressCallback,
+            completionQueue: completionQueue,
+            completion: completion
+        )
+    }
+    
+    private class EcryptorProvider {
+        
+        private let encryptor: PowerAuthCoreEciesEncryptor?
+        private let encryptorProvider: PowerAuthEncryptorProvider?
+        
+        init(_ encryptorProvider: PowerAuthEncryptorProvider?) {
+            self.encryptorProvider = encryptorProvider
+            self.encryptor = nil
+        }
+        
+        init(_ encryptor: PowerAuthCoreEciesEncryptor?) {
+            self.encryptor = encryptor
+            self.encryptorProvider = nil
+        }
+        
+        @discardableResult
+        func provide(completion: @escaping (PowerAuthCoreEciesEncryptor?, Error?) -> Void) -> PowerAuthOperationTask? {
+            if let encryptor {
+                completion(encryptor, nil)
+                return nil
+            } else if let encryptorProvider {
+                return encryptorProvider { fetchedEncryptor, error in
+                    if let fetchedEncryptor {
+                        completion(fetchedEncryptor, nil)
+                    } else {
+                        completion(nil, error!)
+                    }
+                }
+            } else {
+                completion(nil, nil)
+                return nil
+            }
+        }
+    }
+    
     /// Adds a HTTP post request to the request queue.
     @discardableResult
-    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(
+    private func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(
         request: Endpoint.Request,
         headers: [String: String]?,
+        encryptorProvider: EcryptorProvider,
         progressCallback: ((Double) -> Void)?,
         completionQueue: DispatchQueue,
         completion: @escaping Endpoint.Completion
@@ -237,68 +397,74 @@ public class WPNNetworkingService {
                     return
                 }
                 
-                self.httpClient.post(request: request, progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
-                    
-                    guard let self, operation.isCancelled == false else {
-                        completion(nil, .init(reason: .canceled))
+                encryptorProvider.provide { [weak self] encryptor, error in
+                    if let error {
+                        completion(nil, WPNError(reason: .network_generic, error: error))
                         return
                     }
                     
-                    // Handle response
-                    var errorReason = WPNErrorReason.network_generic
-                    var errorResponse: WPNRestApiError?
-                    
-                    if let receivedData = data {
-                        // Process data
-                        let processedResult = request.processResult(data: receivedData)
+                    self?.httpClient.post(request: request.buildUrlRequest(encryptor: encryptor), progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
                         
-                        var resp: Resp?
-                        
-                        switch processedResult {
-                        case .plain(let envelope):
-                            self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
-                            resp = envelope
-                        case .encrypted(let envelope, let decryptedData):
-                            if D.logHttpTraffic {
-                                D.debug("Decrypted response from \(request.url.absoluteString):\n\(String(decoding: decryptedData, as: UTF8.self))")
-                            }
-                            self.responseDelegate?.encryptedResponseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData, decrypted: decryptedData)
-                            resp = envelope
-                        case .failed:
-                            self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
-                            resp = nil
+                        guard let self, operation.isCancelled == false else {
+                            completion(nil, .init(reason: .canceled))
+                            return
                         }
-                        if let responseEnvelope = resp {
-                            // Valid envelope
-                            if responseEnvelope.status == .Ok {
-                                // Success exit from block
-                                completion(responseEnvelope, nil)
-                                return
-                                //
+                        
+                        // Handle response
+                        var errorReason = WPNErrorReason.network_generic
+                        var errorResponse: WPNRestApiError?
+                        
+                        if let receivedData = data {
+                            // Process data
+                            let processedResult = request.processResult(data: receivedData, encryptor: encryptor)
+                            
+                            var resp: Resp?
+                            
+                            switch processedResult {
+                            case .plain(let envelope):
+                                self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
+                                resp = envelope
+                            case .encrypted(let envelope, let decryptedData):
+                                if D.logHttpTraffic {
+                                    D.debug("Decrypted response from \(request.url.absoluteString):\n\(String(decoding: decryptedData, as: UTF8.self))")
+                                }
+                                self.responseDelegate?.encryptedResponseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData, decrypted: decryptedData)
+                                resp = envelope
+                            case .failed:
+                                self.responseDelegate?.responseReceived(from: request.url, statusCode: urlResponse?.statusCode, body: receivedData)
+                                resp = nil
+                            }
+                            if let responseEnvelope = resp {
+                                // Valid envelope
+                                if responseEnvelope.status == .Ok {
+                                    // Success exit from block
+                                    completion(responseEnvelope, nil)
+                                    return
+                                    //
+                                } else {
+                                    // Keep an error object received from the server
+                                    errorResponse = responseEnvelope.responseError
+                                }
                             } else {
-                                // Keep an error object received from the server
-                                errorResponse = responseEnvelope.responseError
+                                // if the error cannot be parsed and has non success code
+                                // report is as error status code (most likely 5xx errors)
+                                if let resp = urlResponse, resp.statusCode != 200 {
+                                    errorReason = .network_errorStatusCode
+                                } else { // if the code is 200 and cannot be parsed, the object is "unexpected"
+                                    errorReason = .network_invalidResponseObject
+                                }
                             }
-                        } else {
-                            // if the error cannot be parsed and has non success code
-                            // report is as error status code (most likely 5xx errors)
-                            if let resp = urlResponse, resp.statusCode != 200 {
-                                errorReason = .network_errorStatusCode
-                            } else { // if the code is 200 and cannot be parsed, the object is "unexpected"
-                                errorReason = .network_invalidResponseObject
-                            }
+                        } else if let resolved = WPNErrorReason.resolve(error: error) {
+                            errorReason = resolved
                         }
-                    } else if let resolved = WPNErrorReason.resolve(error: error) {
-                        errorReason = resolved
-                    }
-                    
-                    // Failure exit from block
-                    let resultError = WPNError(reason: errorReason, error: error)
-                    resultError.httpUrlResponse = urlResponse
-                    resultError.restApiError = errorResponse
-                    completion(nil, resultError)
-                })
-                
+                        
+                        // Failure exit from block
+                        let resultError = WPNError(reason: errorReason, error: error)
+                        resultError.httpUrlResponse = urlResponse
+                        resultError.restApiError = errorResponse
+                        completion(nil, resultError)
+                    })
+                }
             }
         }
         
