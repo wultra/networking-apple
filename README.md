@@ -78,11 +78,12 @@ pod 'WultraPowerAuthNetworking'
 
 ### Guaranteed PowerAuth Compatibility
 
-| WPN SDK | PowerAuth SDK |  
-|---|---|
-| `1.0.x` - `1.2.x` | `1.7.x` |
-| `1.3.x` | `1.8.x` |
-| `1.4.x` | `1.8.x` |
+| WPN SDK           | PowerAuth SDK |  
+|-------------------|---------------|
+| `1.5.x`           | `1.9.x`       |
+| `1.4.x`           | `1.8.x`       |
+| `1.3.x`           | `1.8.x`       |
+| `1.0.x` - `1.2.x` | `1.7.x`       |
 
 ### Xcode Compatibility
 
@@ -125,6 +126,15 @@ let networking = WPNNetworkingService(
 
 Each endpoint you will target with your project must be defined for the service as a `WPNEndpoint` instance. There are several types of endpoints based on the PowerAuth signature that is required.
 
+<!-- begin box info -->
+<!-- begin remove -->
+> [!NOTE]
+<!-- end -->
+> If the endpoint is end-to-end encrypted, you need to set it in the init. Default initializers are set to `e2ee: .notEncrypted`.
+> 
+> Whether an endpoint is encrypted or not is based on its backend definition.
+<!-- end -->
+
 ### Signed endpoint `WPNEndpointSigned`
 
 For endpoints that are __signed__ by PowerAuth signature and can be end-to-end encrypted.
@@ -133,7 +143,7 @@ Example:
 
 ```swift
 typealias MySignedEndpointType = WPNEndpointSigned<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
-var mySignedEndpoint: MySignedEndpointType { WPNEndpointSigned(endpointURLPath: "/additional/path/to/the/signed/endpoint", uriId: "endpoint/identifier") }
+var mySignedEndpoint: MySignedEndpointType { WPNEndpointSigned(endpointURLPath: "/additional/path/to/the/signed/endpoint", uriId: "endpoint/identifier", e2ee: .notEncrypted) }
 // uriId is defined by the endpoint issuer - ask your server developer/provider
 
 ```
@@ -148,7 +158,7 @@ Example:
 
 ```swift
 typealias MyTokenEndpointType = WPNEndpointSignedWithToken<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
-var myTokenEndpoint: MyTokenEndpointType { WPNEndpointSignedWithToken(endpointURLPath: "/additional/path/to/the/token/signed/endpoint", tokenName: "MyToken") }
+var myTokenEndpoint: MyTokenEndpointType { WPNEndpointSignedWithToken(endpointURLPath: "/additional/path/to/the/token/signed/endpoint", tokenName: "MyToken", e2ee: .notEncrypted) }
 
 // tokenName is the name of the token as stored in the PowerAuthSDK
 // more info can be found in the PowerAuthSDK documentation
@@ -164,7 +174,7 @@ Example:
 
 ```swift
 typealias MyBasicEndpointType = WPNEndpointBasic<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
-var myBasicEndpoint: MyBasicEndpointType { WPNEndpointBasic(endpointURLPath: "/additional/path/to/the/basic/endpoint") }
+var myBasicEndpoint: MyBasicEndpointType { WPNEndpointBasic(endpointURLPath: "/additional/path/to/the/basic/endpoint", e2ee: .notEncrypted) }
 
 ```
 
@@ -177,7 +187,6 @@ To create an HTTP request to your endpoint, you need to call the `WPNNetworkingS
   - this parameter is missing for the basic endpoint 
 - `endpoint` - an endpoint that will be called
 - `headers` - custom HTTP headers, `nil` by default
-- `encryptor` - End to End encryptor in case that the encryption is required, `nil` by default
 - `timeoutInterval` - timeout interval, `nil` by default. When `nil`, the default configured in `WPNConfig` will be used
 - `progressCallback` - callback with percentage progress (values between 0 and 1)
 - `completionQueue` - queue that the completion will be called on (main queue by default)
@@ -213,8 +222,6 @@ networking.post(
     to: endpoint,
     // custom HTTP headers
     with: ["MyCustomHeader": "Value"],
-    // encrypt with the application scope
-    encryptedWith: powerAuth.eciesEncryptorForApplicationScope(),
     // only wait 10 seconds at max
     timeoutInterval: 10,
     // handle response or error
@@ -309,7 +316,7 @@ Each `WPNError` has a `reason` property for why the error was created. Such reas
 | Option Name | Description |
 |---|---|
 |`network_unknown`|When unknown (usually logic error) happened during networking.|
-|`network_generic`|When generic networking error happened.|
+|`network_generic`|Network error that indicates a generic network issue (for example server internal error).|
 |`network_errorStatusCode`|HTTP response code was different than 200 (success).|
 |`network_invalidResponseObject`|An unexpected response from the server.|
 |`network_invalidRequestObject`|Request is not valid. Such an object is not sent to the server.|

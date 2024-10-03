@@ -39,12 +39,6 @@ public enum WPNRequestConcurrencyStrategy {
     case serialSigned
 }
 
-public enum WPNPowerAuthEncryptor {
-    case application
-    case activation
-    case custom(PowerAuthCoreEciesEncryptor)
-}
-
 /// Networking service for dispatching PowerAuth signed requests.
 public class WPNNetworkingService {
     
