@@ -12,6 +12,7 @@
 		DCB6614E28AA51FA00937FBA /* WPNUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614D28AA51FA00937FBA /* WPNUtils.swift */; };
 		DCB6615028AA54B800937FBA /* WPNUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614F28AA54B800937FBA /* WPNUserAgent.swift */; };
 		DCB6615328AA564300937FBA /* WPNConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6615228AA564300937FBA /* WPNConstants.swift */; };
+		DCBEBE3C2CADBCC3003CC08A /* WPNEncryptorScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBEBE3B2CADBCC3003CC08A /* WPNEncryptorScope.swift */; };
 		DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */; };
 		OBJ_37 /* WPNAsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* WPNAsyncOperation.swift */; };
 		OBJ_38 /* WPNBaseNetworkingObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* WPNBaseNetworkingObjects.swift */; };
@@ -31,6 +32,7 @@
 		DCB6614D28AA51FA00937FBA /* WPNUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNUtils.swift; path = Sources/WultraPowerauthNetworking/WPNUtils.swift; sourceTree = SOURCE_ROOT; };
 		DCB6614F28AA54B800937FBA /* WPNUserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNUserAgent.swift; path = Sources/WultraPowerauthNetworking/WPNUserAgent.swift; sourceTree = SOURCE_ROOT; };
 		DCB6615228AA564300937FBA /* WPNConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNConstants.swift; path = Sources/WultraPowerauthNetworking/WPNConstants.swift; sourceTree = SOURCE_ROOT; };
+		DCBEBE3B2CADBCC3003CC08A /* WPNEncryptorScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNEncryptorScope.swift; sourceTree = "<group>"; };
 		DCCD8F022771F073004D8BF7 /* WPNResponseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNResponseDelegate.swift; path = Sources/WultraPowerauthNetworking/WPNResponseDelegate.swift; sourceTree = SOURCE_ROOT; };
 		OBJ_10 /* WPNAsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNAsyncOperation.swift; sourceTree = "<group>"; };
 		OBJ_11 /* WPNBaseNetworkingObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNBaseNetworkingObjects.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				DCB6614D28AA51FA00937FBA /* WPNUtils.swift */,
 				DCB6614F28AA54B800937FBA /* WPNUserAgent.swift */,
 				DCB6615228AA564300937FBA /* WPNConstants.swift */,
+				DCBEBE3B2CADBCC3003CC08A /* WPNEncryptorScope.swift */,
 			);
 			name = WultraPowerAuthNetworking;
 			path = Sources/WultraPowerAuthNetworking;
@@ -220,6 +223,7 @@
 				OBJ_39 /* WPNConfig.swift in Sources */,
 				OBJ_40 /* WPNEndpoint.swift in Sources */,
 				OBJ_41 /* WPNError.swift in Sources */,
+				DCBEBE3C2CADBCC3003CC08A /* WPNEncryptorScope.swift in Sources */,
 				OBJ_42 /* WPNHttpClient.swift in Sources */,
 				OBJ_43 /* WPNHttpRequest.swift in Sources */,
 				DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */,

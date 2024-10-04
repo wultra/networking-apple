@@ -161,6 +161,9 @@ public enum WPNKnownRestApiError: String, Decodable {
     /// Returned in case encryption or decryption fails
     case encryptionError                  = "ERR_ENCRYPTION"
     
+    /// Temporary key not matched on the server.
+    case temporaryKeyError                = "ERR_TEMPORARY_KEY"
+    
     // PUSH ERRORS
     
     /// Failed to register push notifications

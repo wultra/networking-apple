@@ -10,9 +10,9 @@ on:
 jobs:
   swift:
     name: Swift Lint
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Lint
-        run: swiftlint --strict
+        run: ./scripts/swiftlint.sh

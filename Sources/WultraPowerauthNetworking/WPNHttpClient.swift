@@ -39,19 +39,17 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         super.init()
     }
     
-    func post<Req: WPNRequestBase, Resp: WPNResponseBase>(request: WPNHttpRequest<Req, Resp>, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
+    func post(request: URLRequest, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
         
-        let urlRequest = request.buildUrlRequest()
-        
-        if request.url.absoluteString.hasPrefix("http://") {
+        if request.url?.absoluteString.hasPrefix("http://") == true {
             D.warning("Using HTTP for communication may create a serious security issue! Use HTTPS in production.")
         }
         
-        urlRequest.printToConsole()
+        request.printToConsole()
         
         var observation: NSKeyValueObservation?
         
-        let task = urlSession.dataTask(with: urlRequest) { responseData, response, error in
+        let task = urlSession.dataTask(with: request) { responseData, response, error in
             observation?.invalidate()
             observation = nil
             assert(Thread.isMainThread) // make sure we're on the right thread

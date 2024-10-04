@@ -44,8 +44,6 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     private var headers = [String: String]()
     private(set) var method: String = "POST"
     
-    private let encryptor: PowerAuthCoreEciesEncryptor?
-    
     private(set) var requestData: Data?
 
     var needsSignature: Bool {
@@ -57,27 +55,24 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     }
     
     // Not signed request
-    init(_ url: URL, requestData: TRequest, encryptor: PowerAuthCoreEciesEncryptor? = nil) {
+    init(_ url: URL, requestData: TRequest) {
         self.url = url
-        self.encryptor = encryptor
         self.buildRequestData(requestData)
     }
     
     // Signed request
-    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest, encryptor: PowerAuthCoreEciesEncryptor? = nil) {
+    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest) {
         self.url = url
         self.uriIdentifier = uriId
         self.auth = auth
-        self.encryptor = encryptor
         self.buildRequestData(requestData)
     }
     
     // Signed with token
-    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest, encryptor: PowerAuthCoreEciesEncryptor? = nil) {
+    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest) {
         self.url = url
         self.tokenName = tokenName
         self.auth = auth
-        self.encryptor = encryptor
         self.buildRequestData(requestData)
     }
     
@@ -91,7 +86,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
         headers[key] = value
     }
     
-    func buildUrlRequest() -> URLRequest {
+    func buildUrlRequest(encryptor: PowerAuthCoreEciesEncryptor?) -> URLRequest {
         
         var request = URLRequest(url: url)
         
@@ -135,7 +130,7 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     }
     
     /// Parses given result data and sets it to `response` property
-    func processResult(data: Data) -> ProcessResultResponse<TResponse> {
+    func processResult(data: Data, encryptor: PowerAuthCoreEciesEncryptor?) -> ProcessResultResponse<TResponse> {
 
         if let encryptor = encryptor {
             do {
@@ -183,6 +178,7 @@ enum ProcessResultResponse<T> {
 }
 
 private struct E2EERequest: Encodable {
+    let temporaryKeyId: String?
     let ephemeralPublicKey: String?
     let encryptedData: String?
     let mac: String?
@@ -190,6 +186,7 @@ private struct E2EERequest: Encodable {
     let timestamp: UInt64
     
     init(cryptogram: PowerAuthCoreEciesCryptogram) {
+        temporaryKeyId = cryptogram.temporaryKeyId
         ephemeralPublicKey = cryptogram.keyBase64
         encryptedData = cryptogram.bodyBase64
         mac = cryptogram.macBase64
