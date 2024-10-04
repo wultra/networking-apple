@@ -27,7 +27,7 @@ public class WPNEndpoint<TRequestData: WPNRequestBase, TResponseData: WPNRespons
     /// End to end encryption configuration
     public let e2ee: WPNE2EEConfiguration
     
-    /// /// Class that describes a server endpoint.
+    /// Class that describes a server endpoint.
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
     ///   - e2ee: End to end encryption configuration.
@@ -45,10 +45,10 @@ public class WPNEndpoint<TRequestData: WPNRequestBase, TResponseData: WPNRespons
     public typealias Completion = (TResponseData?, WPNError?) -> Void
 }
 
-/// Basic endpoint - not signed with PowerAuth
+/// Basic endpoint not signed with PowerAuth.
 public class WPNEndpointBasic<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
     
-    /// /// Basic endpoint - not signed with PowerAuth
+    /// Basic endpoint - not signed with PowerAuth
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
     ///   - e2ee: End to end encryption configuration. `.notEncrypted` by default
@@ -63,7 +63,7 @@ public class WPNEndpointSigned<RequestData: WPNRequestBase, ResponseData: WPNRes
     /// Endpoint ID. Note that this is different from endpoint URL
     public let uriId: String
     
-    /// Endpoint signed with PowerAuth signature
+    /// Endpoint signed with PowerAuth signature.
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
     ///   - uriId: Endpoint ID. Note that this is different from endpoint URL.
@@ -80,7 +80,7 @@ public class WPNEndpointSignedWithToken<RequestData: WPNRequestBase, ResponseDat
     /// Name of the token used for signature.
     public let tokenName: String
     
-    /// Endpoint signed with PowerAuth Token signature
+    /// Endpoint signed with PowerAuth Token signature.
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example "/my/custom/endpoint".
     ///   - tokenName: Name of the token used for signature.
