@@ -16,12 +16,12 @@
 
 import Foundation
 
-/// Endpoint configuration for end to end encryption
+/// Endpoint configuration for end to end encryption.
 public enum WPNE2EEConfiguration {
-    /// Endpoint is encrypted with application scope
+    /// Endpoint is encrypted with the application scope.
     case applicationScope
-    /// Endpoint is encrypted with activation scope
+    /// Endpoint is encrypted with the activation scope.
     case activationScope
-    /// Endpoint is not encrypted
+    /// Endpoint is not encrypted.
     case notEncrypted
 }

@@ -126,13 +126,26 @@ let networking = WPNNetworkingService(
 
 Each endpoint you will target with your project must be defined for the service as a `WPNEndpoint` instance. There are several types of endpoints based on the PowerAuth signature that is required.
 
+### End To End Encryption
+
+If the endpoint is end-to-end encrypted, you need to configure it in the init. Default initializers are set to `e2ee: .notEncrypted`. 
+
+Possible values are:
+
+```swift
+/// Endpoint configuration for end to end encryption.
+public enum WPNE2EEConfiguration {
+    /// Endpoint is encrypted with the application scope.
+    case applicationScope
+    /// Endpoint is encrypted with the activation scope.
+    case activationScope
+    /// Endpoint is not encrypted.
+    case notEncrypted
+}
+```
+
 <!-- begin box info -->
-<!-- begin remove -->
-> [!NOTE]
-<!-- end -->
-> If the endpoint is end-to-end encrypted, you need to set it in the init. Default initializers are set to `e2ee: .notEncrypted`.
-> 
-> Whether an endpoint is encrypted or not is based on its backend definition.
+Whether an endpoint is encrypted or not is based on its backend definition.
 <!-- end -->
 
 ### Signed endpoint `WPNEndpointSigned`
