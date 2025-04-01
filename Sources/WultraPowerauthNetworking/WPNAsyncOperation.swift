@@ -32,6 +32,7 @@ open class WPNAsyncBlockOperation: WPNAsyncOperation {
     public typealias MarkFinishedBlock = ((() -> Void)?) -> Void
     
     private let executionBlock: ExecutionBlock
+    private let canceledBlock: (() -> Void)?
     
     /// Create async operation with block, that does asynchronous work.
     ///
@@ -39,6 +40,18 @@ open class WPNAsyncBlockOperation: WPNAsyncOperation {
     ///   See its type documentation (`ExecutionBlock`) for more info.
     public init(_ executionBlock: @escaping ExecutionBlock) {
         self.executionBlock = executionBlock
+        self.canceledBlock = nil
+        super.init()
+    }
+    
+    /// Create async operation with block, that does asynchronous work.
+    ///
+    /// - Parameter executionBlock: Closure that will be executed when operation is canceled.
+    /// - Parameter executionBlock: Closure that will be executed when the operation starts.
+    ///   See its type documentation (`ExecutionBlock`) for more info.
+    public init(_ canceledBlock: (() -> Void)?, executionBlock: @escaping ExecutionBlock) {
+        self.executionBlock = executionBlock
+        self.canceledBlock = canceledBlock
         super.init()
     }
     
@@ -50,6 +63,10 @@ open class WPNAsyncBlockOperation: WPNAsyncOperation {
             // when markFinished is called, mark operation finished
             self?.markFinished(completion: completion)
         }
+    }
+    
+    final public override func canceled() {
+        canceledBlock?()
     }
 }
 
@@ -87,8 +104,11 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
             }
         }
     }
+    private let stateLock = WPNLock()
     
     public var completionQueue: DispatchQueue?
+    
+    internal weak var delegate: WPNAsyncOperationDelegate?
     
     // MARK: - Lifecycle of the operation
     
@@ -98,38 +118,61 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
     }
     
     /// Starts the operation. This method is called by OperationQueue. Do not call this method.
+    ///
+    /// If the operation is already finished (canceled), it does nothing.
     final public override func start() {
-        guard isCancelled == false else { return }
+        stateLock.lock()
+        guard isFinished == false else {
+            D.warning("Failed to start operation: already finished - \(state.rawValue)")
+            stateLock.unlock()
+            return
+        }
         state = .isExecuting
+        stateLock.unlock()
         started()
+        delegate?.didStartAsyncOperation(self)
     }
     
     /// Advises the operation object that it should stop executing its task. This method does not force
     /// your operation code to stop. Instead, it updates the object’s internal flags to reflect the change in state.
     final public override func cancel() {
-        state = .isCanceled
+        stateLock.synchronized {
+            guard self.isFinished == false else {
+                D.warning("Cannot cancel already finished operation")
+                return
+            }
+            self.state = .isCanceled
+            self.delegate?.didCancelAsyncOperation(self)
+        }
     }
     
     /// Sets the operation as finished.
     ///
-    /// - Parameter completion: Your completion block that will be called right before operation finishes.
+    /// If the operation was already finished (or canceled), this method does nothing and the completion will not be called.
+    ///
+    /// - Parameter completion: Your completion block that will be called right after operation finishes.
+    ///                         If the operation was alredy finished, it won't be called at all.
     ///                         If CompletionDispatchQueue was set, completion is executed on this queue.
     final public func markFinished(completion: (() -> Void)? = nil) {
         
-        // create block, that will properly finish the operation
-        let block = { [weak self] in
-            completion?()
-            self?.state = .isFinished
+        stateLock.lock()
+        guard isFinished == false else {
+            D.warning("Operation is already finished - \(state.rawValue)")
+            stateLock.unlock()
+            return
         }
+        
+        state = .isFinished
+        stateLock.unlock()
         
         if let queue = completionQueue {
             // if completion queue is specified, do it in this queue
             queue.async {
-                block()
+                completion?()
             }
         } else {
             // else just execute the block
-            block()
+            completion?()
         }
     }
     
@@ -141,7 +184,7 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
         D.fatalError("this method needs to be overriden")
     }
     
-    /// Called when operation is canceled.
+    /// Called when operation is canceled. Do not call this method.
     open func canceled() {
         // to override
     }
@@ -167,4 +210,10 @@ private enum AsyncOperationState: String {
     var done: Bool {
         return self == .isCanceled || self == .isFinished
     }
+}
+
+// internal for tests
+internal protocol WPNAsyncOperationDelegate: class {
+    func didStartAsyncOperation(_ operation: WPNAsyncOperation)
+    func didCancelAsyncOperation(_ operation: WPNAsyncOperation)
 }
