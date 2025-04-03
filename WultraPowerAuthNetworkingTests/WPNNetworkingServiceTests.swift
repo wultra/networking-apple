@@ -27,13 +27,11 @@ final class WPNNetworkingServiceTests: XCTestCase {
         static let endpoint: EndpointType = .init(endpointURLPath: "/fake/path")
     }
     
-    private var pa: PowerAuthSDK!
     private var service: WPNNetworkingService!
     
     override func setUp() {
         WPNLogger.verboseLevel = .debug
-        pa = PowerAuthSDK(configuration: .init(instanceId: "test", baseEndpointUrl: "https://fake.url/", configuration: "ARCB+/qxpmLCa04AyT2IPXHKED4Heu76QU+v2PtnzQbe0sYBAUEEU05t3byEUdh90CBiBvqgr4sWU7r1YTAtdpTh3EygAUL791k66wy+SZM1qELw6zdoOHNFk/s4neDDqKtIQ5E5jg=="))
-        service = WPNNetworkingService(powerAuth: pa, config: .init(baseUrl: URL(string: "https://fake.url/")!), serviceName: "testservice")
+        service = TestUtils.createFakeService()
     }
 
     func testCancel() {
@@ -41,7 +39,7 @@ final class WPNNetworkingServiceTests: XCTestCase {
         let exp = XCTestExpectation(description: "Wait for cancel")
         
         var op: WPNAsyncBlockOperation?
-        op = service.post(data: .init(), to: FakeEndpoint.endpoint) { resp, error in
+        op = service.post(data: .init(), to: TestUtils.FakeEndpoint.endpoint) { _, error in
             XCTAssertEqual(error?.reason, WPNErrorReason.canceled)
             exp.fulfill()
         } as? WPNAsyncBlockOperation

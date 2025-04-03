@@ -25,6 +25,7 @@ We use this SDK in our other open-source projects that you can take inspiration 
 - [Raw Response Observer](#raw-response-observer)
 - [Parallel Requests](#parallel-requests)
 - [SSL validation](#ssl-validation)
+- [JSON encoder and decoder](#json-encoder-and-decoder)
 - [Error Handling](#error-handling)
 - [Language Configuration](#language-configuration)
 - [Logging](#logging)
@@ -288,6 +289,14 @@ This behavior can be changed via `WPNNetworkingService.concurrencyStrategy` with
 <!-- begin box info -->
 More about this topic can be found in the [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization).
 <!-- end -->
+
+## JSON encoder and decoder
+
+SDK uses `JSONEncoder` and `JSONDecoder` with `iso8601` date strategies by default.
+
+If the default does not suit your needs, you can set up your own decoder/encoder instances to the `jsonEncoder` and `jsonDecoder` properties in the `WPNNetworkingService` that will be used for all outbound and inbound traffic.
+
+For more info about the JSON encoding and decoding, visit official [Apple documentation](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types).
 
 ## SSL validation
 
