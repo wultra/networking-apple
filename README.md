@@ -29,6 +29,7 @@ We use this SDK in our other open-source projects that you can take inspiration 
 - [Error Handling](#error-handling)
 - [Language Configuration](#language-configuration)
 - [Logging](#logging)
+- [Changelog](#changelog)
 
 ## SDK Integration
 
@@ -392,6 +393,26 @@ To prevent huge logs from being printed out, there is a default limit of 12,000 
 ### Logger Delegate
 
 In case you want to process logs on your own (for example log into a file or some cloud service), you can set `WPNLogger.delegate`.
+
+## Changelog
+
+### 1.5.1 (Apr, 2025)
+- Added `jsonDecoder` and `jsonEncoder` properties to the `WPNNetworkingService` for custom JSON formatting
+- Better `iso8601` date deserialization by default
+
+### 1.5.0 (Oct, 2024)
+- Upgraded PowerAuthSDK to `1.9.x`  _(requires server 1.9+)_
+- End-to-end encryption was moved from post functions to the endpoint definition
+
+### 1.4.0 (Jul, 2024)
+- Log improvements
+- Removed the `serialAll` option from concurrency settings
+
+### 1.3.2 (Apr, 2024)
+- Added new `WPNKnownRestApiError` cases
+
+### 1.3.0 (Nov, 2023)
+- upgraded PowerAuthSDK to `1.8.x` _(requires server 1.5+)_
 
 <!-- begin remove -->
 ## Web Documentation
