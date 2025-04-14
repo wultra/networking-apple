@@ -25,9 +25,11 @@ We use this SDK in our other open-source projects that you can take inspiration 
 - [Raw Response Observer](#raw-response-observer)
 - [Parallel Requests](#parallel-requests)
 - [SSL validation](#ssl-validation)
+- [JSON encoder and decoder](#json-encoder-and-decoder)
 - [Error Handling](#error-handling)
 - [Language Configuration](#language-configuration)
 - [Logging](#logging)
+- [Changelog](#changelog)
 
 ## SDK Integration
 
@@ -289,6 +291,14 @@ This behavior can be changed via `WPNNetworkingService.concurrencyStrategy` with
 More about this topic can be found in the [PowerAuth documentation](https://developers.wultra.com/components/powerauth-mobile-sdk/develop/documentation/PowerAuth-SDK-for-iOS#request-synchronization).
 <!-- end -->
 
+## JSON encoder and decoder
+
+SDK uses `JSONEncoder` and `JSONDecoder` with `iso8601` date strategies by default.
+
+If the default does not suit your needs, you can set up your own decoder/encoder instances to the `jsonEncoder` and `jsonDecoder` properties in the `WPNNetworkingService` that will be used for all outbound and inbound traffic.
+
+For more info about the JSON encoding and decoding, visit official [Apple documentation](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types).
+
 ## SSL validation
 
 The SDK uses default system handling of the SSL errors. To be able to ignore SSL errors (for example when your test server does not have a valid SSL certificate) or implement your own SSL pinning, you can configure `WPNConfig.sslValidation` property to get your desired behavior.
@@ -383,6 +393,26 @@ To prevent huge logs from being printed out, there is a default limit of 12,000 
 ### Logger Delegate
 
 In case you want to process logs on your own (for example log into a file or some cloud service), you can set `WPNLogger.delegate`.
+
+## Changelog
+
+### 1.5.1 (Apr, 2025)
+- Added `jsonDecoder` and `jsonEncoder` properties to the `WPNNetworkingService` for custom JSON formatting
+- Better `iso8601` date deserialization by default
+
+### 1.5.0 (Oct, 2024)
+- Upgraded PowerAuthSDK to `1.9.x`  _(requires server 1.9+)_
+- End-to-end encryption was moved from post functions to the endpoint definition
+
+### 1.4.0 (Jul, 2024)
+- Log improvements
+- Removed the `serialAll` option from concurrency settings
+
+### 1.3.2 (Apr, 2024)
+- Added new `WPNKnownRestApiError` cases
+
+### 1.3.0 (Nov, 2023)
+- upgraded PowerAuthSDK to `1.8.x` _(requires server 1.5+)_
 
 <!-- begin remove -->
 ## Web Documentation

@@ -61,6 +61,20 @@ public class WPNNetworkingService {
     /// PowerAuth instance that will be used for this networking.
     public let powerAuth: PowerAuthSDK
     
+    /// JSON encoder used for all outbound requests
+    public var jsonEncoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }()
+    
+    /// JSON decoder used for all inbound responses.
+    public var jsonDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .customIso8601
+        return decoder
+    }()
+    
     private let httpClient: WPNHttpClient
     private let concurrentQueue = OperationQueue()
     
@@ -108,7 +122,7 @@ public class WPNNetworkingService {
     ) -> Operation {
         
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, requestData: data)
+        let request = Endpoint.Request(url, requestData: data, decoder: jsonDecoder, encoder: jsonEncoder)
         request.timeoutInterval = timeoutInterval
         return post(
             endpoint: endpoint,
@@ -146,7 +160,7 @@ public class WPNNetworkingService {
     ) -> Operation {
         
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data)
+        let request = Endpoint.Request(url, uriId: endpoint.uriId, auth: auth, requestData: data, decoder: jsonDecoder, encoder: jsonEncoder)
         request.timeoutInterval = timeoutInterval
         return post(
             endpoint: endpoint,
@@ -184,7 +198,7 @@ public class WPNNetworkingService {
     ) -> Operation {
         
         let url = config.buildURL(endpoint.endpointURLPath)
-        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data)
+        let request = Endpoint.Request(url, tokenName: endpoint.tokenName, auth: auth, requestData: data, decoder: jsonDecoder, encoder: jsonEncoder)
         request.timeoutInterval = timeoutInterval
         return post(
             endpoint: endpoint,
@@ -217,7 +231,7 @@ public class WPNNetworkingService {
             request.addHeaders(headers)
         }
         
-        let op = WPNAsyncBlockOperation { operation, markFinished in
+        let op = WPNAsyncBlockOperation({ completion(nil, .init(reason: .canceled)) }) { operation, markFinished in
             
             let completion: (Resp?, WPNError?) -> Void = { resp, error in
                 markFinished {
@@ -233,7 +247,6 @@ public class WPNNetworkingService {
                 }
                 
                 guard let self, operation.isCancelled == false else {
-                    completion(nil, .init(reason: .canceled))
                     return
                 }
                 
@@ -247,7 +260,6 @@ public class WPNNetworkingService {
                     self?.httpClient.post(request: request.buildUrlRequest(encryptor: encryptor), progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
                         
                         guard let self, operation.isCancelled == false else {
-                            completion(nil, .init(reason: .canceled))
                             return
                         }
                         
@@ -316,8 +328,8 @@ public class WPNNetworkingService {
             if !powerAuth.executeOperation(onSerialQueue: op) {
                 // Operation wont be added to the queue if there is a missing
                 // activation in the powerauth instance.
-                // In such case, cancel the operation and call completion with appropriate error.
-                op.cancel()
+                // In such case, finish the operation and call completion with appropriate error.
+                op.markFinished()
                 completionQueue.async {
                     completion(nil, WPNError(reason: .network_signError, error: WPNSimpleError(message: "Failed to execute signed operation - PowerAuth instance without activation.")))
                 }
