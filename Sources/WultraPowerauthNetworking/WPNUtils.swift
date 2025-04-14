@@ -81,3 +81,28 @@ internal class WPNConnectionMonitor {
         monitor.cancel()
     }
 }
+
+internal extension JSONDecoder.DateDecodingStrategy {
+    /// custom decoding strategy, because the default "iso8601" strategy fails to process some valid formats
+    static var customIso8601: JSONDecoder.DateDecodingStrategy {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .iso8601)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        return .custom({ decoder in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
+            if let date = formatter.date(from: dateStr) {
+                return date
+            }
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+            if let date = formatter.date(from: dateStr) {
+                return date
+            }
+            throw WPNError(reason: .network_invalidResponseObject)
+        })
+    }
+}

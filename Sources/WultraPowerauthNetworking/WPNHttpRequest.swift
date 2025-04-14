@@ -18,18 +18,7 @@ import Foundation
 import PowerAuth2
 import PowerAuthCore
 
-private let jsonEncoder: JSONEncoder = {
-    let encoder = JSONEncoder()
-    encoder.dateEncodingStrategy = .iso8601
-    return encoder
-}()
-private let jsonDecoder: JSONDecoder = {
-    let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .iso8601
-    return decoder
-}()
-
-class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
+internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
     /// Timeout interval of the request.
     ///
@@ -44,6 +33,9 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     private var headers = [String: String]()
     private(set) var method: String = "POST"
     
+    private let jsonDecoder: JSONDecoder
+    private let jsonEncoder: JSONEncoder
+    
     private(set) var requestData: Data?
 
     var needsSignature: Bool {
@@ -55,24 +47,49 @@ class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     }
     
     // Not signed request
-    init(_ url: URL, requestData: TRequest) {
+    init(
+        _ url: URL,
+        requestData: TRequest,
+        decoder: JSONDecoder,
+        encoder: JSONEncoder
+    ) {
         self.url = url
+        self.jsonDecoder = decoder
+        self.jsonEncoder = encoder
         self.buildRequestData(requestData)
     }
     
     // Signed request
-    init(_ url: URL, uriId: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+    init(
+        _ url: URL,
+        uriId: String,
+        auth: PowerAuthAuthentication,
+        requestData: TRequest,
+        decoder: JSONDecoder,
+        encoder: JSONEncoder
+    ) {
         self.url = url
         self.uriIdentifier = uriId
         self.auth = auth
+        self.jsonDecoder = decoder
+        self.jsonEncoder = encoder
         self.buildRequestData(requestData)
     }
     
     // Signed with token
-    init(_ url: URL, tokenName: String, auth: PowerAuthAuthentication, requestData: TRequest) {
+    init(
+        _ url: URL,
+        tokenName: String,
+        auth: PowerAuthAuthentication,
+        requestData: TRequest,
+        decoder: JSONDecoder,
+        encoder: JSONEncoder
+    ) {
         self.url = url
         self.tokenName = tokenName
         self.auth = auth
+        self.jsonDecoder = decoder
+        self.jsonEncoder = encoder
         self.buildRequestData(requestData)
     }
     
