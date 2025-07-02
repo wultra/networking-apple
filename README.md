@@ -396,7 +396,7 @@ In case you want to process logs on your own (for example log into a file or som
 
 ## Changelog
 
-### 1.5.1 (TBA, 2025)
+### 1.5.1 (Jul, 2025)
 - Added `jsonDecoder` and `jsonEncoder` properties to the `WPNNetworkingService` for custom JSON formatting
 - Better `iso8601` date deserialization by default
 - Improved async operation state handling + better cancel handling
