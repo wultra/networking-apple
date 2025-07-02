@@ -396,9 +396,11 @@ In case you want to process logs on your own (for example log into a file or som
 
 ## Changelog
 
-### 1.5.1 (Apr, 2025)
+### 1.5.1 (TBA, 2025)
 - Added `jsonDecoder` and `jsonEncoder` properties to the `WPNNetworkingService` for custom JSON formatting
 - Better `iso8601` date deserialization by default
+- Improved async operation state handling + better cancel handling
+- Making `WPNRequest` `Encodable` instead of `Codable`
 
 ### 1.5.0 (Oct, 2024)
 - Upgraded PowerAuthSDK to `1.9.x`  _(requires server 1.9+)_
