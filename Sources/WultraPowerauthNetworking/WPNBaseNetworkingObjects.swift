@@ -17,13 +17,13 @@
 import Foundation
 
 /// Base empty request class. Every request needs to inherit from this class.
-open class WPNRequestBase: Codable {
+open class WPNRequestBase: Encodable {
     public init() { }
 }
 
 /// Standard request, where the request payload is passed as the `requestObject`
 /// with a type defined through the generics.
-public class WPNRequest<T: Codable>: WPNRequestBase {
+public class WPNRequest<T: Encodable>: WPNRequestBase {
     
     /// Request payload.
     public var requestObject: T?
@@ -42,13 +42,6 @@ public class WPNRequest<T: Codable>: WPNRequestBase {
         try c.encode(requestObject, forKey: .requestObject)
         
         try super.encode(to: encoder)
-    }
-    
-    required init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: Keys.self)
-        requestObject = try c.decode(T.self, forKey: .requestObject)
-        
-        try super.init(from: decoder)
     }
 }
 
