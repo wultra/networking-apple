@@ -375,6 +375,7 @@ public class WPNNetworkingService {
                 // authenticate with token
                 powerAuth.tokenStore.requestAccessToken(withName: request.tokenName!, authentication: request.auth!) { [weak self] token, tokenError in
                     guard let self else {
+                        completion(WPNError(reason: .network_generic))
                         return
                     }
                     if let token = token {
