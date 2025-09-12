@@ -15,7 +15,7 @@
     },
     {
       "description": "Source constants.",
-      "path": "Sources/WultraPowerAuthNetworking/WPNConstants.swift",
+      "path": "Sources/WultraPowerauthNetworking/WPNConstants.swift",
       "type": "version_replace",
       "match": "sdkVersionName = \"%VERSION%\""
     },
