@@ -396,24 +396,27 @@ In case you want to process logs on your own (for example log into a file or som
 
 ## Changelog
 
-### 1.5.1 (TBA, 2025)
+### 1.5.2
+- Time is now always synchronized when creating token-based authorization headers
+
+### 1.5.1
 - Added `jsonDecoder` and `jsonEncoder` properties to the `WPNNetworkingService` for custom JSON formatting
 - Better `iso8601` date deserialization by default
 - Improved async operation state handling + better cancel handling
 - Making `WPNRequest` `Encodable` instead of `Codable`
 
-### 1.5.0 (Oct, 2024)
+### 1.5.0
 - Upgraded PowerAuthSDK to `1.9.x`  _(requires server 1.9+)_
 - End-to-end encryption was moved from post functions to the endpoint definition
 
-### 1.4.0 (Jul, 2024)
+### 1.4.0
 - Log improvements
 - Removed the `serialAll` option from concurrency settings
 
-### 1.3.2 (Apr, 2024)
+### 1.3.2
 - Added new `WPNKnownRestApiError` cases
 
-### 1.3.0 (Nov, 2023)
+### 1.3.0
 - upgraded PowerAuthSDK to `1.8.x` _(requires server 1.5+)_
 
 <!-- begin remove -->
