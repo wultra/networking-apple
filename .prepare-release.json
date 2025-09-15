@@ -1,0 +1,42 @@
+{
+  "_purpose": "This file is used as a definition file for the prepare-release script.",
+  "_info": "It defines files that contains version number that should be updated during the release preparation.",
+  "library": {
+    "name": "networking-apple",
+    "type": "ios-oss",
+    "podspec": "WultraPowerAuthNetworking.podspec"
+  },
+  "files": [
+    {
+      "description": "Cocoapods definition file.",
+      "path": "WultraPowerAuthNetworking.podspec",
+      "type": "version_replace",
+      "match": "\n  s.version             = '%VERSION%'\n"
+    },
+    {
+      "description": "Source constants.",
+      "path": "Sources/WultraPowerauthNetworking/WPNConstants.swift",
+      "type": "version_replace",
+      "match": "sdkVersionName = \"%VERSION%\""
+    },
+    {
+      "description": "Compatibility in README.",
+      "path": "README.md",
+      "type": "versionstream_verify",
+      "match": "| `%VERSION_STREAM%`"
+    },
+    {
+      "description": "Changelog in README.",
+      "path": "README.md",
+      "type": "version_verify",
+      "match": "### %VERSION%"
+    }
+  ],
+  "scripts": [
+    {
+      "type": "bash",
+      "script": "pod lib lint --allow-warnings",
+      "description": "run pod lint"
+    }
+  ]
+}
