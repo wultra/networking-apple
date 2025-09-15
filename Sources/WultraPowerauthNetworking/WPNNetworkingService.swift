@@ -373,19 +373,21 @@ public class WPNNetworkingService {
             
             if request.needsTokenSignature {
                 // authenticate with token
-                powerAuth.tokenStore.requestAccessToken(withName: request.tokenName!, authentication: request.auth!) { (token, error) in
-                    //
-                    var reportError: WPNError? = error != nil ? WPNError(reason: .network_generic, error: error) : nil
-                    if let token = token {
-                        if let header = token.generateHeader() {
-                            request.addHeader(key: header.key, value: header.value)
-                        } else {
-                            reportError = WPNError(reason: .network_signError)
-                        }
-                    } else if error == nil {
-                        reportError = WPNError(reason: .network_unknown)
+                powerAuth.tokenStore.requestAccessToken(withName: request.tokenName!, authentication: request.auth!) { [weak self] token, tokenError in
+                    guard let self else {
+                        completion(WPNError(reason: .network_generic))
+                        return
                     }
-                    completion(reportError)
+                    if let token = token {
+                        powerAuth.tokenStore.generateAuthorizationHeader(withName: token.tokenName) { header, headerError in
+                            if let header {
+                                request.addHeader(key: header.key, value: header.value)
+                            }
+                            completion(headerError != nil ? WPNError(reason: .network_generic, error: headerError) : nil)
+                        }
+                    } else {
+                        completion(tokenError != nil ? WPNError(reason: .network_generic, error: tokenError) : WPNError(reason: .network_unknown))
+                    }
                 }
             } else {
                 // This is always synchronous...
