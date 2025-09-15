@@ -1,112 +1,43 @@
 #!/bin/bash
 
-set -e # stop sript when error occures
+set -e # stop script when error occurs
 set -u # stop when undefined variable is used
+#set -x # print all execution (good for debugging)
 
-###############################################################################
-# This script prepares a release with provided version
-# ----------------------------------------------------------------------------
+######### USAGE #########
+# This script prepares the release of the library by running the JavaScript script from Wultra infrastructure repository.
+# It can be run in 3 modes:
+# 1. With a version argument: it will prepare the release with the current version in the pubspec.yaml file.
+#    Example: sh scripts/prepare-release.sh 1.0.0
+# 2. With a version argument and --verify: it will verify that the given release version is prepared.
+#    Example: sh scripts/prepare-release.sh 1.0.0 --verify
+# 3. Without arguments: it will run the script in the root directory of the repository and verify that all files are prepared.
+#    Example: sh scripts/prepare-release.sh
+#########################
 
-TOP=$(dirname $0)
-SRC_ROOT="`( cd \"$TOP/..\" && pwd )`"
-DO_COMMIT=0
-DO_PUSH=0
-DO_RELEASE=0
-VERSION=
-VERSIONING_FILES=( 
-    "deploy/WultraPowerAuthNetworking.podspec,${SRC_ROOT}/WultraPowerAuthNetworking.podspec" 
-    "deploy/Info.plist,${SRC_ROOT}/WultraPowerAuthNetworking.xcodeproj/WultraPowerAuthNetworking_Info.plist" 
-    "deploy/WPNConstants.swift,${SRC_ROOT}/Sources/WultraPowerauthNetworking/WPNConstants.swift"
-)
+# path to the script folder
+SCRIPT_FOLDER=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-function USAGE
-{
-    echo ""
-    echo "Usage: prepare-release.sh [options] version"
-    echo ""
-    echo "options are:"
-    echo ""
-    echo "  -c | --commit     commit changed files and create tag"
-    echo ""
-    echo "  -p | --push       push commits and tags"
-    echo ""
-    echo "  -r | --release    release to CocoaPods"
-    echo ""
-    echo "  -h | --help       prints this help information"
-    echo ""
-    exit $1
-}
+# URL of the JavaScript prepare-release script in Wultra infrastructure repository
+URL="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile-release/mobile-release/v1/prepare-release.js"
 
-while [[ $# -gt 0 ]]
-do
-    opt="$1"
-    case "$opt" in
-        -c | --commit)
-            DO_COMMIT=1
-            ;;
-        -h | --help)
-            USAGE 0
-            ;;
-        -p | --push)
-            DO_PUSH=1
-            ;;
-        -r | --release)
-            DO_RELEASE=1
-            ;;
-        *)
-            VERSION=$opt
-            ;;
-    esac
-    shift
-done
+# Create a temporary file
+TMP_FILE=$(mktemp)
 
-if [ -z "${VERSION}" ]; then
-    echo "You have to provide version string."
-    exit 1
+# Ensure the temporary file is removed on exit
+trap 'rm -f "$TMP_FILE"' EXIT
+
+# Download the file
+echo "Downloading prepare-release.js script from Wultra infrastructure repository..."
+curl -fsSL "$URL" -o "$TMP_FILE"
+
+# Run the file with Node.js in a root directory of the repository
+COMMAND="node $TMP_FILE -p $SCRIPT_FOLDER/.." # --ignore-git-clean" # uncomment to ignore git clean errors
+if [ $# -ge 1 ]; then
+  COMMAND="$COMMAND -v $1"
 fi
-
-echo "Settings version to ${VERSION}."
-
-pushd $TOP
-
-for (( i=0; i<${#VERSIONING_FILES[@]}; i++ ));
-do
-    patch_info="${VERSIONING_FILES[$i]}"
-    files=(${patch_info//,/ })
-    template="${files[0]}"
-    target="${files[1]}"
-    if [ ! -f "$template" ]; then
-        echo "Template file not found: ${template}"
-        exit 1
-    fi
-    if [ ! -f "$target" ]; then
-        echo "Target should exist: ${target}"
-        exit 1
-    fi
-    
-    echo "        + ${target}"
-    sed -e "s/%DEPLOY_VERSION%/$VERSION/g" "${template}" > "${target}"
-    if [ x$DO_COMMIT == x1 ]; then
-        git add "${target}"
-    fi
-done
-
-popd
-
-pushd "${SRC_ROOT}"
-
-if [ x$DO_COMMIT == x1 ]; then
-    git commit -m "Bumped version to ${VERSION}"
-    git tag "${VERSION}"
+if [[ $# -ge 2 && "$2" == "--verify" ]]; then
+  COMMAND="$COMMAND --verify"
 fi
-
-if [ x$DO_PUSH == x1 ]; then
-    git push --tags
-fi
-
-if [ x$DO_RELEASE == x1 ]; then
-    pod lib lint
-    pod trunk push
-fi
-
-popd
+echo "Executing command: $COMMAND"
+eval "$COMMAND"
