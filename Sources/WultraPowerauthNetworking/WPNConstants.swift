@@ -18,5 +18,5 @@ import Foundation
 
 internal class WPNConstants {
     /// Version Name of the SDK
-    static let sdkVersionName = "1.5.1"
+    static let sdkVersionName = "1.5.2"
 }
