@@ -14,58 +14,25 @@
 // and limitations under the License.
 //
 
-import XCTest
-import PowerAuth2
+import Testing
 @testable import WultraPowerAuthNetworking
 
-final class WPNNetworkingServiceTests: XCTestCase {
-    
-    struct FakeData: Codable { }
-    
-    enum FakeEndpoint {
-        typealias EndpointType = WPNEndpointBasic<WPNRequestBase, WPNResponse<FakeData>>
-        static let endpoint: EndpointType = .init(endpointURLPath: "/fake/path")
-    }
-    
-    private var service: WPNNetworkingService!
-    
-    override func setUp() {
-        WPNLogger.verboseLevel = .debug
-        service = TestUtils.createFakeService()
+@Test("Async post cancellation")
+func asyncPostCancellation() async {
+    let service = TestUtils.createFakeService()
+    let task = Task<WPNResponse<TestUtils.FakeData>, Error> {
+        try await service.post(data: .init(), to: TestUtils.FakeEndpoint.endpoint)
     }
 
-    func testCancel() {
-        
-        let exp = XCTestExpectation(description: "Wait for cancel")
-        
-        var op: WPNAsyncBlockOperation?
-        op = service.post(data: .init(), to: TestUtils.FakeEndpoint.endpoint) { _, error in
-            XCTAssertEqual(error?.reason, WPNErrorReason.canceled)
-            exp.fulfill()
-        } as? WPNAsyncBlockOperation
-        let delegate = WPNAsyncOperationHandler(onStart: { op?.cancel() }, onCancel: { })
-        op!.delegate = delegate
-        
-        let waiter = XCTWaiter()
-        waiter.wait(for: [exp], timeout: 10)
-    }
-}
+    await Task.yield()
+    task.cancel()
 
-final class WPNAsyncOperationHandler: WPNAsyncOperationDelegate {
-    
-    private let onStart: () -> Void
-    private let onCancel: () -> Void
-    
-    init(onStart: @escaping () -> Void, onCancel: @escaping () -> Void) {
-        self.onStart = onStart
-        self.onCancel = onCancel
-    }
-    
-    func didStartAsyncOperation(_ operation: WPNAsyncOperation) {
-        onStart()
-    }
-    
-    func didCancelAsyncOperation(_ operation: WPNAsyncOperation) {
-        onCancel()
+    do {
+        _ = try await task.value
+        Issue.record("Expected the request to be canceled.")
+    } catch let error as WPNError {
+        #expect(error.reason == .canceled)
+    } catch {
+        Issue.record("Unexpected error: \(String(describing: error))")
     }
 }

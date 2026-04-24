@@ -14,30 +14,27 @@
 // and limitations under the License.
 //
 
-import XCTest
+import Testing
 @testable import WultraPowerAuthNetworking
 
-final class WPNAsyncOperationTests: XCTestCase {
+@Test("Async operation cancel")
+func asyncOperationCancel() {
+    var cancelledCalled = false
+    let op = WPNAsyncBlockOperation({ cancelledCalled = true }) { _, _ in }
+    op.cancel()
+    op.markFinished()
+    #expect(cancelledCalled)
+    #expect(op.isCancelled)
+    #expect(op.isFinished)
+}
 
-    func testCancel() {
-        
-        var cancelledCalled = false
-        let op = WPNAsyncBlockOperation({ cancelledCalled = true }) { _, _ in }
-        op.cancel()
-        op.markFinished()
-        XCTAssertTrue(cancelledCalled)
-        XCTAssertTrue(op.isCancelled)
-        XCTAssertTrue(op.isFinished)
-    }
-    
-    func testFailedCancel() {
-        
-        var cancelledCalled = false
-        let op = WPNAsyncBlockOperation({ cancelledCalled = true }) { _, _ in }
-        op.markFinished()
-        op.cancel()
-        XCTAssertFalse(cancelledCalled)
-        XCTAssertFalse(op.isCancelled)
-        XCTAssertTrue(op.isFinished)
-    }
+@Test("Async operation cancel after finish")
+func asyncOperationFailedCancel() {
+    var cancelledCalled = false
+    let op = WPNAsyncBlockOperation({ cancelledCalled = true }) { _, _ in }
+    op.markFinished()
+    op.cancel()
+    #expect(cancelledCalled == false)
+    #expect(op.isCancelled == false)
+    #expect(op.isFinished)
 }
