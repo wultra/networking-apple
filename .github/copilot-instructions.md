@@ -63,3 +63,4 @@ xcrun xcodebuild \
 - `scripts/test.sh` always recreates the `build/` directory, so do not store anything there that needs to survive test runs.
 - The project ships through SPM and CocoaPods, and release prep verifies README metadata too. Version-related changes usually need matching updates in `WultraPowerAuthNetworking.podspec`, `Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the README compatibility/changelog sections covered by `.prepare-release.json`.
 - Tests live in the `WultraPowerAuthNetworkingTests` scheme and usually rely on `TestUtils.createFakeService()` with `@testable import WultraPowerAuthNetworking` rather than extra integration scaffolding.
+- Place helper classes, mock/stub types, and private utility methods at the **end** of the file or enclosing class — after test methods and production logic, not before them. Use a `// MARK: - Helpers` separator.
