@@ -14,13 +14,14 @@ DESTINATION="platform=iOS Simulator,OS=${IOS_VERSION},name=${SIMULATOR}"
 
 echo "Destination resolved: ${DESTINATION}"
 
-pushd "${SCRIPT_FOLDER}"
-sh cart-update.sh
-popd
-
 pushd "${SCRIPT_FOLDER}/.."
 
 rm -rf "build" # clear build folder
+
+xcrun xcodebuild \
+	-project "WultraPowerAuthNetworking.xcodeproj" \
+	-resolvePackageDependencies \
+	-onlyUsePackageVersionsFromResolvedFile
 
 xcrun xcodebuild \
 	-derivedDataPath "build" \
@@ -29,6 +30,7 @@ xcrun xcodebuild \
     -destination "${DESTINATION}" \
     -parallel-testing-enabled NO \
     -configuration "Debug" \
+    -onlyUsePackageVersionsFromResolvedFile \
     test
 
 popd

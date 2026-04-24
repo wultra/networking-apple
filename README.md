@@ -89,7 +89,7 @@ pod 'WultraPowerAuthNetworking'
 
 ### Xcode Compatibility
 
-We recommend using Xcode version 15.0 or newer.
+We recommend using Xcode version 26.0 or newer.
 
 ## Open Source Code
 

@@ -3,10 +3,8 @@
 
 # Swift PM
 Package.resolved
+!WultraPowerAuthNetworking.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 .build
-
-# Carthage
-Carthage/*
 
 */Pods/*
 

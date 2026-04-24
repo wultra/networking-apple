@@ -5,8 +5,8 @@ This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP
 ## Build, test, and lint
 
 - `./scripts/swiftlint.sh` runs the repo's pinned SwiftLint (`0.53.0`). The script downloads or replaces the `./swiftlint` binary in the repo root as needed.
-- `./scripts/build.sh` runs `carthage update --platform ios --platform tvos --use-xcframeworks` first, then builds `WultraPowerAuthNetworking.xcodeproj` in `Release` for iOS, iOS Simulator, Mac Catalyst, tvOS, and tvOS Simulator.
-- `./scripts/test.sh` resolves the latest available iOS simulator, runs the same Carthage update, deletes the repo-local `build/` directory, and executes the `WultraPowerAuthNetworkingTests` scheme in `Debug`.
+- `./scripts/build.sh` resolves Swift package dependencies for `WultraPowerAuthNetworking.xcodeproj` using the checked-in SwiftPM resolution file, then builds `WultraPowerAuthNetworking.xcodeproj` in `Release` for iOS, iOS Simulator, Mac Catalyst, tvOS, and tvOS Simulator.
+- `./scripts/test.sh` resolves the latest available iOS simulator, removes the repo-local `build/` directory, resolves Swift package dependencies for `WultraPowerAuthNetworking.xcodeproj` using the checked-in SwiftPM resolution file, and executes the `WultraPowerAuthNetworkingTests` scheme in `Debug`.
 - Use the Xcode project and schemes for validation. CI builds and tests through `WultraPowerAuthNetworking.xcodeproj`, not `swift test`.
 - Single-test example, following the same destination setup as `scripts/test.sh`:
 
@@ -55,6 +55,8 @@ xcrun xcodebuild \
   - `jsonEncoder` uses `.iso8601`
   - `WPNLogger.logHttpTraffic` is `true` by default
 - `Package.swift` intentionally forces the target path to `Sources/WultraPowerauthNetworking` because the source folder's casing is historical. Do not "fix" that casing in one place only.
-- Build and test scripts assume Carthage-managed dependencies are refreshed first. `scripts/test.sh` always recreates the `build/` directory, so do not store anything there that needs to survive test runs.
+- The Xcode project and `Package.swift` both resolve PowerAuth through `https://github.com/wultra/powerauth-mobile-sdk-spm.git`. Keep the Xcode project package products (`PowerAuth2`, `PowerAuthCore`) aligned with `Package.swift` instead of reintroducing Carthage framework links.
+- The Xcode project's resolved package version is tracked in `WultraPowerAuthNetworking.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`; the build and test scripts intentionally use that file to avoid drifting to newer PowerAuth patch releases automatically.
+- `scripts/test.sh` always recreates the `build/` directory, so do not store anything there that needs to survive test runs.
 - The project ships through SPM and CocoaPods, and release prep verifies README metadata too. Version-related changes usually need matching updates in `WultraPowerAuthNetworking.podspec`, `Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the README compatibility/changelog sections covered by `.prepare-release.json`.
 - Tests live in the `WultraPowerAuthNetworkingTests` scheme and usually rely on `TestUtils.createFakeService()` with `@testable import WultraPowerAuthNetworking` rather than extra integration scaffolding.
