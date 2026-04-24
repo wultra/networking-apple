@@ -35,7 +35,7 @@ We use this SDK in our other open-source projects that you can take inspiration 
 
 ### Requirements
 
-- iOS 12.0+ and tvOS 12.0+
+- iOS 13.0+ and tvOS 13.0+
 - [PowerAuth Mobile SDK](https://github.com/wultra/powerauth-mobile-sdk) needs to be implemented in your project
 
 ### Swift Package Manager
@@ -50,7 +50,8 @@ import PackageDescription
 let package = Package(
     name: "YourLibrary",
     platforms: [
-        .iOS(.v12)
+        .iOS(.v13),
+        .tvOS(.v13)
     ],
     products: [
         .library(
@@ -75,6 +76,9 @@ let package = Package(
 Add the following dependencies to your Podfile:
 
 ```rb
+# CocoaPods integration currently targets iOS.
+platform :ios, '13.0'
+
 pod 'WultraPowerAuthNetworking'
 ```
 
@@ -195,7 +199,7 @@ var myBasicEndpoint: MyBasicEndpointType { WPNEndpointBasic(endpointURLPath: "/a
 
 ## Creating an HTTP request
 
-To create an HTTP request to your endpoint, you need to call the `WPNNetworkingService.post` method with the following parameters:
+To create an HTTP request to your endpoint, you can call either the callback-based `WPNNetworkingService.post` method or its `async` counterpart with the following request parameters:
 
 - `data` - with the payload of your request
 - `auth` - `PowerAuthAuthentication` instance that will sign the request  
@@ -204,8 +208,8 @@ To create an HTTP request to your endpoint, you need to call the `WPNNetworkingS
 - `headers` - custom HTTP headers, `nil` by default
 - `timeoutInterval` - timeout interval, `nil` by default. When `nil`, the default configured in `WPNConfig` will be used
 - `progressCallback` - callback with percentage progress (values between 0 and 1)
-- `completionQueue` - queue that the completion will be called on (main queue by default)
-- `completion` - result completion
+- `completionQueue` - queue that the completion will be called on (callback API only, main queue by default)
+- `completion` - result completion (callback API only)
 
 
 Example:
@@ -250,6 +254,8 @@ networking.post(
 )
 
 ```
+
+`WultraPowerAuthNetworking` also provides `async/await` counterparts for all public `WPNNetworkingService.post(...)` overloads. 
 
 We use systems `URLSession` under the hood.
 
@@ -297,11 +303,11 @@ SDK uses `JSONEncoder` and `JSONDecoder` with `iso8601` date strategies by defau
 
 If the default does not suit your needs, you can set up your own decoder/encoder instances to the `jsonEncoder` and `jsonDecoder` properties in the `WPNNetworkingService` that will be used for all outbound and inbound traffic.
 
-For more info about the JSON encoding and decoding, visit official [Apple documentation](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types).
+For more info about the JSON encoding and decoding, visit the official [Apple documentation](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types).
 
 ## SSL validation
 
-The SDK uses default system handling of the SSL errors. To be able to ignore SSL errors (for example when your test server does not have a valid SSL certificate) or implement your own SSL pinning, you can configure `WPNConfig.sslValidation` property to get your desired behavior.
+The SDK uses default system handling of the SSL errors. To be able to ignore SSL errors (for example, when your test server does not have a valid SSL certificate) or implement your own SSL pinning, you can configure `WPNConfig.sslValidation` property to get your desired behavior.
 
 Possible values are:
 
