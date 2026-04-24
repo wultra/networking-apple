@@ -51,11 +51,8 @@ final class JSONTests: XCTestCase {
         // default decoder we use in the SDK
         let defaultDecoder = service.jsonDecoder
         
-        // This result is runtime-dependent and is not part of the SDK contract.
-        let oldInvalidResult = try? oldDecoder.decode(TestObject.self, from: invalidISO8601Data)
         let oldValidDecoded = try? oldDecoder.decode(TestObject.self, from: validISO8601Data)
         XCTAssertNotNil(oldValidDecoded)
-        _ = oldInvalidResult
         
         // "invalid" string parsed with the the default decoder should be OK
         let defaultInvalidResult = try? defaultDecoder.decode(TestObject.self, from: invalidISO8601Data)

@@ -6,19 +6,21 @@ This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP
 
 - `./scripts/swiftlint.sh` runs the repo's pinned SwiftLint (`0.53.0`). The script downloads or replaces the `./swiftlint` binary in the repo root as needed.
 - `./scripts/build.sh` resolves Swift package dependencies for `WultraPowerAuthNetworking.xcodeproj` using the checked-in SwiftPM resolution file, then builds `WultraPowerAuthNetworking.xcodeproj` in `Release` for iOS, iOS Simulator, Mac Catalyst, tvOS, and tvOS Simulator.
-- `./scripts/test.sh` resolves the latest available iOS simulator, removes the repo-local `build/` directory, resolves Swift package dependencies for `WultraPowerAuthNetworking.xcodeproj` using the checked-in SwiftPM resolution file, and executes the `WultraPowerAuthNetworkingTests` scheme in `Debug`.
+- `./scripts/test.sh` resolves the best available iOS Simulator destination for `WultraPowerAuthNetworkingTests` via the shared `get-ios-sim.js` helper from the Wultra infrastructure repository, removes the repo-local `build/` directory, resolves Swift package dependencies for `WultraPowerAuthNetworking.xcodeproj` using the checked-in SwiftPM resolution file, and executes the `WultraPowerAuthNetworkingTests` scheme in `Debug`.
 - Use the Xcode project and schemes for validation. CI builds and tests through `WultraPowerAuthNetworking.xcodeproj`, not `swift test`.
 - Single-test example, following the same destination setup as `scripts/test.sh`:
 
 ```bash
-IOS_VERSION=$(xcrun simctl list | grep "\-\- iOS" | tail -1 | tr -d - | tr -d " " | tr -d "iOS")
-SIMULATOR=$(xcrun simctl list | grep "\-\- iOS ${IOS_VERSION} \-\-" -A 1 | tail -1 | sed -E 's/^[[:space:]]+//; s/\(.*//; s/[[:space:]]+$//')
-DESTINATION="platform=iOS Simulator,OS=${IOS_VERSION},name=${SIMULATOR}"
+SCRIPT_FOLDER="$(pwd)/scripts"
+URL="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile-release/mobile-utils/get-ios-sim.js"
+XCODE_PROJECT="WultraPowerAuthNetworking.xcodeproj"
+XCODE_SCHEME="WultraPowerAuthNetworkingTests"
+DESTINATION=$(curl -fsSL "${URL}" | node - -p "${SCRIPT_FOLDER}/.." "${XCODE_PROJECT}" "${XCODE_SCHEME}")
 
 xcrun xcodebuild \
   -derivedDataPath build \
-  -project WultraPowerAuthNetworking.xcodeproj \
-  -scheme WultraPowerAuthNetworkingTests \
+  -project "${XCODE_PROJECT}" \
+  -scheme "${XCODE_SCHEME}" \
   -destination "${DESTINATION}" \
   -parallel-testing-enabled NO \
   -configuration Debug \
@@ -57,6 +59,7 @@ xcrun xcodebuild \
 - `Package.swift` intentionally forces the target path to `Sources/WultraPowerauthNetworking` because the source folder's casing is historical. Do not "fix" that casing in one place only.
 - The Xcode project and `Package.swift` both resolve PowerAuth through `https://github.com/wultra/powerauth-mobile-sdk-spm.git`. Keep the Xcode project package products (`PowerAuth2`, `PowerAuthCore`) aligned with `Package.swift` instead of reintroducing Carthage framework links.
 - The Xcode project's resolved package version is tracked in `WultraPowerAuthNetworking.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`; the build and test scripts intentionally use that file to avoid drifting to newer PowerAuth patch releases automatically.
+- Use spaces for indentation in repository-maintained scripts; do not introduce tab-indented shell lines.
 - `scripts/test.sh` always recreates the `build/` directory, so do not store anything there that needs to survive test runs.
 - The project ships through SPM and CocoaPods, and release prep verifies README metadata too. Version-related changes usually need matching updates in `WultraPowerAuthNetworking.podspec`, `Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the README compatibility/changelog sections covered by `.prepare-release.json`.
 - Tests live in the `WultraPowerAuthNetworkingTests` scheme and usually rely on `TestUtils.createFakeService()` with `@testable import WultraPowerAuthNetworking` rather than extra integration scaffolding.
