@@ -114,7 +114,7 @@ final class WPNPostFailureIntegrationTests {
     }
 
     @Test("Signed POST with wrong authentication")
-    func signedPostWrongPing() async throws {
+    func signedPostWrongPin() async throws {
         let proxy = IntegrationProxy()
         try await proxy.prepareActivation()
         defer { Task { await proxy.cleanup() } }
@@ -128,6 +128,7 @@ final class WPNPostFailureIntegrationTests {
             )
         } catch let error as WPNError {
             #expect(error.reason == .network_generic)
+            #expect(error.restApiError?.errorCode == .authenticationFailure)
         }
     }
 }

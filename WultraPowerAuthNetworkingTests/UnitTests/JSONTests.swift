@@ -34,7 +34,7 @@ final class JSONTests {
             {"test":"2024-03-19T12:29:29.554668Z"}
         """.data(using: .utf8)!
 
-        // valid string that apple can parse by defualt
+        // valid string that apple can parse by default
         let validISO8601Data = """
             {"test":"2023-12-06T07:54:06+0100"}
         """.data(using: .utf8)!

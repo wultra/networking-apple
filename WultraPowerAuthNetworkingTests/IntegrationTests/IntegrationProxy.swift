@@ -146,7 +146,7 @@ class IntegrationProxy {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             powerAuth.removeActivation(with: .possessionWithPassword(password: .init(string: Self.pin))) { error in
                 if error != nil {
-                    // on error, atleast remove the activation locally
+                    // on error, at least remove the activation locally
                     powerAuth.removeActivationLocal()
                 }
                 continuation.resume()
