@@ -41,6 +41,9 @@ xcuserdata
 ## App build artifacts
 build/
 
+# Integration test credentials
+WultraPowerAuthNetworkingTests/IntegrationTests/Config/config.json
+
 # NPM
 node_modules
 
