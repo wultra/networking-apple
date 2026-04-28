@@ -43,6 +43,27 @@ final class WPNAsyncOperationTests {
         #expect(op.isFinished)
     }
 
+    @Test("Cancel notifies Operation KVO keys")
+    func cancelNotifiesOperationKVOKeys() {
+        let op = WPNAsyncBlockOperation({ }) { _, _ in }
+        var didNotifyFinished = false
+        var didNotifyCancelled = false
+
+        let finishedObservation = op.observe(\.isFinished, options: [.new]) { _, change in
+            didNotifyFinished = change.newValue == true
+        }
+        let cancelledObservation = op.observe(\.isCancelled, options: [.new]) { _, change in
+            didNotifyCancelled = change.newValue == true
+        }
+
+        op.cancel()
+
+        withExtendedLifetime((finishedObservation, cancelledObservation)) {
+            #expect(didNotifyFinished)
+            #expect(didNotifyCancelled)
+        }
+    }
+
     @Test("Completion runs on assigned queue")
     func completionRunsOnAssignedQueue() {
         let completionQueue = DispatchQueue(label: "WPNAsyncOperationTests.completion")

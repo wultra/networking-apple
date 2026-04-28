@@ -47,6 +47,11 @@ final class WPNErrorTests {
         #expect(error.httpStatusCode == 401)
     }
 
+    @Test("SSL error reason has stable raw value")
+    func sslErrorReasonHasStableRawValue() {
+        #expect(WPNErrorReason.network_sslError.rawValue == "network_sslError")
+    }
+
     @Test("Network reachability is detected from nested NSError")
     func networkReachabilityIsDetected() {
         let error = WPNError(reason: .network_generic, error: NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet))
