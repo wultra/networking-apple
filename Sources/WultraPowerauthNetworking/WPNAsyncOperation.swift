@@ -21,7 +21,7 @@ import Foundation
  To properly use this class, you need to pass execution block and when the block finishes any
  asynchronous work, call `completion` block that is passed as 2nd parameter to this block.
 */
-open class WPNAsyncBlockOperation: WPNAsyncOperation {
+open class WPNAsyncBlockOperation: WPNAsyncOperation, @unchecked Sendable {
     
     /// Type of block that needs to be passed in init
     ///
@@ -84,26 +84,16 @@ public extension OperationQueue {
 }
 
 /// Base class for asynchronous operations that will be put in `OperationQueue`
-open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
+open class WPNAsyncOperation: Operation, CompletableInSpecificQueue, @unchecked Sendable {
     
     override final public var isAsynchronous: Bool { return true }
-    override final public var isReady: Bool { return state == .isReady && dependencies.allSatisfy({ $0.isFinished }) }
-    override final public var isExecuting: Bool { return state == .isExecuting }
-    override final public var isFinished: Bool { return state.done }
-    override final public var isCancelled: Bool { return state == .isCanceled }
+    override final public var isReady: Bool { return state.isReady && dependencies.allSatisfy({ $0.isFinished }) }
+    override final public var isExecuting: Bool { return state.isExecuting }
+    override final public var isFinished: Bool { return state.isFinished }
+    override final public var isCancelled: Bool { return state.isCancelled }
     
     // Internal state of the operation
-    private var state: AsyncOperationState = .isReady {
-        didSet {
-            willChangeValue(forKey: oldValue.rawValue)
-            willChangeValue(forKey: state.rawValue)
-            didChangeValue(forKey: oldValue.rawValue)
-            didChangeValue(forKey: state.rawValue)
-            if state == .isCanceled {
-                canceled()
-            }
-        }
-    }
+    private var state: AsyncOperationState = .isReady
     private let stateLock = WPNLock()
     
     public var completionQueue: DispatchQueue?
@@ -113,7 +103,6 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
     // MARK: - Lifecycle of the operation
     
     public override init() {
-        self.state = .isReady
         super.init()
     }
     
@@ -127,7 +116,7 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
             stateLock.unlock()
             return
         }
-        state = .isExecuting
+        transition(to: .isExecuting)
         stateLock.unlock()
         started()
         delegate?.didStartAsyncOperation(self)
@@ -136,13 +125,17 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
     /// Advises the operation object that it should stop executing its task. This method does not force
     /// your operation code to stop. Instead, it updates the object’s internal flags to reflect the change in state.
     final public override func cancel() {
-        stateLock.synchronized {
+        let shouldNotifyCancel = stateLock.synchronized {
             guard self.isFinished == false else {
                 D.warning("Cannot cancel already finished operation")
-                return
+                return false
             }
-            self.state = .isCanceled
+            self.transition(to: .isCancelled)
             self.delegate?.didCancelAsyncOperation(self)
+            return true
+        }
+        if shouldNotifyCancel {
+            canceled()
         }
     }
     
@@ -162,7 +155,7 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
             return
         }
         
-        state = .isFinished
+        transition(to: .isFinished)
         stateLock.unlock()
         
         if let queue = completionQueue {
@@ -194,6 +187,18 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue {
     public func assignCompletionDispatchQueue(_ queue: DispatchQueue?) {
         completionQueue = queue
     }
+
+    private func transition(to newState: AsyncOperationState) {
+        let oldState = state
+        guard oldState != newState else {
+            return
+        }
+
+        let keys = AsyncOperationState.changedKeys(from: oldState, to: newState)
+        keys.forEach { willChangeValue(forKey: $0) }
+        state = newState
+        keys.reversed().forEach { didChangeValue(forKey: $0) }
+    }
 }
 
 protocol CompletableInSpecificQueue {
@@ -203,17 +208,38 @@ protocol CompletableInSpecificQueue {
 private enum AsyncOperationState: String {
     case isWaiting
     case isReady
-    case isCanceled
+    case isCancelled
     case isExecuting
     case isFinished
     
-    var done: Bool {
-        return self == .isCanceled || self == .isFinished
+    var isReady: Bool {
+        return self == .isReady
+    }
+
+    var isExecuting: Bool {
+        return self == .isExecuting
+    }
+
+    var isFinished: Bool {
+        return self == .isCancelled || self == .isFinished
+    }
+
+    var isCancelled: Bool {
+        return self == .isCancelled
+    }
+
+    static func changedKeys(from oldState: AsyncOperationState, to newState: AsyncOperationState) -> [String] {
+        [
+            oldState.isReady != newState.isReady ? "isReady" : nil,
+            oldState.isExecuting != newState.isExecuting ? "isExecuting" : nil,
+            oldState.isFinished != newState.isFinished ? "isFinished" : nil,
+            oldState.isCancelled != newState.isCancelled ? "isCancelled" : nil
+        ].compactMap { $0 }
     }
 }
 
 // internal for tests
-internal protocol WPNAsyncOperationDelegate: class {
+internal protocol WPNAsyncOperationDelegate: AnyObject {
     func didStartAsyncOperation(_ operation: WPNAsyncOperation)
     func didCancelAsyncOperation(_ operation: WPNAsyncOperation)
 }
