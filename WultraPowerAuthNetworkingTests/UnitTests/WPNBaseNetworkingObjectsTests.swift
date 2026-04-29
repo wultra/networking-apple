@@ -56,7 +56,7 @@ final class WPNBaseNetworkingObjectsTests {
 
         let responseType: Endpoint.ResponseData.Type = WPNResponse<Payload>.self
 
-        #expect(String(describing: responseType) == String(describing: WPNResponse<Payload>.self))
+        #expect(responseType == WPNResponse<Payload>.self)
     }
 
     @Test("Response decodes error envelope")

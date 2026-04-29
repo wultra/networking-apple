@@ -86,11 +86,11 @@ public extension OperationQueue {
 /// Base class for asynchronous operations that will be put in `OperationQueue`
 open class WPNAsyncOperation: Operation, CompletableInSpecificQueue, @unchecked Sendable {
     
-    override final public var isAsynchronous: Bool { return true }
-    override final public var isReady: Bool { return state.isReady && dependencies.allSatisfy({ $0.isFinished }) }
-    override final public var isExecuting: Bool { return state.isExecuting }
-    override final public var isFinished: Bool { return state.isFinished }
-    override final public var isCancelled: Bool { return state.isCancelled }
+    override final public var isAsynchronous: Bool { true }
+    override final public var isReady: Bool { state.isReady && dependencies.allSatisfy({ $0.isFinished }) }
+    override final public var isExecuting: Bool { state.isExecuting }
+    override final public var isFinished: Bool { state.isFinished }
+    override final public var isCancelled: Bool { state.isCancelled }
     
     // Internal state of the operation
     private var state: AsyncOperationState = .isReady
@@ -212,28 +212,17 @@ private enum AsyncOperationState: String {
     case isExecuting
     case isFinished
     
-    var isReady: Bool {
-        return self == .isReady
-    }
-
-    var isExecuting: Bool {
-        return self == .isExecuting
-    }
-
-    var isFinished: Bool {
-        return self == .isCancelled || self == .isFinished
-    }
-
-    var isCancelled: Bool {
-        return self == .isCancelled
-    }
+    var isReady: Bool { self == .isReady }
+    var isExecuting: Bool { self == .isExecuting }
+    var isFinished: Bool { self == .isCancelled || self == .isFinished }
+    var isCancelled: Bool { self == .isCancelled }
 
     static func changedKeys(from oldState: AsyncOperationState, to newState: AsyncOperationState) -> [String] {
         [
-            oldState.isReady != newState.isReady ? "isReady" : nil,
-            oldState.isExecuting != newState.isExecuting ? "isExecuting" : nil,
-            oldState.isFinished != newState.isFinished ? "isFinished" : nil,
-            oldState.isCancelled != newState.isCancelled ? "isCancelled" : nil
+            oldState.isReady != newState.isReady ? #keyPath(Operation.isReady) : nil,
+            oldState.isExecuting != newState.isExecuting ? #keyPath(Operation.isExecuting) : nil,
+            oldState.isFinished != newState.isFinished ? #keyPath(Operation.isFinished) : nil,
+            oldState.isCancelled != newState.isCancelled ? #keyPath(Operation.isCancelled) : nil
         ].compactMap { $0 }
     }
 }
