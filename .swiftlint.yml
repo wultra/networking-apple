@@ -11,7 +11,7 @@ disabled_rules:
   - nesting
   - inclusive_language
 excluded:
-  - Carthage
+  - .build
   - Deploy
   - build
 type_name:

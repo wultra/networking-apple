@@ -43,18 +43,14 @@ final class JSONTests: XCTestCase {
             {"test":"2023-12-06T07:54:06+0100"}
         """.data(using: .utf8)!
         
-        // decoder used in older sdk versions. when apple fixes this, we might use it again
+        // Foundation behavior changed over time, so the built-in decoder may or may not parse
+        // fractional seconds on the current Xcode/runtime.
         let oldDecoder = JSONDecoder()
         oldDecoder.dateDecodingStrategy = .iso8601
         
         // default decoder we use in the SDK
         let defaultDecoder = service.jsonDecoder
         
-        // "invalid" string parsed with the old decoder should fail to decode
-        let oldInvalidResult = try? oldDecoder.decode(TestObject.self, from: invalidISO8601Data)
-        XCTAssertNil(oldInvalidResult)
-        
-        // valid string should be parsed
         let oldValidDecoded = try? oldDecoder.decode(TestObject.self, from: validISO8601Data)
         XCTAssertNotNil(oldValidDecoded)
         

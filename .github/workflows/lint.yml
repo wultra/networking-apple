@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - develop
-      - main
+      - release/*
   pull_request:
 
 jobs:
   swift:
     name: Swift Lint
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
