@@ -6,9 +6,15 @@ set -u # stop when undefined variable is used
 set -o pipefail
 
 SCRIPT_FOLDER=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-URL="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile-release/mobile-utils/get-ios-sim.js"
 XCODE_PROJECT="WultraPowerAuthNetworking.xcodeproj"
 XCODE_SCHEME="WultraPowerAuthNetworkingTests"
+BUILD_FOLDER="build"
+
+# Function that resolved the best available simulator for the test run
+function getSimulatorDestination {
+  local scriptUrl="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile-release/mobile-utils/get-ios-sim.js"
+  curl -fsSL "${scriptUrl}" | node - -p "${SCRIPT_FOLDER}/.." "${XCODE_PROJECT}" "${XCODE_SCHEME}"
+}
 
 CONFIG_JSON=""
 
@@ -29,13 +35,16 @@ do
 done
 
 # Resolve the newest available iOS Simulator destination through the shared Node helper.
-DESTINATION=$(curl -fsSL "${URL}" | node - -p "${SCRIPT_FOLDER}/.." "${XCODE_PROJECT}" "${XCODE_SCHEME}")
+echo "Resolving the best simulator for the ${XCODE_SCHEME}..."
+DESTINATION=$(getSimulatorDestination)
 
-echo "Destination resolved: ${DESTINATION}"
+echo "Simulator to use: ${DESTINATION}"
 
 pushd "${SCRIPT_FOLDER}/.."
 
-rm -rf "build" # clear build folder
+rm -rf "${BUILD_FOLDER}" # clear build folder
+
+echo "Resolving SPM dependencies..."
 
 # Write integration test config if provided
 if [ -n "${CONFIG_JSON}" ]; then
@@ -48,8 +57,10 @@ xcrun xcodebuild \
   -resolvePackageDependencies \
   -onlyUsePackageVersionsFromResolvedFile
 
+  echo "Starting the test"
+
 xcrun xcodebuild \
-  -derivedDataPath "build" \
+  -derivedDataPath "${BUILD_FOLDER}" \
   -project "${XCODE_PROJECT}" \
   -scheme "${XCODE_SCHEME}" \
   -destination "${DESTINATION}" \
