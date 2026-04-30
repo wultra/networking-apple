@@ -16,7 +16,6 @@ The `Config/` folder holds configuration for server-dependent integration tests.
 | `enrollmentServerUrl` | Enrollment server URL used as the PowerAuth SDK `baseEndpointUrl`. |
 | `enrollmentServerOnboardingUrl` | Enrollment server onboarding URL used as the base URL for E2EE onboarding endpoints (e.g. `/api/onboarding/start`). |
 | `operationsServerUrl` | Server URL used as the base URL for signed and token-signed operation endpoints. |
-| `sdkConfig` | Base64-encoded PowerAuth SDK configuration string. |
 
 ## Running
 

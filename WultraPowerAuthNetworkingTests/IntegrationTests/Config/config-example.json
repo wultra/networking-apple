@@ -5,6 +5,5 @@
     "cloudApplicationId": "demo-app",
     "enrollmentServerUrl": "https://example.com/enrollment-server",
     "enrollmentServerOnboardingUrl": "https://example.com/enrollment-server-onboarding",
-    "operationsServerUrl": "https://example.com/enrollment-server",
-    "sdkConfig": "BASE_64_CONFIG"
+    "operationsServerUrl": "https://example.com/enrollment-server"
 }

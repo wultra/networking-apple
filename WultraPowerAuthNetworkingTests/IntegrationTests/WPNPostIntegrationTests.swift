@@ -26,7 +26,17 @@ final class WPNPostSuccessIntegrationTests {
 
     @Test("Plain POST verifies transport to jsonplaceholder")
     func plainPost() async throws {
-        let service = IntegrationProxy.createPlainService(baseUrl: "https://jsonplaceholder.typicode.com")
+        let powerAuth = try #require(PowerAuthSDK(configuration: .init(
+            instanceId: "plain-\(UUID().uuidString)",
+            baseEndpointUrl: "https://localhost/",
+            configuration: "ARCB+/qxpmLCa04AyT2IPXHKED4Heu76QU+v2PtnzQbe0sYBAUEEU05t3byEUdh90CBiBvqgr4sWU7r1YTAtdpTh3EygAUL791k66wy+SZM1qELw6zdoOHNFk/s4neDDqKtIQ5E5jg=="
+        )))
+        WPNLogger.verboseLevel = .debug
+        let service = WPNNetworkingService(
+            powerAuth: powerAuth,
+            config: .init(baseUrl: URL(string: "https://jsonplaceholder.typicode.com")!),
+            serviceName: "plain-service"
+        )
         let recorder = ResponseRecorder()
         service.responseDelegate = recorder
 
@@ -49,11 +59,13 @@ final class WPNPostSuccessIntegrationTests {
 
     @Test("E2EE POST with application scope encryption")
     func e2eePost() async throws {
-        let proxy = IntegrationProxy()
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
         try await proxy.prepareActivation()
         defer { Task { await proxy.cleanup() } }
 
-        let service = try #require(proxy.onboardingService)
+        let service = try proxy.createNetworkingService(url: loaded.enrollmentServerOnboardingUrl)
         let request = WPNRequest(TestEndpoints.StartRequest(identification: ["clientNumber": UUID().uuidString]))
 
         let response = try await service.post(data: request, to: TestEndpoints.Start.endpoint)
@@ -62,14 +74,16 @@ final class WPNPostSuccessIntegrationTests {
 
     @Test("Signed POST with PowerAuth signature")
     func signedPost() async throws {
-        let proxy = IntegrationProxy()
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
         try await proxy.prepareActivation()
         defer { Task { await proxy.cleanup() } }
 
-        let service = try #require(proxy.operationsService)
+        let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
         let response = try await service.post(
             data: WPNRequestBase(),
-            signedWith: .possessionWithPassword(password: IntegrationProxy.pin),
+            signedWith: .possessionWithPassword(password: proxy.pin),
             to: TestEndpoints.History.endpoint
         )
         #expect(response.status == .Ok)
@@ -77,14 +91,16 @@ final class WPNPostSuccessIntegrationTests {
 
     @Test("Token-signed POST with PowerAuth token")
     func tokenPost() async throws {
-        let proxy = IntegrationProxy()
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
         try await proxy.prepareActivation()
         defer { Task { await proxy.cleanup() } }
 
-        let service = try #require(proxy.operationsService)
+        let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
         let response = try await service.post(
             data: WPNRequestBase(),
-            signedWith: .possessionWithPassword(password: IntegrationProxy.pin),
+            signedWith: .possessionWithPassword(password: proxy.pin),
             to: TestEndpoints.OperationList.endpoint
         )
         #expect(response.status == .Ok)
@@ -98,12 +114,13 @@ final class WPNPostFailureIntegrationTests {
 
     @Test("E2EE activationScope without activation")
     func e2eePostUnactivated() async throws {
-        
-        let proxy = IntegrationProxy()
-        _ = try await proxy.createPowerAuthAndServices()
+
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
         defer { Task { await proxy.cleanup() } }
-        
-        let service = try #require(proxy.onboardingService)
+
+        let service = try proxy.createNetworkingService(url: loaded.enrollmentServerOnboardingUrl)
 
         do {
             _ = try await service.post(data: WPNRequest(WPNRequestBase()), to: TestEndpoints.FailingStart.endpoint)
@@ -115,11 +132,13 @@ final class WPNPostFailureIntegrationTests {
 
     @Test("Signed POST with wrong authentication")
     func signedPostWrongPin() async throws {
-        let proxy = IntegrationProxy()
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
         try await proxy.prepareActivation()
         defer { Task { await proxy.cleanup() } }
 
-        let service = try #require(proxy.operationsService)
+        let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
         do {
             _ = try await service.post(
                 data: WPNRequestBase(),
