@@ -11,7 +11,8 @@ Pod::Spec.new do |s|
   s.source_files        = 'Sources/WultraPowerauthNetworking/**/*.swift'
   s.platform            = :ios
   s.swift_version       = "5.9"
-  s.ios.deployment_target  = '12.0'
+  s.ios.deployment_target  = '13.0'
 
   s.dependency 'PowerAuth2', '~> 1.9.2'
+  s.dependency 'PowerAuthCore', '~> 1.9.2'
 end

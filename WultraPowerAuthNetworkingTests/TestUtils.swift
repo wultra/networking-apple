@@ -28,6 +28,7 @@ class TestUtils {
     }
     
     static func createFakeService() -> WPNNetworkingService {
+        WPNLogger.verboseLevel = .debug
         let pa = PowerAuthSDK(configuration: .init(instanceId: "test", baseEndpointUrl: "https://fake.url/", configuration: "ARCB+/qxpmLCa04AyT2IPXHKED4Heu76QU+v2PtnzQbe0sYBAUEEU05t3byEUdh90CBiBvqgr4sWU7r1YTAtdpTh3EygAUL791k66wy+SZM1qELw6zdoOHNFk/s4neDDqKtIQ5E5jg=="))!
         return WPNNetworkingService(powerAuth: pa, config: .init(baseUrl: URL(string: "https://fake.url/")!), serviceName: "testservice")
     }

@@ -9,10 +9,10 @@
 __Wultra PowerAuth Networking__ (WPN) is a high-level SDK built on top of our [PowerAuth SDK](https://github.com/wultra/powerauth-mobile-sdk) that enables request signing and encryption.
 
 <!-- begin box info -->
-You can imagine the purpose of this SDK as an __HTTP layer (client) that enables request signing and encryption__ via PowerAuth SDK based on its recommended implementation.
+You can think of this SDK as an __HTTP layer (client) that enables request signing and encryption__ via the PowerAuth SDK, based on its recommended implementation.
 <!-- end -->
 
-We use this SDK in our other open-source projects that you can take inspiration for example in:  
+We use this SDK in our other open-source projects. You can use these as inspiration, for example:  
 - [Digital Onboarding SDK](https://github.com/wultra/digital-onboarding-apple/blob/develop/Sources/API/Networking.swift)  
 - [Mobile Token SDK](https://github.com/wultra/mtoken-sdk-ios/blob/develop/WultraMobileTokenSDK/Operations/Service/WMTOperationsImpl.swift#L259)
 
@@ -35,12 +35,12 @@ We use this SDK in our other open-source projects that you can take inspiration 
 
 ### Requirements
 
-- iOS 12.0+ and tvOS 12.0+
-- [PowerAuth Mobile SDK](https://github.com/wultra/powerauth-mobile-sdk) needs to be implemented in your project
+- iOS 13.0+ and tvOS 13.0+
+- [PowerAuth Mobile SDK](https://github.com/wultra/powerauth-mobile-sdk) must already be integrated into your project
 
 ### Swift Package Manager
 
-Add the `https://github.com/wultra/networking-apple` repository as a package in Xcode UI and add the `WultraPowerAuthNetworking` library as a dependency.
+Add the `https://github.com/wultra/networking-apple` repository as a package in the Xcode UI and add the `WultraPowerAuthNetworking` library as a dependency.
 
 Alternatively, you can add the dependency manually. For example:
 
@@ -50,7 +50,8 @@ import PackageDescription
 let package = Package(
     name: "YourLibrary",
     platforms: [
-        .iOS(.v12)
+        .iOS(.v13),
+        .tvOS(.v13)
     ],
     products: [
         .library(
@@ -70,11 +71,14 @@ let package = Package(
 )
 ```
 
-### Cocoapods
+### CocoaPods
 
-Add the following dependencies to your Podfile:
+Add the following dependency to your Podfile:
 
 ```rb
+# CocoaPods integration currently targets iOS.
+platform :ios, '13.0'
+
 pod 'WultraPowerAuthNetworking'
 ```
 
@@ -93,18 +97,18 @@ We recommend using Xcode version 26.0 or newer.
 
 ## Open Source Code
 
-The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/networking-apple](https://github.com/wultra/networking-apple/#docucheck-keep-link)
+The library is open source, and you can freely browse it on GitHub at [https://github.com/wultra/networking-apple](https://github.com/wultra/networking-apple/#docucheck-keep-link)
 
 ## Initialization and Configuration
 
-Everything you need is packed inside the single `WPNNetworkingService` class that provides all the necessary APIs for your networking.
+Everything you need is packed into the single `WPNNetworkingService` class, which provides all the networking APIs you need.
 
-To successfully create an instance of the service, you need only 2 things:  
-- configured `PowerAuthSDK` object  
-- configuration of the service (like endpoints base URL)
+To successfully create an instance of the service, you need only two things:  
+- a configured `PowerAuthSDK` object  
+- service configuration (such as the base endpoint URL)
 
 <!-- begin box info -->
-You can create as many instances of the class as you need for your usage.
+You can create as many instances of the class as you need for your use case.
 <!-- end -->
 
 Example:
@@ -126,11 +130,11 @@ let networking = WPNNetworkingService(
 
 ## Endpoint Definition
 
-Each endpoint you will target with your project must be defined for the service as a `WPNEndpoint` instance. There are several types of endpoints based on the PowerAuth signature that is required.
+Each endpoint you target in your project must be defined for the service as a `WPNEndpoint` instance. There are several endpoint types, depending on the required PowerAuth signature.
 
 ### End To End Encryption
 
-If the endpoint is end-to-end encrypted, you need to configure it in the init. Default initializers are set to `e2ee: .notEncrypted`. 
+If the endpoint is end-to-end encrypted, you need to configure it in the initializer. The default initializers use `e2ee: .notEncrypted`.
 
 Possible values are:
 
@@ -147,12 +151,12 @@ public enum WPNE2EEConfiguration {
 ```
 
 <!-- begin box info -->
-Whether an endpoint is encrypted or not is based on its backend definition.
+Whether an endpoint is encrypted is determined by its backend definition.
 <!-- end -->
 
 ### Signed endpoint `WPNEndpointSigned`
 
-For endpoints that are __signed__ by PowerAuth signature and can be end-to-end encrypted.
+For endpoints that use a __PowerAuth signature__ and can be end-to-end encrypted.
 
 Example:
 
@@ -165,9 +169,9 @@ var mySignedEndpoint: MySignedEndpointType { WPNEndpointSigned(endpointURLPath: 
 
 ### Signed endpoint with Token `WPNEndpointSignedWithToken`
 
-For endpoints that are __signed by token__ by PowerAuth signature and can be end-to-end encrypted.
+For endpoints that use a __PowerAuth token signature__ and can be end-to-end encrypted.
 
-More info for token-based authentication [can be found here](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/PowerAuth-SDK-for-iOS.md#token-based-authentication)
+More information about token-based authentication [can be found here](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/PowerAuth-SDK-for-iOS.md#token-based-authentication).
 
 Example:
 
@@ -176,14 +180,14 @@ typealias MyTokenEndpointType = WPNEndpointSignedWithToken<WPNRequest<MyEndpoint
 var myTokenEndpoint: MyTokenEndpointType { WPNEndpointSignedWithToken(endpointURLPath: "/additional/path/to/the/token/signed/endpoint", tokenName: "MyToken", e2ee: .notEncrypted) }
 
 // tokenName is the name of the token as stored in the PowerAuthSDK
-// more info can be found in the PowerAuthSDK documentation
+// more information can be found in the PowerAuthSDK documentation
 // https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/PowerAuth-SDK-for-iOS.md#token-based-authentication
 
 ```
 
 ### Basic endpoint (not signed) `WPNEndpointBasic`
 
-For endpoints that are __not signed__ by PowerAuth signature but can be end-to-end encrypted.
+For endpoints that __do not use a PowerAuth signature__ but can still be end-to-end encrypted.
 
 Example:
 
@@ -195,17 +199,17 @@ var myBasicEndpoint: MyBasicEndpointType { WPNEndpointBasic(endpointURLPath: "/a
 
 ## Creating an HTTP request
 
-To create an HTTP request to your endpoint, you need to call the `WPNNetworkingService.post` method with the following parameters:
+To create an HTTP request for your endpoint, you can call either the callback-based `WPNNetworkingService.post` method or its `async` counterpart with the following request parameters:
 
-- `data` - with the payload of your request
-- `auth` - `PowerAuthAuthentication` instance that will sign the request  
-  - this parameter is missing for the basic endpoint 
-- `endpoint` - an endpoint that will be called
+- `data` - the payload of your request
+- `auth` - the `PowerAuthAuthentication` instance used to sign the request  
+  - this parameter is omitted for the basic endpoint 
+- `endpoint` - the endpoint to call
 - `headers` - custom HTTP headers, `nil` by default
-- `timeoutInterval` - timeout interval, `nil` by default. When `nil`, the default configured in `WPNConfig` will be used
-- `progressCallback` - callback with percentage progress (values between 0 and 1)
-- `completionQueue` - queue that the completion will be called on (main queue by default)
-- `completion` - result completion
+- `timeoutInterval` - the timeout interval, `nil` by default. When `nil`, the default configured in `WPNConfig` is used
+- `progressCallback` - a callback with percentage progress (values between 0 and 1)
+- `completionQueue` - the queue on which the completion is called (callback API only, main queue by default)
+- `completion` - the result completion handler (callback API only)
 
 
 Example:
@@ -251,7 +255,9 @@ networking.post(
 
 ```
 
-We use systems `URLSession` under the hood.
+`WultraPowerAuthNetworking` also provides `async/await` counterparts to all public `WPNNetworkingService.post(...)` overloads.
+
+The SDK uses the system `URLSession` under the hood.
 
 ## Raw Response Observer
 
@@ -280,7 +286,7 @@ class MyResponseDelegateLogger: WPNResponseDelegate {
 
 ## Parallel Requests
 
-By default, the SDK is serializing all signed requests. This means that the requests signed with the PowerAuthSDK are put into the queue and executed one by one (meaning that the HTTP request is not made until the previous one is finished). Other requests will be parallel.
+By default, the SDK serializes all signed requests. Requests signed with `PowerAuthSDK` are placed into a queue and executed one by one, which means an HTTP request is not sent until the previous one finishes. Other requests are executed in parallel.
 
 This behavior can be changed via `WPNNetworkingService.concurrencyStrategy` with the following possible values:
 
@@ -293,15 +299,15 @@ More about this topic can be found in the [PowerAuth documentation](https://deve
 
 ## JSON encoder and decoder
 
-SDK uses `JSONEncoder` and `JSONDecoder` with `iso8601` date strategies by default.
+The SDK uses `JSONEncoder` and `JSONDecoder` with `iso8601` date strategies by default.
 
-If the default does not suit your needs, you can set up your own decoder/encoder instances to the `jsonEncoder` and `jsonDecoder` properties in the `WPNNetworkingService` that will be used for all outbound and inbound traffic.
+If the default configuration does not suit your needs, you can assign your own encoder and decoder instances to the `jsonEncoder` and `jsonDecoder` properties of `WPNNetworkingService`. They will then be used for all outbound and inbound traffic.
 
-For more info about the JSON encoding and decoding, visit official [Apple documentation](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types).
+For more info about the JSON encoding and decoding, visit the official [Apple documentation](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types).
 
 ## SSL validation
 
-The SDK uses default system handling of the SSL errors. To be able to ignore SSL errors (for example when your test server does not have a valid SSL certificate) or implement your own SSL pinning, you can configure `WPNConfig.sslValidation` property to get your desired behavior.
+The SDK uses the system's default handling of SSL errors. To ignore SSL errors (for example, when your test server does not have a valid SSL certificate) or implement your own SSL pinning, configure the `WPNConfig.sslValidation` property.
 
 Possible values are:
 
@@ -311,12 +317,12 @@ Possible values are:
 
 ## Error Handling
 
-Every error produced by this library is of a `WPNError` type. This error contains the following information:
+Every error produced by this library is of type `WPNError`. This error contains the following information:
 
-- `reason` - A specific reason, why the error happened. For more information see [WPNErrorReason chapter](#wpnerrorreason).
-- `nestedError` - Original exception/error (if available) that caused this error.
+- `reason` - A specific reason why the error happened. For more information, see the [WPNErrorReason chapter](#wpnerrorreason).
+- `nestedError` - The original exception or error (if available) that caused this error.
 - `httpStatusCode` - If the error is a networking error, this property will provide the HTTP status code of the error.
-- `httpUrlResponse` - If the error is a networking error, this will hold the original HTTP response that was received from the backend.
+- `httpUrlResponse` - If the error is a networking error, this holds the original HTTP response received from the backend.
 - `restApiError` - If the error is a "well-known" API error, it will be filled here. For all available codes follow [the source code](https://github.com/wultra/networking-apple/blob/develop/Sources/WultraPowerauthNetworking/WPNBaseNetworkingObjects.swift#L130#docucheck-keep-link).
 - `networkIsNotReachable` - Convenience property, informs about a state where the network is unavailable (based on the error type).
 - `networkConnectionIsNotTrusted` - Convenience property, informs about a TLS error.
@@ -325,7 +331,7 @@ Every error produced by this library is of a `WPNError` type. This error contain
 
 ### WPNErrorReason
 
-Each `WPNError` has a `reason` property for why the error was created. Such reason can be useful when you're creating for example a general error handling or reporting, or when you're debugging the code.
+Each `WPNError` has a `reason` property that explains why the error was created. This can be useful when you are creating, for example, general error-handling or reporting logic, or when you are debugging the code.
 
 #### General errors  
 
@@ -351,19 +357,19 @@ Each `WPNError` has a `reason` property for why the error was created. Such reas
 
 #### Custom Errors
 
-`WPNErrorReason` is a struct that can be created by other libraries so the list above is not a final list of all possible errors. Such errors (in libraries developed by Wultra) will be presented in the dedicated documentation (for example Mobile Token SDK library).
+`WPNErrorReason` is a struct that can also be created by other libraries, so the list above is not exhaustive. Such errors (in libraries developed by Wultra) are documented in their respective documentation, for example in the Mobile Token SDK documentation.
 
 ## Language Configuration
 
-Before using any methods from this SDK that call the backend, a proper language should be set. A properly translated content is served based on this configuration. The property that stores language settings __does not persist__. You need to set `acceptLanguage` every time that the application boots.
+Before using any SDK methods that call the backend, you should set the proper language. Properly translated content is served based on this configuration. This setting __does not persist__, so you need to set `acceptLanguage` every time the application starts.
 
 <!-- begin box warning -->
-Note: Content language capabilities are limited by the implementation of the server - it must support the provided language.
+Note: Content-language capabilities are limited by the server implementation - the server must support the provided language.
 <!-- end -->
 
 ### Format
 
-The default value is always `en`. With other languages, we use values compliant with standard RFC [Accept-Language](https://tools.ietf.org/html/rfc7231#section-5.3.5).
+The default value is always `en`. For other languages, use values compliant with the standard RFC [Accept-Language](https://tools.ietf.org/html/rfc7231#section-5.3.5).
 
 ## Logging
 
@@ -378,12 +384,12 @@ You can limit the amount of logged information via the `verboseLevel` property.
 | `off`                  | Silences all logs.                                |
 | `errors`               | Only errors will be logged.                       |
 | `warnings` _(default)_ | Errors and warnings will be logged.               |
-| `info`                 | Error, warning and info messages will be logged.  |
+| `info`                 | Errors, warnings, and info messages will be logged. |
 | `debug`                | All messages will be logged.                      |
 
 ### Character limit
 
-To prevent huge logs from being printed out, there is a default limit of 12,000 characters per log in place. You can change this via `WPNLogger.characterLimit`.
+To prevent huge logs from being printed, the default limit is 12,000 characters per log. You can change this via `WPNLogger.characterLimit`.
 
 ### HTTP traffic logs
 
@@ -392,9 +398,13 @@ To prevent huge logs from being printed out, there is a default limit of 12,000 
 
 ### Logger Delegate
 
-In case you want to process logs on your own (for example log into a file or some cloud service), you can set `WPNLogger.delegate`.
+If you want to process logs on your own (for example, log them to a file or a cloud service), you can set `WPNLogger.delegate`.
 
 ## Changelog
+
+### TBA
+- Raised the minimum supported platform versions to iOS 13.0 and tvOS 13.0.
+- Added `async/await` counterparts to all public `WPNNetworkingService.post(...)` overloads.
 
 ### 1.5.2
 - Time is now always synchronized when creating token-based authorization headers
@@ -417,7 +427,7 @@ In case you want to process logs on your own (for example log into a file or som
 - Added new `WPNKnownRestApiError` cases
 
 ### 1.3.0
-- upgraded PowerAuthSDK to `1.8.x` _(requires server 1.5+)_
+- Upgraded PowerAuthSDK to `1.8.x` _(requires server 1.5+)_
 
 <!-- begin remove -->
 ## Web Documentation

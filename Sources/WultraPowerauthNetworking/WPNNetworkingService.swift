@@ -447,3 +447,186 @@ public extension WPNErrorReason {
         }
     }
 }
+
+// MARK: Async API
+
+public extension WPNNetworkingService {
+
+    /// Sends basic request without an authentication.
+    ///
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    /// - Returns: Decoded response envelope.
+    /// - Throws: `WPNError`
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointBasic<Req, Resp>>(
+        data: Req,
+        to endpoint: Endpoint,
+        with headers: [String: String]? = nil,
+        timeoutInterval: TimeInterval? = nil,
+        progressCallback: ((Double) -> Void)? = nil
+    ) async throws -> Resp {
+        return try await asyncPost { completion in
+            post(
+                data: data,
+                to: endpoint,
+                with: headers,
+                timeoutInterval: timeoutInterval,
+                progressCallback: progressCallback,
+                completion: completion
+            )
+        }
+    }
+
+    /// Sends signed request with provided authentication.
+    ///
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - auth: Authentication object.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    /// - Returns: Decoded response envelope.
+    /// - Throws: `WPNError`
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSigned<Req, Resp>>(
+        data: Req,
+        signedWith auth: PowerAuthAuthentication,
+        to endpoint: Endpoint,
+        with headers: [String: String]? = nil,
+        timeoutInterval: TimeInterval? = nil,
+        progressCallback: ((Double) -> Void)? = nil
+    ) async throws -> Resp {
+        return try await asyncPost { completion in
+            post(
+                data: data,
+                signedWith: auth,
+                to: endpoint,
+                with: headers,
+                timeoutInterval: timeoutInterval,
+                progressCallback: progressCallback,
+                completion: completion
+            )
+        }
+    }
+
+    /// Sends signed request with provided authentication.
+    ///
+    /// - Parameters:
+    ///   - data: Request data to send.
+    ///   - auth: Authentication object.
+    ///   - endpoint: Server endpoint.
+    ///   - headers: Custom headers to send along.
+    ///   - timeoutInterval: Timeout interval of the request.
+    ///                      Value from `config` will be used when nil.
+    ///   - progressCallback: Reports fraction of how much data was already transferred.
+    /// - Returns: Decoded response envelope.
+    /// - Throws: `WPNError`
+    func post<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpointSignedWithToken<Req, Resp>>(
+        data: Req,
+        signedWith auth: PowerAuthAuthentication,
+        to endpoint: Endpoint,
+        with headers: [String: String]? = nil,
+        timeoutInterval: TimeInterval? = nil,
+        progressCallback: ((Double) -> Void)? = nil
+    ) async throws -> Resp {
+        return try await asyncPost { completion in
+            post(
+                data: data,
+                signedWith: auth,
+                to: endpoint,
+                with: headers,
+                timeoutInterval: timeoutInterval,
+                progressCallback: progressCallback,
+                completion: completion
+            )
+        }
+    }
+
+    /// Bridges the callback-based `post(...)` implementation to Swift concurrency.
+    ///
+    /// The method starts the underlying request, converts its `(response, error)` callback
+    /// into `async throws`, and keeps the returned `Operation` connected to the current
+    /// Swift task so task cancellation still cancels the in-flight request.
+    private func asyncPost<Resp: WPNResponseBase>(
+        _ startRequest: (@escaping (Resp?, WPNError?) -> Void) -> Operation
+    ) async throws -> Resp {
+        let taskBridge = WPNAsyncPostTaskBridge()
+
+        return try await withTaskCancellationHandler(operation: {
+            // Respect cancellation that happened before the request had a chance to start.
+            if Task.isCancelled {
+                throw WPNError(reason: .canceled)
+            }
+
+            return try await withCheckedThrowingContinuation { continuation in
+                let operation = startRequest { response, error in
+                    // Translate the callback pair to a single async result.
+                    if let response {
+                        continuation.resume(returning: response)
+                    } else if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(throwing: WPNError(
+                            reason: .network_unknown,
+                            error: WPNSimpleError(message: "Request finished without response or error.")
+                        ))
+                    }
+                }
+                // Cancellation may race with request creation, so register the operation
+                // through the bridge instead of storing it directly.
+                taskBridge.setOperation(operation)
+            }
+        }, onCancel: {
+            // Forward task cancellation to the already created operation, or remember it
+            // so the operation gets canceled as soon as it becomes available.
+            taskBridge.cancel()
+        })
+    }
+}
+
+/// Synchronizes cancellation between a Swift `Task` and the callback-based request `Operation`.
+///
+/// Task cancellation can happen before the callback API returns its `Operation`. This helper
+/// bridges that race by storing either the operation or the cancellation intent, so whichever
+/// arrives second can still cancel the underlying request.
+private final class WPNAsyncPostTaskBridge {
+
+    private let lock = WPNLock()
+    private var operation: Operation?
+    private var isCancelled = false
+
+    /// Registers the request operation for later cancellation.
+    ///
+    /// If the task was already canceled, then the operation is canceled immediately.
+    /// - Parameter operation: Operation returned by the callback-based request.
+    func setOperation(_ operation: Operation) {
+        let shouldCancel = lock.synchronized {
+            if isCancelled {
+                return true
+            } else {
+                self.operation = operation
+                return false
+            }
+        }
+        // Cancel outside the lock to keep the critical section minimal.
+        if shouldCancel {
+            operation.cancel()
+        }
+    }
+
+    /// Marks the task as canceled and propagates the cancellation to the underlying operation when available.
+    func cancel() {
+        let operation = lock.synchronized {
+            isCancelled = true
+            return self.operation
+        }
+        // Cancel outside the lock to avoid executing cancellation logic while locked.
+        operation?.cancel()
+    }
+}
