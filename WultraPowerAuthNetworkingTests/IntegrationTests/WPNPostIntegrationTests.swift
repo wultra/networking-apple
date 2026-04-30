@@ -17,6 +17,7 @@
 import Foundation
 import PowerAuth2
 import Testing
+internal import WultraPowerAuthTestIntegrationProxyV1
 @testable import WultraPowerAuthNetworking
 
 // MARK: - Success tests

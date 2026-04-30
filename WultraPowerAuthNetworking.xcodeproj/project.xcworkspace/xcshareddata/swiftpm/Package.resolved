@@ -1,5 +1,5 @@
 {
-  "originHash" : "1243171514ca34f85e3668271b7ac5ceeaaa6bb510694d834e20215fe2e3b718",
+  "originHash" : "d4fa5cd143ad2bc7bb23a52656fbd9d61f7b5f28c64a58ca7302a966ee5377df",
   "pins" : [
     {
       "identity" : "powerauth-mobile-sdk-spm",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "d932ab5bdcca3a981080ff4244fdbf9e1bb01104",
         "version" : "1.9.4"
+      }
+    },
+    {
+      "identity" : "wultra-infrastructure",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wultra/wultra-infrastructure.git",
+      "state" : {
+        "branch" : "mobile",
+        "revision" : "7067185a559a786e6b645b0f4eb62a38e67a1d9f"
       }
     }
   ],

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC37A1872FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 in Frameworks */ = {isa = PBXBuildFile; productRef = DC37A1862FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */; };
+		DC37A18A2FA3BD4000B24B2D /* WultraPowerAuthTestIntegrationProxyV1 in Frameworks */ = {isa = PBXBuildFile; productRef = DC37A1892FA3BD4000B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */; };
 		DC7A273B2D9BEB0F00E9AE31 /* WPNLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7A273A2D9BEB0F00E9AE31 /* WPNLock.swift */; };
 		DC7A27562D9D83EF00E9AE31 /* WultraPowerAuthNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */; };
 		DCB6614E28AA51FA00937FBA /* WPNUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614D28AA51FA00937FBA /* WPNUtils.swift */; };
@@ -73,7 +75,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC37A18A2FA3BD4000B24B2D /* WultraPowerAuthTestIntegrationProxyV1 in Frameworks */,
 				E1A7C0012E0A000100000003 /* PowerAuth2 in Frameworks */,
+				DC37A1872FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 in Frameworks */,
 				DC7A27562D9D83EF00E9AE31 /* WultraPowerAuthNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -166,6 +170,8 @@
 			name = WultraPowerAuthNetworkingTests;
 			packageProductDependencies = (
 				E1A7C0012E0A000100000007 /* PowerAuth2 */,
+				DC37A1862FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */,
+				DC37A1892FA3BD4000B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */,
 			);
 			productName = WultraPowerAuthNetworkingTests;
 			productReference = DC7A27522D9D83EF00E9AE31 /* WultraPowerAuthNetworkingTests.xctest */;
@@ -219,6 +225,7 @@
 			mainGroup = OBJ_5;
 			packageReferences = (
 				E1A7C0012E0A000100000004 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */,
+				DC37A1882FA3BD4000B24B2D /* XCRemoteSwiftPackageReference "wultra-infrastructure" */,
 			);
 			productRefGroup = OBJ_22 /* Products */;
 			projectDirPath = "";
@@ -605,6 +612,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		DC37A1882FA3BD4000B24B2D /* XCRemoteSwiftPackageReference "wultra-infrastructure" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/wultra/wultra-infrastructure.git";
+			requirement = {
+				branch = mobile;
+				kind = branch;
+			};
+		};
 		E1A7C0012E0A000100000004 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/wultra/powerauth-mobile-sdk-spm.git";
@@ -616,6 +631,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DC37A1862FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WultraPowerAuthTestIntegrationProxyV1;
+		};
+		DC37A1892FA3BD4000B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC37A1882FA3BD4000B24B2D /* XCRemoteSwiftPackageReference "wultra-infrastructure" */;
+			productName = WultraPowerAuthTestIntegrationProxyV1;
+		};
 		E1A7C0012E0A000100000005 /* PowerAuth2 */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E1A7C0012E0A000100000004 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */;
