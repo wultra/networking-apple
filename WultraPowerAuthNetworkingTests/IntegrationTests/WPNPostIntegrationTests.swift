@@ -146,6 +146,7 @@ final class WPNPostFailureIntegrationTests {
                 signedWith: .possessionWithPassword(password: "0000"),
                 to: TestEndpoints.History.endpoint
             )
+            Issue.record("Request should have failed with wrong PIN but succeeded")
         } catch let error as WPNError {
             #expect(error.reason == .network_generic)
             #expect(error.restApiError?.errorCode == .authenticationFailure)

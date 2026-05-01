@@ -194,7 +194,6 @@
 			name = WultraPowerAuthNetworkingTests;
 			packageProductDependencies = (
 				E1A7C0012E0A000100000007 /* PowerAuth2 */,
-				DC37A1862FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */,
 				DCA5746C2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 */,
 			);
 			productName = WultraPowerAuthNetworkingTests;
@@ -655,10 +654,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		DC37A1862FA3BAF500B24B2D /* WultraPowerAuthTestIntegrationProxyV1 */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WultraPowerAuthTestIntegrationProxyV1;
-		};
 		DCA5746C2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DCA5746B2FA531E100CB2889 /* XCRemoteSwiftPackageReference "wultra-infrastructure" */;
