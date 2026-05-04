@@ -103,7 +103,7 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
         headers[key] = value
     }
     
-    func buildUrlRequest(encryptor: PowerAuthCoreEciesEncryptor?) -> URLRequest {
+    func buildUrlRequest(encryptor: PowerAuthCoreEncryptor?) -> URLRequest {
         
         var request = URLRequest(url: url)
         
@@ -120,14 +120,17 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
         
         var data = requestData
         if let encryptor = encryptor {
-            if let cryptorgram = encryptor.encryptRequest(data) {
-                data = try? jsonEncoder.encode(E2EERequest(cryptogram: cryptorgram))
+            do {
+                let encryptedRequest = try encryptor.encryptRequest(data)
+                data = encryptedRequest.requestBody
                 // Only add E2EE headers when the endpoint is not signed
-                if !needsSignature, let metadata = encryptor.associatedMetaData {
-                    request.addValue(metadata.httpHeaderValue, forHTTPHeaderField: metadata.httpHeaderKey)
+                if needsSignature == false {
+                    encryptedRequest.requestHeaders.forEach { header in
+                        request.addValue(header.headerValue, forHTTPHeaderField: header.headerName)
+                    }
                 }
-            } else {
-                D.error("Failed to encrypt request with encryptor.")
+            } catch let e {
+                D.error("Failed to encrypt request with encryptor: \(e).")
             }
         }
         
@@ -147,33 +150,26 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
     }
     
     /// Parses given result data and sets it to `response` property
-    func processResult(data: Data, encryptor: PowerAuthCoreEciesEncryptor?) -> ProcessResultResponse<TResponse> {
+    func processResult(data: Data, encryptor: PowerAuthCoreEncryptor?) -> ProcessResultResponse<TResponse> {
 
         if let encryptor = encryptor {
             do {
-                if let decryptedData = encryptor.decryptResponse(try jsonDecoder.decode(E2EEResponse.self, from: data).toCryptorgram()) {
-                    do {
-                        let decryptedResponse = try jsonDecoder.decode(TResponse.self, from: decryptedData)
-                        return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)
-                    } catch {
-                        D.error("failed to decode decrypted response:\n\(error)")
-                        D.error("from decryptedData: \(decryptedData.forLog())")
-                        return .failed(error: error)
-                    }
-                } else {
-                    D.error("failed to decrypt response")
-                    
-                    // error responses might not be encrypted, so try to parse the response as a plain, but only for error responses
-                    if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
-                        D.error("but found plain error response")
-                        return .plain(obj: plain)
-                    }
-                    
-                    return .failed(error: WPNSimpleError(message: "failed to decrypt response"))
+                let decryptedData = try encryptor.decryptResponse(try PowerAuthCoreEncryptedResponse(responseBody: data))
+                do {
+                    let decryptedResponse = try jsonDecoder.decode(TResponse.self, from: decryptedData)
+                    return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)
+                } catch {
+                    D.error("failed to decode decrypted response:\n\(error)")
+                    D.error("from decryptedData: \(decryptedData.forLog())")
+                    return .failed(error: error)
+
                 }
             } catch {
+                // error responses are not encrypted - try to parse the response as a plain, but only for error responses
+                if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
+                    return .plain(obj: plain)
+                }
                 D.error("failed to decrypt response:\n\(error)")
-                D.error("from data: \(data.forLog())")
                 return .failed(error: error)
             }
         } else {
@@ -192,40 +188,6 @@ enum ProcessResultResponse<T> {
     case plain(obj: T)
     case encrypted(obj: T, decryptedData: Data)
     case failed(error: Error)
-}
-
-private struct E2EERequest: Encodable {
-    let temporaryKeyId: String?
-    let ephemeralPublicKey: String?
-    let encryptedData: String?
-    let mac: String?
-    let nonce: String?
-    let timestamp: UInt64
-    
-    init(cryptogram: PowerAuthCoreEciesCryptogram) {
-        temporaryKeyId = cryptogram.temporaryKeyId
-        ephemeralPublicKey = cryptogram.keyBase64
-        encryptedData = cryptogram.bodyBase64
-        mac = cryptogram.macBase64
-        nonce = cryptogram.nonceBase64
-        timestamp = cryptogram.timestamp
-    }
-}
-
-private struct E2EEResponse: Decodable {
-    let encryptedData: String?
-    let mac: String?
-    let nonce: String?
-    let timestamp: UInt64
-    
-    func toCryptorgram() -> PowerAuthCoreEciesCryptogram {
-        let cryptogram = PowerAuthCoreEciesCryptogram()
-        cryptogram.bodyBase64 = encryptedData
-        cryptogram.macBase64 = mac
-        cryptogram.nonceBase64 = nonce
-        cryptogram.timestamp = timestamp
-        return cryptogram
-    }
 }
 
 private extension Data {

@@ -341,12 +341,12 @@ public class WPNNetworkingService {
         return op
     }
     
-    private func getEncryptor<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(endpoint: Endpoint, completion: @escaping (PowerAuthCoreEciesEncryptor?, Error?) -> Void) {
+    private func getEncryptor<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(endpoint: Endpoint, completion: @escaping (PowerAuthCoreEncryptor?, Error?) -> Void) {
         switch endpoint.e2ee {
         case .activationScope:
-            powerAuth.eciesEncryptorForActivationScope(callback: completion)
+            powerAuth.encryptorForActivationScope(callback: completion)
         case .applicationScope:
-            powerAuth.eciesEncryptorForApplicationScope(callback: completion)
+            powerAuth.encryptorForApplicationScope(callback: completion)
         case .notEncrypted:
             completion(nil, nil)
         }
@@ -379,7 +379,7 @@ public class WPNNetworkingService {
                         return
                     }
                     if let token = token {
-                        powerAuth.tokenStore.generateAuthorizationHeader(withName: token.tokenName) { header, headerError in
+                        powerAuth.tokenStore.generateAuthenticationHeader(withName: token.tokenName) { header, headerError in
                             if let header {
                                 request.addHeader(key: header.key, value: header.value)
                             }
@@ -393,7 +393,7 @@ public class WPNNetworkingService {
                 // This is always synchronous...
                 if request.needsSignature {
                     // Sign request
-                    let header = try powerAuth.requestSignature(with: request.auth!, method: request.method, uriId: request.uriIdentifier!, body: data)
+                    let header = try powerAuth.authenticationHeaderForRequestWithBody(with: request.auth!, method: request.method, uriId: request.uriIdentifier!, body: data)
                     request.addHeader(key: header.key, value: header.value)
                 }
                 completion(nil)

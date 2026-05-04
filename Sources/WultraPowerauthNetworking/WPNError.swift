@@ -62,8 +62,10 @@ public class WPNError: Error {
             if let rae = _restApiError {
                 return rae
             }
-            if let pae = powerAuthRestApiError?.responseObject {
-                return WPNRestApiError(code: pae.code, message: pae.message)
+            if let pae = powerAuthRestApiError?.responseObject,
+               let paeCode = pae.code,
+               let paeMessage = pae.message {
+                return WPNRestApiError(code: paeCode, message: paeMessage)
             }
             return nil
         }
