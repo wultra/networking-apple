@@ -11,8 +11,7 @@ echo "---------------------------------------------------"
 echo "Resolving Swift package dependencies"
 echo "---------------------------------------------------"
 xcrun xcodebuild -resolvePackageDependencies \
-    -project "WultraPowerAuthNetworking.xcodeproj" \
-    -onlyUsePackageVersionsFromResolvedFile
+    -project "WultraPowerAuthNetworking.xcodeproj"
 
 echo "---------------------------------------------------"
 echo "iOS"
@@ -22,7 +21,6 @@ xcrun xcodebuild build \
     -scheme "WultraPowerAuthNetworking" \
     -configuration "Release" \
     -destination "generic/platform=iOS" \
-    -onlyUsePackageVersionsFromResolvedFile \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO
 echo "---------------------------------------------------"
