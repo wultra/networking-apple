@@ -86,6 +86,7 @@ pod 'WultraPowerAuthNetworking'
 
 | WPN SDK           | PowerAuth SDK |  
 |-------------------|---------------|
+| `TBA`             | `2.0.0`       |
 | `1.5.x`           | `1.9.x`       |
 | `1.4.x`           | `1.8.x`       |
 | `1.3.x`           | `1.8.x`       |
@@ -403,6 +404,7 @@ If you want to process logs on your own (for example, log them to a file or a cl
 ## Changelog
 
 ### TBA
+- Requires PowerAuth SDK `2.0.0`.
 - Raised the minimum supported platform versions to iOS 13.0 and tvOS 13.0.
 - Added `async/await` counterparts to all public `WPNNetworkingService.post(...)` overloads.
 
