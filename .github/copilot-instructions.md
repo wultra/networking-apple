@@ -12,7 +12,7 @@ This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP
 
 ```bash
 SCRIPT_FOLDER="$(pwd)/scripts"
-URL="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile/mobile/utils/get-ios-simulator/v1/get-ios-sim.js"
+URL="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile/mobile/utils/ios-get-simulator/v1/get-ios-sim.js"
 XCODE_PROJECT="WultraPowerAuthNetworking.xcodeproj"
 XCODE_SCHEME="WultraPowerAuthNetworkingTests"
 DESTINATION=$(curl -fsSL "${URL}" | node - -p "${SCRIPT_FOLDER}/.." "${XCODE_PROJECT}" "${XCODE_SCHEME}")
