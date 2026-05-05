@@ -12,7 +12,7 @@ BUILD_FOLDER="build"
 
 # Function that resolved the best available simulator for the test run
 function getSimulatorDestination {
-  local scriptUrl="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile/mobile/utils/get-ios-simulator/v1/get-ios-sim.js"
+  local scriptUrl="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile/mobile/utils/ios-get-simulator/v1/get-ios-sim.js"
   curl -fsSL "${scriptUrl}" | node - -p "${SCRIPT_FOLDER}/.." "${XCODE_PROJECT}" "${XCODE_SCHEME}"
 }
 

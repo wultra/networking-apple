@@ -54,3 +54,4 @@ node_modules
 scripts/**/node_modules
 scripts/**/.DS_Store
 WultraPowerAuthNetworking.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+WultraPowerAuthNetworkingTests/IntegrationTests/IntegrationProxy/IntegrationProxy.swift
