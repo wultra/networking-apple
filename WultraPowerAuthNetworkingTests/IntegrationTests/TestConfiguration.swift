@@ -15,7 +15,6 @@
 //
 
 import Foundation
-internal import WultraPowerAuthTestIntegrationProxyV1
 
 /// Loads integration test configuration from `config.json` bundled with the
 /// test target. See `Config/README.md` for setup instructions and field

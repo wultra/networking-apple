@@ -10,8 +10,6 @@
 		DC7A273B2D9BEB0F00E9AE31 /* WPNLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7A273A2D9BEB0F00E9AE31 /* WPNLock.swift */; };
 		DCA574652FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */; };
 		DCA574662FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DCA5746D2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 in Frameworks */ = {isa = PBXBuildFile; productRef = DCA5746C2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 */; };
-		DCA5746E2FA5322600CB2889 /* WultraPowerAuthTestIntegrationProxyV1 in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DCA5746C2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		DCB6614E28AA51FA00937FBA /* WPNUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614D28AA51FA00937FBA /* WPNUtils.swift */; };
 		DCB6615028AA54B800937FBA /* WPNUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614F28AA54B800937FBA /* WPNUserAgent.swift */; };
 		DCB6615328AA564300937FBA /* WPNConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6615228AA564300937FBA /* WPNConstants.swift */; };
@@ -49,7 +47,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DCA5746E2FA5322600CB2889 /* WultraPowerAuthTestIntegrationProxyV1 in Embed Frameworks */,
 				DCA574662FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -92,7 +89,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1A7C0012E0A000100000003 /* PowerAuth2 in Frameworks */,
-				DCA5746D2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 in Frameworks */,
 				DCA574652FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,7 +190,6 @@
 			name = WultraPowerAuthNetworkingTests;
 			packageProductDependencies = (
 				E1A7C0012E0A000100000007 /* PowerAuth2 */,
-				DCA5746C2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 */,
 			);
 			productName = WultraPowerAuthNetworkingTests;
 			productReference = DC7A27522D9D83EF00E9AE31 /* WultraPowerAuthNetworkingTests.xctest */;
@@ -248,7 +243,6 @@
 			mainGroup = OBJ_5;
 			packageReferences = (
 				E1A7C0012E0A000100000004 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */,
-				DCA5746B2FA531E100CB2889 /* XCRemoteSwiftPackageReference "wultra-infrastructure" */,
 			);
 			productRefGroup = OBJ_22 /* Products */;
 			projectDirPath = "";
@@ -635,14 +629,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		DCA5746B2FA531E100CB2889 /* XCRemoteSwiftPackageReference "wultra-infrastructure" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/wultra/wultra-infrastructure.git";
-			requirement = {
-				branch = mobile;
-				kind = branch;
-			};
-		};
 		E1A7C0012E0A000100000004 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/wultra/powerauth-mobile-sdk-spm.git";
@@ -654,11 +640,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		DCA5746C2FA531E100CB2889 /* WultraPowerAuthTestIntegrationProxyV1 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DCA5746B2FA531E100CB2889 /* XCRemoteSwiftPackageReference "wultra-infrastructure" */;
-			productName = WultraPowerAuthTestIntegrationProxyV1;
-		};
 		E1A7C0012E0A000100000005 /* PowerAuth2 */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E1A7C0012E0A000100000004 /* XCRemoteSwiftPackageReference "powerauth-mobile-sdk-spm" */;

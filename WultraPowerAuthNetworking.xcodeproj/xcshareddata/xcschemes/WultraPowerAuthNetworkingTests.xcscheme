@@ -6,6 +6,24 @@
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
       buildArchitectures = "Automatic">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "set -e&#10;set -x&#10;&#10;# ---- CONFIG ----&#10;FILE_NAME=&quot;IntegrationProxy.swift&quot;&#10;FILE_PATH=&quot;${SRCROOT}/WultraPowerAuthNetworkingTests/IntegrationTests/IntegrationProxy/${FILE_NAME}&quot;&#10;DOWNLOAD_URL=&quot;https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile/mobile/code/ios-test-proxy/v1/${FILE_NAME}&quot;&#10;&#10;# ---- LOGGING ----&#10;echo &quot;Checking for required file at: ${FILE_PATH}&quot;&#10;&#10;# ---- CHECK + DOWNLOAD ----&#10;if [ -f &quot;${FILE_PATH}&quot; ]; then&#10;    # print it as a warning just to be sure the runner will be notified&#10;    echo &quot;warning: ${FILE_NAME} already exists. Skipping download. Be aware that this script does not check for new versions of the file. To update the file, delete it from the project first.&quot;&#10;else&#10;    echo &quot;File not found. Downloading...&quot;&#10;&#10;    # Download using curl&#10;    curl -L --fail --silent --show-error &quot;${DOWNLOAD_URL}&quot; -o &quot;${FILE_PATH}&quot;&#10;&#10;    echo &quot;Download completed.&quot;&#10;&#10;    # Verify that the file exists&#10;    if [ -f &quot;${FILE_PATH}&quot; ]; then&#10;        echo &quot;File is present: ${FILE_PATH}&quot;&#10;        sleep 3 # wait for 3 seconds to be sure xcode picks-up the file&#10;    else&#10;        echo &quot;ERROR: File is still missing after download attempt.&quot;&#10;        exit 1&#10;    fi&#10;fi&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "DC7A27512D9D83EF00E9AE31"
+                     BuildableName = "WultraPowerAuthNetworkingTests.xctest"
+                     BlueprintName = "WultraPowerAuthNetworkingTests"
+                     ReferencedContainer = "container:WultraPowerAuthNetworking.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
