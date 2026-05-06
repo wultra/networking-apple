@@ -21,8 +21,8 @@ import Testing
 final class WPNNetworkingServiceTests {
 
     @Test("Async post cancellation")
-    func asyncPostCancellation() async {
-        let service = TestUtils.createFakeService()
+    func asyncPostCancellation() async throws {
+        let service = try TestUtils.createDummyService()
         let task = Task<WPNResponse<TestUtils.FakeData>, Error> {
             try await service.post(data: .init(), to: TestUtils.FakeEndpoint.endpoint)
         }

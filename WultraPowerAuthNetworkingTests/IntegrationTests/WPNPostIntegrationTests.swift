@@ -26,17 +26,7 @@ final class WPNPostSuccessIntegrationTests {
 
     @Test("Plain POST verifies transport to jsonplaceholder")
     func plainPost() async throws {
-        let powerAuth = try #require(PowerAuthSDK(configuration: .init(
-            instanceId: "plain-\(UUID().uuidString)",
-            baseEndpointUrl: "https://localhost/",
-            configuration: "ARCB+/qxpmLCa04AyT2IPXHKED4Heu76QU+v2PtnzQbe0sYBAUEEU05t3byEUdh90CBiBvqgr4sWU7r1YTAtdpTh3EygAUL791k66wy+SZM1qELw6zdoOHNFk/s4neDDqKtIQ5E5jg=="
-        )))
-        WPNLogger.verboseLevel = .debug
-        let service = WPNNetworkingService(
-            powerAuth: powerAuth,
-            config: .init(baseUrl: URL(string: "https://jsonplaceholder.typicode.com")!),
-            serviceName: "plain-service"
-        )
+        let service = try TestUtils.createDummyService(url: "https://jsonplaceholder.typicode.com")
         let recorder = ResponseRecorder()
         service.responseDelegate = recorder
 
