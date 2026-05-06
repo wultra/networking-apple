@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.cocoapods_version   = '>= 1.10'
   s.name                = "WultraPowerAuthNetworking"
-  s.version             = '1.5.0'
+  s.version             = '2.0.0'
   s.license             = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
   s.summary             = "PowerAuth Networking by Wultra"
   s.homepage            = "https://www.wultra.com/"
@@ -13,6 +13,6 @@ Pod::Spec.new do |s|
   s.swift_version       = "5.9"
   s.ios.deployment_target  = '13.0'
 
-  s.dependency 'PowerAuth2', '~> 1.9.2'
-  s.dependency 'PowerAuthCore', '~> 1.9.2'
+  s.dependency 'PowerAuth2', '~> 2.0.0'
+  s.dependency 'PowerAuthCore', '~> 2.0.0'
 end
