@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		DC7A273B2D9BEB0F00E9AE31 /* WPNLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7A273A2D9BEB0F00E9AE31 /* WPNLock.swift */; };
-		DC7A27562D9D83EF00E9AE31 /* WultraPowerAuthNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */; };
+		DCA574652FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */; };
+		DCA574662FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = "WultraPowerAuthNetworking::WultraPowerAuthNetworking::Product" /* WultraPowerAuthNetworking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DCB6614E28AA51FA00937FBA /* WPNUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614D28AA51FA00937FBA /* WPNUtils.swift */; };
 		DCB6615028AA54B800937FBA /* WPNUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6614F28AA54B800937FBA /* WPNUserAgent.swift */; };
 		DCB6615328AA564300937FBA /* WPNConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB6615228AA564300937FBA /* WPNConstants.swift */; };
@@ -30,7 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DC7A27572D9D83EF00E9AE31 /* PBXContainerItemProxy */ = {
+		DCA574632FA530DF00CB2889 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
@@ -38,6 +39,20 @@
 			remoteInfo = WultraPowerAuthNetworking;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DCA574672FA530E700CB2889 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DCA574662FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		DC7A273A2D9BEB0F00E9AE31 /* WPNLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNLock.swift; sourceTree = "<group>"; };
@@ -74,7 +89,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1A7C0012E0A000100000003 /* PowerAuth2 in Frameworks */,
-				DC7A27562D9D83EF00E9AE31 /* WultraPowerAuthNetworking.framework in Frameworks */,
+				DCA574652FA530E700CB2889 /* WultraPowerAuthNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +105,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DCA574602FA530DF00CB2889 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		OBJ_22 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +130,7 @@
 				OBJ_28 /* LICENSE */,
 				OBJ_30 /* WultraPowerAuthNetworking.podspec */,
 				OBJ_31 /* README.md */,
+				DCA574602FA530DF00CB2889 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -154,11 +177,12 @@
 				DC7A274E2D9D83EF00E9AE31 /* Sources */,
 				DC7A274F2D9D83EF00E9AE31 /* Frameworks */,
 				DC7A27502D9D83EF00E9AE31 /* Resources */,
+				DCA574672FA530E700CB2889 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				DC7A27582D9D83EF00E9AE31 /* PBXTargetDependency */,
+				DCA574642FA530DF00CB2889 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				DC7A27532D9D83EF00E9AE31 /* WultraPowerAuthNetworkingTests */,
@@ -296,10 +320,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DC7A27582D9D83EF00E9AE31 /* PBXTargetDependency */ = {
+		DCA574642FA530DF00CB2889 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "WultraPowerAuthNetworking::WultraPowerAuthNetworking" /* WultraPowerAuthNetworking */;
-			targetProxy = DC7A27572D9D83EF00E9AE31 /* PBXContainerItemProxy */;
+			targetProxy = DCA574632FA530DF00CB2889 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

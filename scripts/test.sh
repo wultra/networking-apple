@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e # stop sript when error occures
+set -e # stop script when error occures
 set -u # stop when undefined variable is used
 #set -x # print all execution (good for debugging)
 set -o pipefail
@@ -12,9 +12,27 @@ BUILD_FOLDER="build"
 
 # Function that resolved the best available simulator for the test run
 function getSimulatorDestination {
-  local scriptUrl="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile-release/mobile-utils/get-ios-sim.js"
+  local scriptUrl="https://raw.githubusercontent.com/wultra/wultra-infrastructure/refs/heads/mobile/mobile/utils/ios-get-simulator/v1/get-ios-sim.js"
   curl -fsSL "${scriptUrl}" | node - -p "${SCRIPT_FOLDER}/.." "${XCODE_PROJECT}" "${XCODE_SCHEME}"
 }
+
+CONFIG_JSON=""
+
+# Parse parameters of this script
+while [[ $# -gt 0 ]]
+do
+  case "$1" in
+    -config)
+      CONFIG_JSON="$2"
+      shift
+      shift
+      ;;
+    *)
+      echo "Unknown parameter ${1}"
+      exit 1
+      ;;
+  esac
+done
 
 # Resolve the newest available iOS Simulator destination through the shared Node helper.
 echo "Resolving the best simulator for the ${XCODE_SCHEME}..."
@@ -27,6 +45,12 @@ pushd "${SCRIPT_FOLDER}/.."
 rm -rf "${BUILD_FOLDER}" # clear build folder
 
 echo "Resolving SPM dependencies..."
+
+# Write integration test config if provided
+if [ -n "${CONFIG_JSON}" ]; then
+  echo "Writing integration test config..."
+  echo "${CONFIG_JSON}" > "WultraPowerAuthNetworkingTests/IntegrationTests/Config/config.json"
+fi
 
 xcrun xcodebuild \
   -project "${XCODE_PROJECT}" \

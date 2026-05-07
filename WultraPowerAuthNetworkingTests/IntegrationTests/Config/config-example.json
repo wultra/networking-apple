@@ -1,0 +1,9 @@
+{
+    "cloudServerUrl": "https://example.com/powerauth-cloud",
+    "cloudServerLogin": "admin",
+    "cloudServerPassword": "admin",
+    "cloudApplicationId": "demo-app",
+    "enrollmentServerUrl": "https://example.com/enrollment-server",
+    "enrollmentServerOnboardingUrl": "https://example.com/enrollment-server-onboarding",
+    "operationsServerUrl": "https://example.com/enrollment-server"
+}
