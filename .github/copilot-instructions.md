@@ -40,7 +40,7 @@ xcrun xcodebuild \
   - `WPNEndpointAuthenticatedWithToken` for token-authenticated endpoints
 - The transport flow spans several files:
   - `WPNNetworkingService.swift` creates typed requests, adds default headers, decides whether the operation goes through the shared serial PowerAuth queue or the service's concurrent queue, and obtains ECIES encryptors when `endpoint.e2ee` is enabled.
-  - `WPNHttpRequest.swift` JSON-encodes requests, wraps encrypted payloads into the ECIES cryptogram envelope, and decodes or decrypts response envelopes.
+  - `WPNHttpRequests.swift` JSON-encodes requests, wraps encrypted payloads into the ECIES cryptogram envelope, and decodes or decrypts response envelopes.
   - `WPNHttpClient.swift` sends the `URLRequest` through an ephemeral `URLSession` and delegates TLS handling to `WPNSSLValidationStrategy`.
   - `WPNError.swift`, `WPNBaseNetworkingObjects.swift`, and `WPNResponseDelegate.swift` define how response envelopes, backend errors, raw traffic, and PowerAuth/network failures are surfaced.
 - Authenticated requests are serialized by default through `PowerAuthSDK.executeOperation(onSerialQueue:)`. Unauthenticated requests use the service-owned `OperationQueue` unless `concurrencyStrategy` is explicitly changed to `.concurrentAll`.

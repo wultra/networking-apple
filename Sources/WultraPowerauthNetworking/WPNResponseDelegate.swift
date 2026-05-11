@@ -24,6 +24,6 @@ public protocol WPNResponseDelegate: AnyObject {
     ///   - url: Called URL
     ///   - statusCode: HTTP status code (if retrieved)
     ///   - body: Data retrieved from the response
-    ///   - decrypted: If the request was encrypted, this will contains decrypted body
+    ///   - decrypted: If the request was encrypted, this will contain decrypted body
     func responseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data?)
 }

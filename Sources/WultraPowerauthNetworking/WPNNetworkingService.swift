@@ -231,9 +231,11 @@ public class WPNNetworkingService {
             request.addHeaders(headers)
         }
         
-        let op = WPNAsyncBlockOperation({ completion(nil, .init(reason: .canceled)) }) { operation, markFinished in
+        let op = WPNAsyncBlockOperation({
+            completion(nil, .init(reason: .canceled))
+        }) { operation, markFinished in
             
-            // make sure that any completion call wil also mark the operation finished
+            // make sure that any completion call will also mark the operation finished
             let completion: (Resp?, WPNError?) -> Void = { resp, error in
                 markFinished {
                     completion(resp, error)
@@ -256,7 +258,9 @@ public class WPNNetworkingService {
                     progressCallback: progressCallback
                 ) { [weak self] data, urlResponse, error in
                     
-                    guard let self, operation.isCancelled == false else { return }
+                    guard let self, operation.isCancelled == false else {
+                        return
+                    }
                     
                     guard let data else {
                         let reason = WPNErrorReason.resolve(error: error)
