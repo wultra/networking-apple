@@ -16,7 +16,6 @@
 
 import Foundation
 import PowerAuth2
-import PowerAuthCore
 
 class WPNHttpClient: NSObject, URLSessionDelegate {
     

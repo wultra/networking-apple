@@ -16,7 +16,6 @@
 
 import Foundation
 import PowerAuth2
-import PowerAuthCore
 
 internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBase> {
     
@@ -103,7 +102,7 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
         headers[key] = value
     }
     
-    func buildUrlRequest(encryptor: PowerAuthCoreEncryptor?) -> URLRequest {
+    func buildUrlRequest(encryptor: PowerAuthEncryptor?) -> URLRequest {
         
         var request = URLRequest(url: url)
         
@@ -126,7 +125,7 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
                 // Only add E2EE headers when the endpoint is not signed
                 if needsSignature == false {
                     encryptedRequest.requestHeaders.forEach { header in
-                        request.addValue(header.headerValue, forHTTPHeaderField: header.headerName)
+                        request.addValue(header.value, forHTTPHeaderField: header.key)
                     }
                 }
             } catch let e {
@@ -150,11 +149,11 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
     }
     
     /// Parses given result data and sets it to `response` property
-    func processResult(data: Data, encryptor: PowerAuthCoreEncryptor?) -> ProcessResultResponse<TResponse> {
+    func processResult(data: Data, encryptor: PowerAuthEncryptor?) -> ProcessResultResponse<TResponse> {
 
         if let encryptor = encryptor {
             do {
-                let decryptedData = try encryptor.decryptResponse(try PowerAuthCoreEncryptedResponse(responseBody: data))
+                let decryptedData = try encryptor.decryptResponse(try PowerAuthEncryptedResponse(responseBody: data))
                 do {
                     let decryptedResponse = try jsonDecoder.decode(TResponse.self, from: decryptedData)
                     return .encrypted(obj: decryptedResponse, decryptedData: decryptedData)

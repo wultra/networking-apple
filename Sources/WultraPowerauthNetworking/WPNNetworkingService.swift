@@ -16,7 +16,6 @@
 
 import Foundation
 import PowerAuth2
-import PowerAuthCore
 
 /// Strategy that decides if request will be put in serial or concurrent queue.
 ///
@@ -341,7 +340,7 @@ public class WPNNetworkingService {
         return op
     }
     
-    private func getEncryptor<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(endpoint: Endpoint, completion: @escaping (PowerAuthCoreEncryptor?, Error?) -> Void) {
+    private func getEncryptor<Req: WPNRequestBase, Resp: WPNResponseBase, Endpoint: WPNEndpoint<Req, Resp>>(endpoint: Endpoint, completion: @escaping (PowerAuthEncryptor?, Error?) -> Void) {
         switch endpoint.e2ee {
         case .activationScope:
             powerAuth.encryptorForActivationScope(callback: completion)
