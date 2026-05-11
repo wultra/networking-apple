@@ -1,0 +1,15 @@
+{
+  "originHash" : "1243171514ca34f85e3668271b7ac5ceeaaa6bb510694d834e20215fe2e3b718",
+  "pins" : [
+    {
+      "identity" : "powerauth-mobile-sdk-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wultra/powerauth-mobile-sdk-spm.git",
+      "state" : {
+        "revision" : "e98e570bd527c98ef4ffff950fe2bebf557e4b85",
+        "version" : "1.9.6"
+      }
+    }
+  ],
+  "version" : 3
+}

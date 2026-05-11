@@ -50,6 +50,15 @@ final class WPNBaseNetworkingObjectsTests {
         #expect(response.responseError == nil)
     }
 
+    @Test("Endpoint exposes response data type")
+    func endpointExposesResponseDataType() {
+        typealias Endpoint = WPNEndpointBasic<WPNRequest<Payload>, WPNResponse<Payload>>
+
+        let responseType: Endpoint.ResponseData.Type = WPNResponse<Payload>.self
+
+        #expect(responseType == WPNResponse<Payload>.self)
+    }
+
     @Test("Response decodes error envelope")
     func responseDecodesErrorEnvelope() throws {
         let data = Data(#"{"status":"ERROR","responseObject":{"code":"INVALID_REQUEST","message":"Bad request"}}"#.utf8)

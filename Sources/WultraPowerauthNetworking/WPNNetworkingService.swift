@@ -427,7 +427,7 @@ public extension WPNErrorReason {
     /// Bad (malformed) HTTP server response. Probably an unexpected HTTP server error.
     static let network_badServerResponse = WPNErrorReason(rawValue: "network_badServerResponse")
     /// SSL error. For detailed information, see attached error object when available.
-    static let network_sslError = WPNErrorReason(rawValue: "network_sslErrror")
+    static let network_sslError = WPNErrorReason(rawValue: "network_sslError")
     /// HTTP response code was different than 200 (success).
     static let network_errorStatusCode = WPNErrorReason(rawValue: "network_errorStatusCode")
     
