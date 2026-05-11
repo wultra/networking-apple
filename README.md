@@ -73,6 +73,9 @@ let package = Package(
 
 ### CocoaPods
 
+> [!NOTE]
+> CocoaPods is [moving to maintenance mode only](https://blog.cocoapods.org/CocoaPods-Support-Plans/). We recommend using Swift Package Manager instead.
+
 Add the following dependency to your Podfile:
 
 ```rb

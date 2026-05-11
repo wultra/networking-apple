@@ -14,5 +14,4 @@ Pod::Spec.new do |s|
   s.ios.deployment_target  = '13.0'
 
   s.dependency 'PowerAuth2', '~> 2.0.0'
-  s.dependency 'PowerAuthCore', '~> 2.0.0'
 end

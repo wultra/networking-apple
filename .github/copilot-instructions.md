@@ -57,7 +57,7 @@ xcrun xcodebuild \
   - `jsonEncoder` uses `.iso8601`
   - `WPNLogger.logHttpTraffic` is `true` by default
 - `Package.swift` intentionally forces the target path to `Sources/WultraPowerauthNetworking` because the source folder's casing is historical. Do not "fix" that casing in one place only.
-- The Xcode project and `Package.swift` both resolve PowerAuth through `https://github.com/wultra/powerauth-mobile-sdk-spm.git`. Keep the Xcode project package products (`PowerAuth2`, `PowerAuthCore`) aligned with `Package.swift` instead of reintroducing Carthage framework links.
+- The Xcode project resolves PowerAuth through `https://github.com/wultra/powerauth-mobile-sdk.git`. Only `PowerAuth2` is imported. Keep the Xcode project package products aligned with `Package.swift` instead of reintroducing Carthage framework links.
 - Use spaces for indentation in repository-maintained scripts; do not introduce tab-indented shell lines.
 - `scripts/test.sh` always recreates the `build/` directory, so do not store anything there that needs to survive test runs.
 - The project ships through SPM and CocoaPods, and release prep verifies README metadata too. Version-related changes usually need matching updates in `WultraPowerAuthNetworking.podspec`, `Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the README compatibility/changelog sections covered by `.prepare-release.json`.
