@@ -224,7 +224,7 @@ extension IntegrationProxy {
         WPNLogger.verboseLevel = .debug
         return WPNNetworkingService(
             powerAuth: powerAuth,
-            config: .init(baseUrl: URL(string: url)!),
+            config: .init(baseUrl: try TestUtils.createURL(string: url)),
             serviceName: serviceName
         )
     }

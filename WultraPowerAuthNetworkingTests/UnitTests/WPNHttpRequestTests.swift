@@ -71,7 +71,7 @@ final class WPNHttpRequestTests {
             "X-Test": "value"
         ])
 
-        let urlRequest = request.buildUrlRequest(encryptor: nil)
+        let urlRequest = try request.buildUrlRequest(encryptor: nil)
         let body = try #require(urlRequest.httpBody)
         let decodedBody = try JSONDecoder().decode(RequestEnvelope.self, from: body)
 
@@ -84,7 +84,7 @@ final class WPNHttpRequestTests {
     }
 
     @Test("Request data stays nil when encoding fails")
-    func requestDataStaysNilWhenEncodingFails() {
+    func requestDataStaysNilWhenEncodingFails() throws {
         let request = WPNHttpRequest<FailingRequest, TestResponse>(
             url,
             requestData: WPNRequest(FailingPayload()),
@@ -93,7 +93,7 @@ final class WPNHttpRequestTests {
         )
 
         #expect(request.requestData == nil)
-        #expect(request.buildUrlRequest(encryptor: nil).httpBody == nil)
+        #expect(try request.buildUrlRequest(encryptor: nil).httpBody == nil)
     }
 
     @Test("Process result decodes plain success envelope")

@@ -256,7 +256,15 @@ public class WPNNetworkingService {
                         return
                     }
                     
-                    self?.httpClient.post(request: request.buildUrlRequest(encryptor: encryptor), progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
+                    let urlRequest: URLRequest
+                    do {
+                        urlRequest = try request.buildUrlRequest(encryptor: encryptor)
+                    } catch let e {
+                        completion(nil, WPNError(reason: .network_generic, error: error))
+                        return
+                    }
+                    
+                    self?.httpClient.post(request: urlRequest, progressCallback: progressCallback, completion: { [weak self] data, urlResponse, error in
                         
                         guard let self, operation.isCancelled == false else {
                             return

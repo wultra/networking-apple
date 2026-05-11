@@ -20,6 +20,11 @@ import WultraPowerAuthNetworking
 
 class TestUtils {
     
+    struct InvalidUrlError: Error {
+        let url: String
+        var localDescription: String { "Failed to create URL from: \(url)" }
+    }
+    
     struct FakeData: Codable { }
     
     enum FakeEndpoint {
@@ -39,9 +44,17 @@ class TestUtils {
         return WPNNetworkingService(
             powerAuth: pa,
             config: .init(
-                baseUrl: URL(string: url)!),
+                baseUrl: try createURL(string: url)
+            ),
             serviceName: "dummy"
         )
+    }
+    
+    static func createURL(string: String) throws -> URL {
+        guard let url = URL(string: string) else {
+            throw InvalidUrlError(url: string)
+        }
+        return url
     }
 }
 

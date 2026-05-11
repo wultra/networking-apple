@@ -21,7 +21,7 @@ let package = Package(
         .target(
             name: "WultraPowerAuthNetworking",
             dependencies: [
-                .product(name: "PowerAuth2", package: "powerauth-mobile-sdk"),
+                .product(name: "PowerAuth2", package: "powerauth-mobile-sdk")
             ],
             // For historical reasons, the folder has a wrong case-sensitive name, so we have to force the path
             // to get rid of swift PM warning.

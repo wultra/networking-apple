@@ -102,25 +102,25 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
         headers[key] = value
     }
     
-    func buildUrlRequest(encryptor: PowerAuthEncryptor?) -> URLRequest {
+    func buildUrlRequest(encryptor: PowerAuthEncryptor?) throws -> URLRequest {
         
         var request = URLRequest(url: url)
         
-        if let ti = timeoutInterval {
-            request.timeoutInterval = ti
+        if let timeoutInterval {
+            request.timeoutInterval = timeoutInterval
         }
         
         let jsonType = "application/json"
         let requestHeaders = headers.merging(["Accept": jsonType, "Content-Type": jsonType], uniquingKeysWith: { f, _ in f })
         
-        for (k, v) in requestHeaders {
-            request.addValue(v, forHTTPHeaderField: k)
+        for (key, valye) in requestHeaders {
+            request.addValue(valye, forHTTPHeaderField: key)
         }
         
-        var data = requestData
-        if let encryptor = encryptor {
+        let data: Data?
+        if let encryptor {
             do {
-                let encryptedRequest = try encryptor.encryptRequest(data)
+                let encryptedRequest = try encryptor.encryptRequest(requestData)
                 data = encryptedRequest.requestBody
                 // Only add E2EE headers when the endpoint is not signed
                 if needsSignature == false {
@@ -129,8 +129,14 @@ internal class WPNHttpRequest<TRequest: WPNRequestBase, TResponse: WPNResponseBa
                     }
                 }
             } catch let e {
+                // encryption failed - log and rethrow.
+                // We don't want to send empty or unencrypted body in such case
                 D.error("Failed to encrypt request with encryptor: \(e).")
+                throw e
             }
+        } else {
+            // just send the data
+            data = requestData
         }
         
         request.httpMethod = method
