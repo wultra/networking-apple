@@ -44,6 +44,7 @@ public enum WPNSSLValidationStrategy {
             if provider.validate(challenge: challenge) {
                 completionHandler(.performDefaultHandling, nil)
             } else {
+                D.warning("SSL pinning validation failed for \(challenge.protectionSpace.host):\(challenge.protectionSpace.port). Cancelling the authentication challenge.")
                 completionHandler(.cancelAuthenticationChallenge, nil)
             }
         case .default:

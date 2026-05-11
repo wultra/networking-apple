@@ -78,18 +78,20 @@ internal class WPNHttpPlainRequest<TRequest: WPNRequestBase, TResponse: WPNRespo
         do {
             bodyData = try jsonEncoder.encode(requestObject)
         } catch {
-            D.error("failed to build JSON request:\n\(error)")
+            D.error("Failed to encode request body for \(url.absoluteString): \(error)")
             completion(.failure(WPNError(reason: .network_invalidRequestObject, error: error)))
             return
         }
 
         computeAuthHeaders(powerAuth: powerAuth, bodyData: bodyData) { [self] error in
             if let error {
+                D.error("Failed to compute authentication headers for \(self.url.absoluteString): \(error)")
                 completion(.failure(error))
                 return
             }
             self.getEncryptor(powerAuth: powerAuth, e2ee: e2ee) { [self] encryptor, encryptorError in
                 if let encryptorError {
+                    D.error("Failed to obtain E2EE encryptor for \(self.url.absoluteString): \(encryptorError)")
                     completion(.failure(WPNError(reason: .network_e2eeError, error: encryptorError)))
                     return
                 }
@@ -173,7 +175,7 @@ internal class WPNHttpPlainRequest<TRequest: WPNRequestBase, TResponse: WPNRespo
                 : []
             return (encrypted.requestBody, headers)
         } catch {
-            D.error("Failed to encrypt request with encryptor: \(error).")
+            D.error("Failed to encrypt request body for \(url.absoluteString): \(error)")
             throw error
         }
     }
@@ -219,6 +221,7 @@ internal final class WPNHttpAuthenticatedRequest<TRequest: WPNRequestBase, TResp
             addHeader(key: header.key, value: header.value)
             completion(nil)
         } catch {
+            D.error("Failed to compute authentication code for \(url.absoluteString) (uriId: \(uriIdentifier)): \(error)")
             completion(WPNError(reason: .network_signError, error: error))
         }
     }
@@ -249,18 +252,29 @@ internal final class WPNHttpTokenAuthenticatedRequest<TRequest: WPNRequestBase, 
         bodyData: Data,
         completion: @escaping (WPNError?) -> Void
     ) {
+        let tokenName = self.tokenName
+        let url = self.url
         powerAuth.tokenStore.requestAccessToken(withName: tokenName, authentication: auth) { [weak self] token, tokenError in
             guard let self else {
                 completion(WPNError(reason: .network_tokenError))
                 return
             }
             guard let token else {
-                completion(tokenError != nil ? WPNError(reason: .network_tokenError, error: tokenError) : WPNError(reason: .network_unknown))
+                if let tokenError {
+                    D.error("Failed to obtain token '\(tokenName)' for \(url.absoluteString): \(tokenError)")
+                    completion(WPNError(reason: .network_tokenError, error: tokenError))
+                } else {
+                    D.error("Failed to obtain token '\(tokenName)' for \(url.absoluteString): unknown error")
+                    completion(WPNError(reason: .network_unknown))
+                }
                 return
             }
             powerAuth.tokenStore.generateAuthenticationHeader(withName: token.tokenName) { header, headerError in
                 if let header {
                     self.addHeader(key: header.key, value: header.value)
+                }
+                if let headerError {
+                    D.error("Failed to generate token header '\(token.tokenName)' for \(url.absoluteString): \(headerError)")
                 }
                 completion(headerError != nil ? WPNError(reason: .network_tokenError, error: headerError) : nil)
             }
@@ -303,8 +317,8 @@ internal struct WPNUrlRequest<TResponse: WPNResponseBase> {
                     let envelope = try jsonDecoder.decode(TResponse.self, from: decryptedData)
                     return .success(envelope: envelope, decryptedData: decryptedData)
                 } catch {
-                    D.error("Failed to decode decrypted response:\n\(error)")
-                    D.debug("- from decryptedData: \(decryptedData.forLog())")
+                    D.error("Failed to decode decrypted response from \(url.absoluteString): \(error)")
+                    D.debug("Decrypted data: \(decryptedData.forLog())")
                     return .failure(error: error)
                 }
             } catch {
@@ -312,7 +326,7 @@ internal struct WPNUrlRequest<TResponse: WPNResponseBase> {
                 if let plain = try? jsonDecoder.decode(TResponse.self, from: data), plain.responseError != nil {
                     return .success(envelope: plain, decryptedData: nil)
                 }
-                D.error("Failed to decrypt response:\n\(error)")
+                D.error("Failed to decrypt response from \(url.absoluteString): \(error)")
                 return .failure(error: error)
             }
         } else {
@@ -320,8 +334,8 @@ internal struct WPNUrlRequest<TResponse: WPNResponseBase> {
                 let envelope = try jsonDecoder.decode(TResponse.self, from: data)
                 return .success(envelope: envelope, decryptedData: nil)
             } catch {
-                D.error("Failed to decode the response:\n\(error)")
-                D.debug("- from data: \(data.forLog())")
+                D.error("Failed to decode response from \(url.absoluteString): \(error)")
+                D.debug("Raw data: \(data.forLog())")
                 return .failure(error: error)
             }
         }

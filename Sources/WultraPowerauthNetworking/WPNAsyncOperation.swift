@@ -127,7 +127,7 @@ open class WPNAsyncOperation: Operation, CompletableInSpecificQueue, @unchecked 
     final public override func cancel() {
         let shouldNotifyCancel = stateLock.synchronized {
             guard self.isFinished == false else {
-                D.warning("Cannot cancel already finished operation")
+                D.warning("Cannot cancel already finished operation - \(state.rawValue)")
                 return false
             }
             self.transition(to: .isCancelled)

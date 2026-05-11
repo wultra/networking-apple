@@ -260,6 +260,7 @@ public class WPNNetworkingService {
                     
                     guard let data else {
                         let reason = WPNErrorReason.resolve(error: error)
+                        D.error("Network request to \(endpoint.endpointURLPath) failed with no response data: \(reason.rawValue) - \(error?.localizedDescription ?? "unknown error")")
                         let resultError = WPNError(reason: reason, error: error)
                         resultError.httpUrlResponse = urlResponse
                         completion(nil, resultError)
@@ -284,6 +285,7 @@ public class WPNNetworkingService {
                 // Operation wont be added to the queue if there is a missing
                 // activation in the powerauth instance.
                 // In such case, finish the operation and call completion with appropriate error.
+                D.error("Cannot execute authenticated request to \(endpoint.endpointURLPath) - PowerAuth instance has no activation.")
                 op.markFinished()
                 completionQueue.async {
                     completion(nil, WPNError(reason: .missingActivation, error: WPNSimpleError(message: "Failed to execute authenticated operation - PowerAuth instance without activation.")))
@@ -308,7 +310,6 @@ public class WPNNetworkingService {
         case .success(let envelope, let decryptedData):
             
             if let decryptedData, D.logHttpTraffic {
-                // Log decrypted response if enabled
                 D.debug("Decrypted response from \(wpnRequest.url.absoluteString):\n\(String(decoding: decryptedData, as: UTF8.self))")
             }
             
@@ -317,6 +318,11 @@ public class WPNNetworkingService {
             if envelope.status == .ok {
                 completion(envelope, nil)
             } else {
+                if let apiError = envelope.responseError {
+                    D.error("Server returned error for \(wpnRequest.url.absoluteString): \(apiError.code) - \(apiError.message)")
+                } else {
+                    D.error("Server returned non-OK status for \(wpnRequest.url.absoluteString) without error details.")
+                }
                 let resultError = WPNError(reason: .network_generic)
                 resultError.httpUrlResponse = urlResponse
                 resultError.restApiError = envelope.responseError
@@ -329,6 +335,7 @@ public class WPNNetworkingService {
             let reason: WPNErrorReason
             if let resp = urlResponse, resp.statusCode != 200 {
                 reason = .network_errorStatusCode
+                D.error("Response processing failed for \(wpnRequest.url.absoluteString) with HTTP \(resp.statusCode): \(processingError)")
             } else if wpnRequest.isEncrypted {
                 reason = .network_e2eeError
             } else {
