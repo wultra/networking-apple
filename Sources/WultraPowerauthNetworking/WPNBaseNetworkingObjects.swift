@@ -50,12 +50,12 @@ open class WPNResponseBase: Decodable {
     
     /// Status of the response
     public enum Status: String, Decodable {
-        case Ok     = "OK"
-        case Error  = "ERROR"
+        case ok     = "OK"
+        case error  = "ERROR"
     }
     
     /// Status of the response
-    public var status: Status = .Error
+    public var status: Status = .error
     /// Details of the error (when the response is error)
     public var responseError: WPNRestApiError?
     
@@ -68,10 +68,9 @@ open class WPNResponseBase: Decodable {
         let c = try decoder.container(keyedBy: Keys.self)
         status = try c.decode(Status.self, forKey: .status)
         
-        if status == .Error {
+        if status == .error {
             responseError = try c.decode(WPNRestApiError.self, forKey: .responseObject)
         }
-        
     }
 }
 
@@ -90,7 +89,7 @@ open class WPNResponse<T: Decodable>: WPNResponseBase {
         
         try super.init(from: decoder)
         
-        guard status == .Ok else { return }
+        guard status == .ok else { return }
         
         let c = try decoder.container(keyedBy: Keys.self)
         responseObject = try c.decode(T.self, forKey: .responseObject)
@@ -112,7 +111,7 @@ open class WPNResponseArray<T: Decodable>: WPNResponseBase {
         
         try super.init(from: decoder)
         
-        guard status == .Ok else { return }
+        guard status == .ok else { return }
         
         let c = try decoder.container(keyedBy: Keys.self)
         responseObject = try c.decode([T].self, forKey: .responseObject)

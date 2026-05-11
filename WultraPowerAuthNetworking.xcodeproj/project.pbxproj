@@ -24,7 +24,7 @@
 		OBJ_40 /* WPNEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* WPNEndpoint.swift */; };
 		OBJ_41 /* WPNError.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* WPNError.swift */; };
 		OBJ_42 /* WPNHttpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* WPNHttpClient.swift */; };
-		OBJ_43 /* WPNHttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* WPNHttpRequest.swift */; };
+		OBJ_43 /* WPNHttpRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* WPNHttpRequests.swift */; };
 		OBJ_44 /* WPNLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* WPNLogger.swift */; };
 		OBJ_45 /* WPNNetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* WPNNetworkingService.swift */; };
 		OBJ_46 /* WPNSSLValidationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* WPNSSLValidationStrategy.swift */; };
@@ -69,7 +69,7 @@
 		OBJ_13 /* WPNEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNEndpoint.swift; sourceTree = "<group>"; };
 		OBJ_14 /* WPNError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNError.swift; sourceTree = "<group>"; };
 		OBJ_15 /* WPNHttpClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNHttpClient.swift; sourceTree = "<group>"; };
-		OBJ_16 /* WPNHttpRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNHttpRequest.swift; sourceTree = "<group>"; };
+		OBJ_16 /* WPNHttpRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNHttpRequests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* WPNLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNLogger.swift; sourceTree = "<group>"; };
 		OBJ_18 /* WPNNetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNNetworkingService.swift; sourceTree = "<group>"; };
 		OBJ_19 /* WPNSSLValidationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNSSLValidationStrategy.swift; sourceTree = "<group>"; };
@@ -148,7 +148,7 @@
 				OBJ_9 /* WultraPowerAuthNetworking.h */,
 				OBJ_18 /* WPNNetworkingService.swift */,
 				OBJ_15 /* WPNHttpClient.swift */,
-				OBJ_16 /* WPNHttpRequest.swift */,
+				OBJ_16 /* WPNHttpRequests.swift */,
 				OBJ_10 /* WPNAsyncOperation.swift */,
 				OBJ_11 /* WPNBaseNetworkingObjects.swift */,
 				OBJ_12 /* WPNConfig.swift */,
@@ -304,7 +304,7 @@
 				OBJ_41 /* WPNError.swift in Sources */,
 				DCBEBE3C2CADBCC3003CC08A /* WPNEncryptorScope.swift in Sources */,
 				OBJ_42 /* WPNHttpClient.swift in Sources */,
-				OBJ_43 /* WPNHttpRequest.swift in Sources */,
+				OBJ_43 /* WPNHttpRequests.swift in Sources */,
 				DCCD8F032771F073004D8BF7 /* WPNResponseDelegate.swift in Sources */,
 				OBJ_44 /* WPNLogger.swift in Sources */,
 				OBJ_45 /* WPNNetworkingService.swift in Sources */,

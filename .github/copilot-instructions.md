@@ -1,6 +1,6 @@
 # Copilot instructions for `networking-apple`
 
-This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP client for Apple platforms. It is meant for apps that already have a configured `PowerAuthSDK` and want a typed transport layer for request signing, token-based authorization, optional end-to-end encryption, and shared response/error handling.
+This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP client for Apple platforms. It is meant for apps that already have a configured `PowerAuthSDK` and want a typed transport layer for request authentication, token-based authorization, optional end-to-end encryption, and shared response/error handling.
 
 ## Build, test, and lint
 
@@ -32,18 +32,18 @@ xcrun xcodebuild \
 
 ## High-level architecture
 
-- This SDK sits on top of PowerAuth rather than replacing it. App code still owns activation and `PowerAuthSDK` lifecycle; `WPNNetworkingService` consumes that configured instance to sign requests, generate token authorization headers, and obtain ECIES encryptors.
-- `WPNNetworkingService` is the single orchestration point for request signing, optional end-to-end encryption, transport, response decoding, and error mapping.
+- This SDK sits on top of PowerAuth rather than replacing it. App code still owns activation and `PowerAuthSDK` lifecycle; `WPNNetworkingService` consumes that configured instance to authenticate requests, generate token authorization headers, and obtain ECIES encryptors.
+- `WPNNetworkingService` is the single orchestration point for request authentication, optional end-to-end encryption, transport, response decoding, and error mapping.
 - Endpoint behavior is encoded in types, not flags passed at call sites:
-  - `WPNEndpointBasic` for unsigned endpoints
-  - `WPNEndpointSigned` for PowerAuth-signed endpoints
-  - `WPNEndpointSignedWithToken` for token-signed endpoints
+  - `WPNEndpointBasic` for unauthenticated endpoints
+  - `WPNEndpointAuthenticated` for PowerAuth-authenticated endpoints
+  - `WPNEndpointAuthenticatedWithToken` for token-authenticated endpoints
 - The transport flow spans several files:
   - `WPNNetworkingService.swift` creates typed requests, adds default headers, decides whether the operation goes through the shared serial PowerAuth queue or the service's concurrent queue, and obtains ECIES encryptors when `endpoint.e2ee` is enabled.
   - `WPNHttpRequest.swift` JSON-encodes requests, wraps encrypted payloads into the ECIES cryptogram envelope, and decodes or decrypts response envelopes.
   - `WPNHttpClient.swift` sends the `URLRequest` through an ephemeral `URLSession` and delegates TLS handling to `WPNSSLValidationStrategy`.
   - `WPNError.swift`, `WPNBaseNetworkingObjects.swift`, and `WPNResponseDelegate.swift` define how response envelopes, backend errors, raw traffic, and PowerAuth/network failures are surfaced.
-- Signed requests are serialized by default through `PowerAuthSDK.executeOperation(onSerialQueue:)`. Unsigned requests use the service-owned `OperationQueue` unless `concurrencyStrategy` is explicitly changed to `.concurrentAll`.
+- Authenticated requests are serialized by default through `PowerAuthSDK.executeOperation(onSerialQueue:)`. Unauthenticated requests use the service-owned `OperationQueue` unless `concurrencyStrategy` is explicitly changed to `.concurrentAll`.
 - End-to-end encryption is configured per endpoint through `WPNE2EEConfiguration`; callers opt in on the endpoint definition and do not manually encrypt or decrypt payloads.
 
 ## Key conventions

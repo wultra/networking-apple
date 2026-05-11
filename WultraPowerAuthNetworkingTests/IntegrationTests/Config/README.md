@@ -15,7 +15,7 @@ The `Config/` folder holds configuration for server-dependent integration tests.
 | `cloudApplicationId` | Application identifier registered in PowerAuth Cloud. |
 | `enrollmentServerUrl` | Enrollment server URL used as the PowerAuth SDK `baseEndpointUrl`. |
 | `enrollmentServerOnboardingUrl` | Enrollment server onboarding URL used as the base URL for E2EE onboarding endpoints (e.g. `/api/onboarding/start`). |
-| `operationsServerUrl` | Server URL used as the base URL for signed and token-signed operation endpoints. |
+| `operationsServerUrl` | Server URL used as the base URL for authenticated and token-authenticated operation endpoints. |
 
 ## Running
 

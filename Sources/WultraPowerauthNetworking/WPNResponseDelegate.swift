@@ -19,7 +19,11 @@ import Foundation
 /// Delegate for tapping into the communication and receiving raw data .
 public protocol WPNResponseDelegate: AnyObject {
     /// Called when response is received
-    func responseReceived(from url: URL, statusCode: Int?, body: Data)
-    /// Called when encrypted response is received
-    func encryptedResponseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data)
+    ///
+    /// - Parameters:
+    ///   - url: Called URL
+    ///   - statusCode: HTTP status code (if retrieved)
+    ///   - body: Data retrieved from the response
+    ///   - decrypted: If the request was encrypted, this will contains decrypted body
+    func responseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data?)
 }

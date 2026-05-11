@@ -79,4 +79,14 @@ final class WPNErrorTests {
 
         #expect(error.powerAuthErrorMessage == "PowerAuth failure")
     }
+
+    @Test("E2EE error reason has stable raw value")
+    func e2eeErrorReasonHasStableRawValue() {
+        #expect(WPNErrorReason.network_e2eeError.rawValue == "network_e2eeError")
+    }
+
+    @Test("Token error reason has stable raw value")
+    func tokenErrorReasonHasStableRawValue() {
+        #expect(WPNErrorReason.network_tokenError.rawValue == "network_tokenError")
+    }
 }

@@ -20,9 +20,9 @@ import WultraPowerAuthNetworking
 
 class TestUtils {
     
-    struct InvalidUrlError: Error {
+    struct InvalidUrlError: LocalizedError {
         let url: String
-        var localDescription: String { "Failed to create URL from: \(url)" }
+        var errorDescription: String? { "Failed to create URL from: \(url)" }
     }
     
     struct FakeData: Codable { }

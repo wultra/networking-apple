@@ -134,7 +134,7 @@ let networking = WPNNetworkingService(
 
 ## Endpoint Definition
 
-Each endpoint you target in your project must be defined for the service as a `WPNEndpoint` instance. There are several endpoint types, depending on the required PowerAuth signature.
+Each endpoint you target in your project must be defined for the service as a `WPNEndpoint` instance. There are several endpoint types, depending on the required PowerAuth authentication.
 
 ### End To End Encryption
 
@@ -158,30 +158,30 @@ public enum WPNE2EEConfiguration {
 Whether an endpoint is encrypted is determined by its backend definition.
 <!-- end -->
 
-### Signed endpoint `WPNEndpointSigned`
+### Authenticated endpoint `WPNEndpointAuthenticated`
 
-For endpoints that use a __PowerAuth signature__ and can be end-to-end encrypted.
+For endpoints that use a __PowerAuth authentication code__ and can be end-to-end encrypted.
 
 Example:
 
 ```swift
-typealias MySignedEndpointType = WPNEndpointSigned<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
-var mySignedEndpoint: MySignedEndpointType { WPNEndpointSigned(endpointURLPath: "/additional/path/to/the/signed/endpoint", uriId: "endpoint/identifier", e2ee: .notEncrypted) }
+typealias MyAuthenticatedEndpointType = WPNEndpointAuthenticated<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
+var myAuthenticatedEndpoint: MyAuthenticatedEndpointType { WPNEndpointAuthenticated(endpointURLPath: "/additional/path/to/the/authenticated/endpoint", uriId: "endpoint/identifier", e2ee: .notEncrypted) }
 // uriId is defined by the endpoint issuer - ask your server developer/provider
 
 ```
 
-### Signed endpoint with Token `WPNEndpointSignedWithToken`
+### Authenticated endpoint with Token `WPNEndpointAuthenticatedWithToken`
 
-For endpoints that use a __PowerAuth token signature__ and can be end-to-end encrypted.
+For endpoints that use a __PowerAuth token authentication__ and can be end-to-end encrypted.
 
 More information about token-based authentication [can be found here](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/PowerAuth-SDK-for-iOS.md#token-based-authentication).
 
 Example:
 
 ```swift
-typealias MyTokenEndpointType = WPNEndpointSignedWithToken<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
-var myTokenEndpoint: MyTokenEndpointType { WPNEndpointSignedWithToken(endpointURLPath: "/additional/path/to/the/token/signed/endpoint", tokenName: "MyToken", e2ee: .notEncrypted) }
+typealias MyTokenEndpointType = WPNEndpointAuthenticatedWithToken<WPNRequest<MyEndpointDataRequest>, WPNResponse<MyEndpointDataResponse>>
+var myTokenEndpoint: MyTokenEndpointType { WPNEndpointAuthenticatedWithToken(endpointURLPath: "/additional/path/to/the/token/authenticated/endpoint", tokenName: "MyToken", e2ee: .notEncrypted) }
 
 // tokenName is the name of the token as stored in the PowerAuthSDK
 // more information can be found in the PowerAuthSDK documentation
@@ -189,9 +189,9 @@ var myTokenEndpoint: MyTokenEndpointType { WPNEndpointSignedWithToken(endpointUR
 
 ```
 
-### Basic endpoint (not signed) `WPNEndpointBasic`
+### Basic endpoint (not authenticated) `WPNEndpointBasic`
 
-For endpoints that __do not use a PowerAuth signature__ but can still be end-to-end encrypted.
+For endpoints that __do not use a PowerAuth authentication code__ but can still be end-to-end encrypted.
 
 Example:
 
@@ -206,7 +206,7 @@ var myBasicEndpoint: MyBasicEndpointType { WPNEndpointBasic(endpointURLPath: "/a
 To create an HTTP request for your endpoint, you can call either the callback-based `WPNNetworkingService.post` method or its `async` counterpart with the following request parameters:
 
 - `data` - the payload of your request
-- `auth` - the `PowerAuthAuthentication` instance used to sign the request  
+- `auth` - the `PowerAuthAuthentication` instance used to authenticate the request  
   - this parameter is omitted for the basic endpoint 
 - `endpoint` - the endpoint to call
 - `headers` - custom HTTP headers, `nil` by default
@@ -231,8 +231,8 @@ struct MyResponse {
 }
 
 // endpoint configuration
-typealias MyEndpointType = WPNEndpointSigned<WPNRequest<MyRequestPayload>, WPNResponse<MyResponse>>
-var endpoint: MyEndpointType { WPNEndpointSigned(endpointURLPath: "/path/to/myendpoint", uriId: "myendpoint/identifier") }
+typealias MyEndpointType = WPNEndpointAuthenticated<WPNRequest<MyRequestPayload>, WPNResponse<MyResponse>>
+var endpoint: MyEndpointType { WPNEndpointAuthenticated(endpointURLPath: "/path/to/myendpoint", uriId: "myendpoint/identifier") }
 
 // Authentication (for example purposes) expect user PIN 1111
 let auth = PowerAuthAuthentication.possessionWithPassword("1111")
@@ -290,11 +290,11 @@ class MyResponseDelegateLogger: WPNResponseDelegate {
 
 ## Parallel Requests
 
-By default, the SDK serializes all signed requests. Requests signed with `PowerAuthSDK` are placed into a queue and executed one by one, which means an HTTP request is not sent until the previous one finishes. Other requests are executed in parallel.
+By default, the SDK serializes all authenticated requests. Requests authenticated with `PowerAuthSDK` are placed into a queue and executed one by one, which means an HTTP request is not sent until the previous one finishes. Other requests are executed in parallel.
 
 This behavior can be changed via `WPNNetworkingService.concurrencyStrategy` with the following possible values:
 
-- `serialSigned` - Default behavior. Only requests that need a PowerAuth signature will be put into the serial queue that is shared with the `PowerAuthSDK` instance to ensure all signed requests are in proper order.
+- `serialAuthenticated` - Default behavior. Only requests that need a PowerAuth authentication code will be put into the serial queue that is shared with the `PowerAuthSDK` instance to ensure all authenticated requests are in proper order.
 - `concurrentAll` - All requests will be put into the concurrent queue. This behavior is not recommended unless you know exactly why you want this.
 
 <!-- begin box info -->
@@ -353,11 +353,13 @@ Each `WPNError` has a `reason` property that explains why the error was created.
 |`network_errorStatusCode`|HTTP response code was different than 200 (success).|
 |`network_invalidResponseObject`|An unexpected response from the server.|
 |`network_invalidRequestObject`|Request is not valid. Such an object is not sent to the server.|
-|`network_signError`|When the signing of the request failed.|
+|`network_signError`|When the authentication code computation for the request failed.|
 |`network_timeOut`|Request timed out|
 |`network_noInternetConnection`|Not connected to the internet.|
 |`network_badServerResponse`|Bad (malformed) HTTP server response. Probably an unexpected HTTP server error.|
 |`network_sslError`|SSL error. For detailed information, see the attached error object when available.|
+|`network_e2eeError`|End-to-end encryption or decryption failed. For detailed information, see the attached error object when available.|
+|`network_tokenError`|PowerAuth token authorization failed — the token could not be obtained or its header could not be generated.|
 
 #### Custom Errors
 
@@ -410,6 +412,10 @@ If you want to process logs on your own (for example, log them to a file or a cl
 - Requires PowerAuth SDK `2.0.0`.
 - Raised the minimum supported platform versions to iOS 13.0 and tvOS 13.0.
 - Added `async/await` counterparts to all public `WPNNetworkingService.post(...)` overloads.
+- Added `network_e2eeError` and `network_tokenError` error reasons for more granular error handling.
+- Renamed `WPNEndpointSigned` to `WPNEndpointAuthenticated` and `WPNEndpointSignedWithToken` to `WPNEndpointAuthenticatedWithToken` to align with updated PowerAuth terminology (authentication code instead of signature).
+- Renamed `WPNRequestConcurrencyStrategy.serialSigned` to `.serialAuthenticated`.
+- Renamed the `signedWith` parameter label in `post(...)` methods to `authenticatedWith`.
 
 ### 1.5.2
 - Time is now always synchronized when creating token-based authorization headers

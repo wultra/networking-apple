@@ -59,11 +59,11 @@ final class WPNPostSuccessIntegrationTests {
         let request = WPNRequest(TestEndpoints.StartRequest(identification: ["clientNumber": UUID().uuidString]))
 
         let response = try await service.post(data: request, to: TestEndpoints.Start.endpoint)
-        #expect(response.status == .Ok)
+        #expect(response.status == .ok)
     }
 
-    @Test("Signed POST with PowerAuth signature")
-    func signedPost() async throws {
+    @Test("Authenticated POST with PowerAuth authentication code")
+    func authenticatedPost() async throws {
         let loaded = try #require(TestConfiguration.load())
         let proxy = IntegrationProxy(config: loaded.config)
         try await proxy.initializePowerauth()
@@ -73,13 +73,13 @@ final class WPNPostSuccessIntegrationTests {
         let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
         let response = try await service.post(
             data: WPNRequestBase(),
-            signedWith: .possessionWithPassword(password: proxy.pin),
+            authenticatedWith: .possessionWithPassword(password: proxy.pin),
             to: TestEndpoints.History.endpoint
         )
-        #expect(response.status == .Ok)
+        #expect(response.status == .ok)
     }
 
-    @Test("Token-signed POST with PowerAuth token")
+    @Test("Token-authenticated POST with PowerAuth token")
     func tokenPost() async throws {
         let loaded = try #require(TestConfiguration.load())
         let proxy = IntegrationProxy(config: loaded.config)
@@ -90,10 +90,10 @@ final class WPNPostSuccessIntegrationTests {
         let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
         let response = try await service.post(
             data: WPNRequestBase(),
-            signedWith: .possessionWithPassword(password: proxy.pin),
+            authenticatedWith: .possessionWithPassword(password: proxy.pin),
             to: TestEndpoints.OperationList.endpoint
         )
-        #expect(response.status == .Ok)
+        #expect(response.status == .ok)
     }
 }
 
@@ -116,12 +116,12 @@ final class WPNPostFailureIntegrationTests {
             _ = try await service.post(data: WPNRequest(WPNRequestBase()), to: TestEndpoints.FailingStart.endpoint)
             Issue.record("Expected error for malformed E2EE payload")
         } catch let error as WPNError {
-            #expect(error.reason == .network_generic)
+            #expect(error.reason == .network_e2eeError)
         }
     }
 
-    @Test("Signed POST with wrong authentication")
-    func signedPostWrongPin() async throws {
+    @Test("Authenticated POST with wrong authentication")
+    func authenticatedPostWrongPin() async throws {
         let loaded = try #require(TestConfiguration.load())
         let proxy = IntegrationProxy(config: loaded.config)
         try await proxy.initializePowerauth()
@@ -132,7 +132,7 @@ final class WPNPostFailureIntegrationTests {
         do {
             _ = try await service.post(
                 data: WPNRequestBase(),
-                signedWith: .possessionWithPassword(password: "0000"),
+                authenticatedWith: .possessionWithPassword(password: "0000"),
                 to: TestEndpoints.History.endpoint
             )
             Issue.record("Request should have failed with wrong PIN but succeeded")
@@ -156,11 +156,7 @@ private final class ResponseRecorder: WPNResponseDelegate, @unchecked Sendable {
 
     private(set) var responses: [Entry] = []
 
-    func responseReceived(from url: URL, statusCode: Int?, body: Data) {
-        responses.append(Entry(url: url, statusCode: statusCode, body: body))
-    }
-
-    func encryptedResponseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data) {
+    func responseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data?) {
         responses.append(Entry(url: url, statusCode: statusCode, body: body))
     }
 }
@@ -180,15 +176,15 @@ private enum TestEndpoints {
         static var endpoint: EndpointType { .init(endpointURLPath: "/api/onboarding/start", e2ee: .applicationScope) }
     }
 
-    /// Signed endpoint inspired by mtoken History.
+    /// Authenticated endpoint inspired by mtoken History.
     enum History {
-        typealias EndpointType = WPNEndpointSigned<WPNRequestBase, WPNResponseBase>
+        typealias EndpointType = WPNEndpointAuthenticated<WPNRequestBase, WPNResponseBase>
         static let endpoint: EndpointType = .init(endpointURLPath: "/api/auth/token/app/operation/history", uriId: "/operation/history")
     }
 
-    /// Token-signed endpoint inspired by mtoken List.
+    /// Token-authenticated endpoint inspired by mtoken List.
     enum OperationList {
-        typealias EndpointType = WPNEndpointSignedWithToken<WPNRequestBase, WPNResponseBase>
+        typealias EndpointType = WPNEndpointAuthenticatedWithToken<WPNRequestBase, WPNResponseBase>
         static let endpoint: EndpointType = .init(endpointURLPath: "/api/auth/token/app/operation/list", tokenName: "possession_universal")
     }
 

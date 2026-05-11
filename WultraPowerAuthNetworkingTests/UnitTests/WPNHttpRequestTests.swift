@@ -23,55 +23,22 @@ import Testing
 final class WPNHttpRequestTests {
 
     private let url = URL(string: "https://example.com/test")!
+    private let powerAuth: PowerAuthSDK
 
-    @Test("Basic request does not require signature")
-    func basicRequestDoesNotRequireSignature() {
-        let request = makeBasicRequest()
-
-        #expect(request.needsSignature == false)
-        #expect(request.needsTokenSignature == false)
-    }
-
-    @Test("Signed request requires PowerAuth signature")
-    func signedRequestRequiresSignature() {
-        let request = WPNHttpRequest<TestRequest, TestResponse>(
-            url,
-            uriId: "/operation/sign",
-            auth: PowerAuthAuthentication.possession(),
-            requestData: WPNRequest(Payload(value: "hello")),
-            decoder: JSONDecoder(),
-            encoder: JSONEncoder()
-        )
-
-        #expect(request.needsSignature)
-        #expect(request.needsTokenSignature == false)
-    }
-
-    @Test("Token-signed request requires token signature")
-    func tokenSignedRequestRequiresTokenSignature() {
-        let request = WPNHttpRequest<TestRequest, TestResponse>(
-            url,
-            tokenName: "access-token",
-            auth: PowerAuthAuthentication.possession(),
-            requestData: WPNRequest(Payload(value: "hello")),
-            decoder: JSONDecoder(),
-            encoder: JSONEncoder()
-        )
-
-        #expect(request.needsSignature == false)
-        #expect(request.needsTokenSignature)
+    init() throws {
+        powerAuth = try TestUtils.createDummyService().powerAuth
     }
 
     @Test("URL request merges headers and timeout")
-    func urlRequestMergesHeadersAndTimeout() throws {
-        let request = makeBasicRequest()
-        request.timeoutInterval = 12
+    func urlRequestMergesHeadersAndTimeout() async throws {
+        let request = makeBasicRequest(timeoutInterval: 12)
         request.addHeaders([
             "Accept": "application/custom+json",
             "X-Test": "value"
         ])
 
-        let urlRequest = try request.buildUrlRequest(encryptor: nil)
+        let wpnRequest = try await buildUrlRequest(request)
+        let urlRequest = wpnRequest.urlRequest
         let body = try #require(urlRequest.httpBody)
         let decodedBody = try JSONDecoder().decode(RequestEnvelope.self, from: body)
 
@@ -83,60 +50,61 @@ final class WPNHttpRequestTests {
         #expect(decodedBody == RequestEnvelope(requestObject: Payload(value: "hello")))
     }
 
-    @Test("Request data stays nil when encoding fails")
-    func requestDataStaysNilWhenEncodingFails() throws {
-        let request = WPNHttpRequest<FailingRequest, TestResponse>(
+    @Test("buildUrlRequest fails when encoding fails")
+    func buildUrlRequestFailsWhenEncodingFails() async {
+        let request = WPNHttpPlainRequest<FailingRequest, TestResponse>(
             url,
             requestData: WPNRequest(FailingPayload()),
             decoder: JSONDecoder(),
             encoder: JSONEncoder()
         )
 
-        #expect(request.requestData == nil)
-        #expect(try request.buildUrlRequest(encryptor: nil).httpBody == nil)
+        let result = await buildUrlRequestResult(request)
+        switch result {
+        case .success:
+            Issue.record("Expected encoding failure.")
+        case .failure(let error):
+            #expect(error.reason == .network_invalidRequestObject)
+        }
     }
 
     @Test("Process result decodes plain success envelope")
     func processResultDecodesPlainSuccessEnvelope() {
-        let request = makeBasicRequest()
+        let wpnRequest = makePlainWpnRequest()
         let data = Data(#"{"status":"OK","responseObject":{"value":"done"}}"#.utf8)
 
-        switch request.processResult(data: data, encryptor: nil) {
-        case .plain(let response):
-            #expect(response.status == .Ok)
+        switch wpnRequest.processResult(data: data) {
+        case .success(let response, _):
+            #expect(response.status == .ok)
             #expect(response.responseObject == Payload(value: "done"))
-        case .encrypted:
-            Issue.record("Expected a plain response for a non-encrypted request.")
-        case .failed(let error):
+        case .failure(let error):
             Issue.record("Expected a decoded response, got error: \(error)")
         }
     }
 
     @Test("Process result decodes plain error envelope")
     func processResultDecodesPlainErrorEnvelope() {
-        let request = makeBasicRequest()
+        let wpnRequest = makePlainWpnRequest()
         let data = Data(#"{"status":"ERROR","responseObject":{"code":"INVALID_REQUEST","message":"Bad request"}}"#.utf8)
 
-        switch request.processResult(data: data, encryptor: nil) {
-        case .plain(let response):
-            #expect(response.status == .Error)
+        switch wpnRequest.processResult(data: data) {
+        case .success(let response, _):
+            #expect(response.status == .error)
             #expect(response.responseError?.errorCode == .invalidRequest)
-        case .encrypted:
-            Issue.record("Expected a plain response for a non-encrypted request.")
-        case .failed(let error):
+        case .failure(let error):
             Issue.record("Expected a decoded error envelope, got error: \(error)")
         }
     }
 
     @Test("Process result fails on malformed response")
     func processResultFailsOnMalformedResponse() {
-        let request = makeBasicRequest()
+        let wpnRequest = makePlainWpnRequest()
         let data = Data(#"{"responseObject":{"value":"missing status"}}"#.utf8)
 
-        switch request.processResult(data: data, encryptor: nil) {
-        case .plain, .encrypted:
+        switch wpnRequest.processResult(data: data) {
+        case .success:
             Issue.record("Expected malformed data to fail decoding.")
-        case .failed:
+        case .failure:
             break
         }
     }
@@ -165,12 +133,44 @@ final class WPNHttpRequestTests {
     private typealias TestResponse = WPNResponse<Payload>
     private typealias FailingRequest = WPNRequest<FailingPayload>
 
-    private func makeBasicRequest() -> WPNHttpRequest<TestRequest, TestResponse> {
-        WPNHttpRequest(
+    private func makeBasicRequest(timeoutInterval: TimeInterval? = nil) -> WPNHttpPlainRequest<TestRequest, TestResponse> {
+        WPNHttpPlainRequest(
             url,
             requestData: WPNRequest(Payload(value: "hello")),
             decoder: JSONDecoder(),
-            encoder: JSONEncoder()
+            encoder: JSONEncoder(),
+            timeoutInterval: timeoutInterval
         )
+    }
+
+    private func makePlainWpnRequest() -> WPNUrlRequest<TestResponse> {
+        WPNUrlRequest(
+            urlRequest: URLRequest(url: url),
+            url: url,
+            encryptor: nil,
+            jsonDecoder: JSONDecoder()
+        )
+    }
+
+    private func buildUrlRequest<Req: WPNRequestBase, Resp: WPNResponseBase>(
+        _ request: WPNHttpPlainRequest<Req, Resp>,
+        e2ee: WPNE2EEConfiguration = .notEncrypted
+    ) async throws -> WPNUrlRequest<Resp> {
+        try await withCheckedThrowingContinuation { continuation in
+            request.buildUrlRequest(powerAuth: powerAuth, e2ee: e2ee) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+
+    private func buildUrlRequestResult<Req: WPNRequestBase, Resp: WPNResponseBase>(
+        _ request: WPNHttpPlainRequest<Req, Resp>,
+        e2ee: WPNE2EEConfiguration = .notEncrypted
+    ) async -> Result<WPNUrlRequest<Resp>, WPNError> {
+        await withCheckedContinuation { continuation in
+            request.buildUrlRequest(powerAuth: powerAuth, e2ee: e2ee) { result in
+                continuation.resume(returning: result)
+            }
+        }
     }
 }
