@@ -15,7 +15,7 @@ let package = Package(
             targets: ["WultraPowerAuthNetworking"])
     ],
     dependencies: [
-        .package(url: "https://github.com/wultra/powerauth-mobile-sdk.git", .branch("issues/310-spm"))
+        .package(url: "https://github.com/wultra/powerauth-mobile-sdk.git", branch: "develop")
     ],
     targets: [
         .target(
