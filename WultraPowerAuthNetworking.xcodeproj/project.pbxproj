@@ -632,7 +632,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/wultra/powerauth-mobile-sdk.git";
 			requirement = {
-				branch = "issues/310-spm";
+				branch = develop;
 				kind = branch;
 			};
 		};

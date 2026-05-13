@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/wultra/cc7",
       "state" : {
-        "revision" : "4b121897bc8f091085203d2dd21d40f10bbe4129",
-        "version" : "0.7.0-spm3"
+        "revision" : "0ea92b389c86eb5fa7201d058b544a835980a405",
+        "version" : "0.7.0-rc2"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/wultra/powerauth-mobile-sdk.git",
       "state" : {
-        "branch" : "issues/310-spm",
-        "revision" : "a803a189836bd07659c025d6869c35bc0da3b3d5"
+        "branch" : "develop",
+        "revision" : "de85d2e34498ca7a1009882218017b5bfa1010cf"
       }
     }
   ],
