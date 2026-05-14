@@ -147,7 +147,7 @@ internal class WPNHttpPlainRequest<TRequest: WPNRequestBase, TResponse: WPNRespo
             request.addValue(value, forHTTPHeaderField: key)
         }
 
-        let (body, encryptionHeaders) = try encryptBodyIfNeeded(bodyData: bodyData, encryptor: encryptor)
+        let (body, encryptionHeaders) = try encryptBody(bodyData: bodyData, encryptor: encryptor)
 
         for (key, value) in encryptionHeaders {
             request.addValue(value, forHTTPHeaderField: key)
@@ -161,7 +161,7 @@ internal class WPNHttpPlainRequest<TRequest: WPNRequestBase, TResponse: WPNRespo
 
     /// Encrypts the request body when an encryptor is provided, returning the (possibly encrypted)
     /// body data together with any encryption headers that must be added to the URL request.
-    private func encryptBodyIfNeeded(
+    private func encryptBody(
         bodyData: Data,
         encryptor: PowerAuthEncryptor?
     ) throws -> (body: Data, headers: [(key: String, value: String)]) {

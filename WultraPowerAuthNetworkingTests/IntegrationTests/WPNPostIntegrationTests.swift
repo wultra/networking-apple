@@ -31,7 +31,7 @@ final class WPNPostSuccessIntegrationTests {
         service.responseDelegate = recorder
 
         do {
-            _ = try await service.post(data: WPNRequestBase(), to: TestEndpoints.Todo.endpoint)
+            _ = try await service.post(data: WPNRequestBase(), to: TestEndpoints.Posts.endpoint)
             Issue.record("Expected error because jsonplaceholder does not return WPN envelope format")
         } catch let error as WPNError {
             // Transport succeeded but jsonplaceholder either returns a non-200
@@ -165,7 +165,7 @@ private final class ResponseRecorder: WPNResponseDelegate, @unchecked Sendable {
 private enum TestEndpoints {
 
     /// Plain endpoint for jsonplaceholder (no auth, no e2ee).
-    enum Todo {
+    enum Posts {
         typealias EndpointType = WPNEndpointBasic<WPNRequestBase, WPNResponseBase>
         static let endpoint: EndpointType = .init(endpointURLPath: "/posts")
     }
