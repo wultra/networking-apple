@@ -22,12 +22,12 @@ import Testing
 final class JSONTests {
 
     @Test("Date deserialization")
-    func dateDeserialization() {
+    func dateDeserialization() throws {
         struct TestObject: Codable {
             let test: Date
         }
 
-        let service = TestUtils.createFakeService()
+        let service = try TestUtils.createDummyService()
 
         // the string is valid, but Apple parser cannot parse it by default...
         let invalidISO8601Data = """

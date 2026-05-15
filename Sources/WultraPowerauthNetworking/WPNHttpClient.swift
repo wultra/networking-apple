@@ -16,7 +16,6 @@
 
 import Foundation
 import PowerAuth2
-import PowerAuthCore
 
 class WPNHttpClient: NSObject, URLSessionDelegate {
     
@@ -79,9 +78,7 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
 private extension URLRequest {
     func printToConsole() {
         if D.logHttpTraffic {
-            D.info("WPNHttpClient Request")
-            D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
-            D.info("- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: allHTTPHeaderFields))")
+            D.info("WPNHttpClient Request\n- URL: POST - \(url?.absoluteString ?? "no URL")\n- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: allHTTPHeaderFields))")
             D.debug("- Body: \(httpBody?.utf8string ?? "empty body")")
         }
     }
@@ -90,14 +87,11 @@ private extension URLRequest {
 private extension HTTPURLResponse {
     func printToConsole(withData data: Data?, andError error: Error?) {
         if D.logHttpTraffic {
-            D.info("WPNHttpClient Response")
-            D.info("- URL: POST - \(url?.absoluteString ?? "no URL")")
-            D.info("- Status code: \(statusCode)")
-            D.info("- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: Dictionary(uniqueKeysWithValues: allHeaderFields.map { ($0.key.description, "\($0.value)") })))")
+            D.info("WPNHttpClient Response\n- URL: POST - \(url?.absoluteString ?? "no URL")\n- Status code: \(statusCode)\n- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: Dictionary(uniqueKeysWithValues: allHeaderFields.map { ($0.key.description, "\($0.value)") })))")
             D.debug("- Body: \(data?.utf8string ?? "empty body")")
             
-            if let error = error {
-                D.error("- Error: \(error.localizedDescription)")
+            if let error {
+                D.error("WPNHttpClient response error for \(url?.absoluteString ?? "unknown URL"): \(error.localizedDescription)")
             }
         }
     }

@@ -45,7 +45,7 @@ final class WPNBaseNetworkingObjectsTests {
 
         let response = try JSONDecoder().decode(WPNResponse<Payload>.self, from: data)
 
-        #expect(response.status == .Ok)
+        #expect(response.status == .ok)
         #expect(response.responseObject == Payload(value: "hello"))
         #expect(response.responseError == nil)
     }
@@ -65,7 +65,7 @@ final class WPNBaseNetworkingObjectsTests {
 
         let response = try JSONDecoder().decode(WPNResponse<Payload>.self, from: data)
 
-        #expect(response.status == .Error)
+        #expect(response.status == .error)
         #expect(response.responseObject == nil)
         #expect(response.responseError?.code == "INVALID_REQUEST")
         #expect(response.responseError?.errorCode == .invalidRequest)
@@ -77,7 +77,7 @@ final class WPNBaseNetworkingObjectsTests {
 
         let response = try JSONDecoder().decode(WPNResponseArray<Payload>.self, from: data)
 
-        #expect(response.status == .Ok)
+        #expect(response.status == .ok)
         #expect(response.responseObject == [Payload(value: "first"), Payload(value: "second")])
     }
 

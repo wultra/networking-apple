@@ -1,6 +1,6 @@
 # Copilot instructions for `networking-apple`
 
-This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP client for Apple platforms. It is meant for apps that already have a configured `PowerAuthSDK` and want a typed transport layer for request signing, token-based authorization, optional end-to-end encryption, and shared response/error handling.
+This repository builds **Wultra PowerAuth Networking**, a PowerAuth-focused HTTP client for Apple platforms. It is meant for apps that already have a configured `PowerAuthSDK` and want a typed transport layer for request authentication, token-based authorization, optional end-to-end encryption, and shared response/error handling.
 
 ## Build, test, and lint
 
@@ -32,18 +32,18 @@ xcrun xcodebuild \
 
 ## High-level architecture
 
-- This SDK sits on top of PowerAuth rather than replacing it. App code still owns activation and `PowerAuthSDK` lifecycle; `WPNNetworkingService` consumes that configured instance to sign requests, generate token authorization headers, and obtain ECIES encryptors.
-- `WPNNetworkingService` is the single orchestration point for request signing, optional end-to-end encryption, transport, response decoding, and error mapping.
+- This SDK sits on top of PowerAuth rather than replacing it. App code still owns activation and `PowerAuthSDK` lifecycle; `WPNNetworkingService` consumes that configured instance to authenticate requests, generate token authorization headers, and obtain ECIES encryptors.
+- `WPNNetworkingService` is the single orchestration point for request authentication, optional end-to-end encryption, transport, response decoding, and error mapping.
 - Endpoint behavior is encoded in types, not flags passed at call sites:
-  - `WPNEndpointBasic` for unsigned endpoints
-  - `WPNEndpointSigned` for PowerAuth-signed endpoints
-  - `WPNEndpointSignedWithToken` for token-signed endpoints
+  - `WPNEndpointBasic` for unauthenticated endpoints
+  - `WPNEndpointAuthenticated` for PowerAuth-authenticated endpoints
+  - `WPNEndpointAuthenticatedWithToken` for token-authenticated endpoints
 - The transport flow spans several files:
   - `WPNNetworkingService.swift` creates typed requests, adds default headers, decides whether the operation goes through the shared serial PowerAuth queue or the service's concurrent queue, and obtains ECIES encryptors when `endpoint.e2ee` is enabled.
-  - `WPNHttpRequest.swift` JSON-encodes requests, wraps encrypted payloads into the ECIES cryptogram envelope, and decodes or decrypts response envelopes.
+  - `WPNHttpRequests.swift` JSON-encodes requests, wraps encrypted payloads into the ECIES cryptogram envelope, and decodes or decrypts response envelopes.
   - `WPNHttpClient.swift` sends the `URLRequest` through an ephemeral `URLSession` and delegates TLS handling to `WPNSSLValidationStrategy`.
   - `WPNError.swift`, `WPNBaseNetworkingObjects.swift`, and `WPNResponseDelegate.swift` define how response envelopes, backend errors, raw traffic, and PowerAuth/network failures are surfaced.
-- Signed requests are serialized by default through `PowerAuthSDK.executeOperation(onSerialQueue:)`. Unsigned requests use the service-owned `OperationQueue` unless `concurrencyStrategy` is explicitly changed to `.concurrentAll`.
+- Authenticated requests are serialized by default through `PowerAuthSDK.executeOperation(onSerialQueue:)`. Unauthenticated requests use the service-owned `OperationQueue` unless `concurrencyStrategy` is explicitly changed to `.concurrentAll`.
 - End-to-end encryption is configured per endpoint through `WPNE2EEConfiguration`; callers opt in on the endpoint definition and do not manually encrypt or decrypt payloads.
 
 ## Key conventions
@@ -57,7 +57,7 @@ xcrun xcodebuild \
   - `jsonEncoder` uses `.iso8601`
   - `WPNLogger.logHttpTraffic` is `true` by default
 - `Package.swift` intentionally forces the target path to `Sources/WultraPowerauthNetworking` because the source folder's casing is historical. Do not "fix" that casing in one place only.
-- The Xcode project and `Package.swift` both resolve PowerAuth through `https://github.com/wultra/powerauth-mobile-sdk-spm.git`. Keep the Xcode project package products (`PowerAuth2`, `PowerAuthCore`) aligned with `Package.swift` instead of reintroducing Carthage framework links.
+- The Xcode project resolves PowerAuth through `https://github.com/wultra/powerauth-mobile-sdk.git`. Only `PowerAuth2` is imported. Keep the Xcode project package products aligned with `Package.swift` instead of reintroducing Carthage framework links.
 - Use spaces for indentation in repository-maintained scripts; do not introduce tab-indented shell lines.
 - `scripts/test.sh` always recreates the `build/` directory, so do not store anything there that needs to survive test runs.
 - The project ships through SPM and CocoaPods, and release prep verifies README metadata too. Version-related changes usually need matching updates in `WultraPowerAuthNetworking.podspec`, `Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the README compatibility/changelog sections covered by `.prepare-release.json`.

@@ -4,17 +4,16 @@
 # Swift PM
 Package.resolved
 !WultraPowerAuthNetworking.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-.build
 
-*/Pods/*
-
+# Swiftlint binary
 swiftlint
 
-## Build generated
+# Build
 build/
 DerivedData
+.build
 
-## Various settings
+# Various settings
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -25,32 +24,24 @@ DerivedData
 !default.perspectivev3
 xcuserdata
 
-## Other
+# Other
 *.xccheckout
 *.moved-aside
 *.xcuserstate
 *.xcscmblueprint
 *.mobileprovision
 
-## Obj-C/Swift specific
+# iOS specific
 *.hmap
 *.ipa
 *.framework
 *.xcframework
 
-## App build artifacts
-build/
-
-# Integration test credentials
+# Integration test credentials and proxy
 WultraPowerAuthNetworkingTests/IntegrationTests/Config/config.json
-
-# NPM
-node_modules
-
-*.jar
+WultraPowerAuthNetworkingTests/IntegrationTests/IntegrationProxy/IntegrationProxy.swift
 
 # keep everything in the script folder
 !scripts/*
 scripts/**/node_modules
 scripts/**/.DS_Store
-WultraPowerAuthNetworkingTests/IntegrationTests/IntegrationProxy/IntegrationProxy.swift

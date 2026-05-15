@@ -41,15 +41,16 @@ public class WPNEndpoint<TRequestData: WPNRequestBase, TResponseData: WPNRespons
         self.e2ee = e2ee
     }
     
-    typealias Request = WPNHttpRequest<RequestData, ResponseData>
     /// Completion called when a request to the endpoint finishes.
     public typealias Completion = (ResponseData?, WPNError?) -> Void
 }
 
-/// Endpoint that does not require a PowerAuth signature.
+/// Endpoint that does not require a PowerAuth authentication code.
 public class WPNEndpointBasic<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
     
-    /// Creates an unsigned endpoint definition.
+    typealias Request = WPNHttpPlainRequest<RequestData, ResponseData>
+    
+    /// Creates an unauthenticated endpoint definition.
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example `"/my/custom/endpoint"`.
     ///   - e2ee: End-to-end encryption configuration. `.notEncrypted` by default.
@@ -58,17 +59,19 @@ public class WPNEndpointBasic<RequestData: WPNRequestBase, ResponseData: WPNResp
     }
 }
 
-/// Endpoint signed with a standard PowerAuth request signature.
-public class WPNEndpointSigned<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
+/// Endpoint authenticated with a standard PowerAuth authentication code.
+public class WPNEndpointAuthenticated<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
     
-    /// PowerAuth URI identifier used for request signing.
+    typealias Request = WPNHttpAuthenticatedRequest<RequestData, ResponseData>
+    
+    /// PowerAuth URI identifier used for authentication code computation.
     /// This can differ from the endpoint URL path.
     public let uriId: String
     
-    /// Creates an endpoint signed with a standard PowerAuth request signature.
+    /// Creates an endpoint authenticated with a standard PowerAuth authentication code.
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example `"/my/custom/endpoint"`.
-    ///   - uriId: PowerAuth URI identifier used for request signing.
+    ///   - uriId: PowerAuth URI identifier used for authentication code computation.
     ///   - e2ee: End-to-end encryption configuration. `.notEncrypted` by default.
     public init(endpointURLPath: String, uriId: String, e2ee: WPNE2EEConfiguration = .notEncrypted) {
         self.uriId = uriId
@@ -76,13 +79,15 @@ public class WPNEndpointSigned<RequestData: WPNRequestBase, ResponseData: WPNRes
     }
 }
 
-/// Endpoint signed with a PowerAuth token authorization header.
-public class WPNEndpointSignedWithToken<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
+/// Endpoint authenticated with a PowerAuth token authorization header.
+public class WPNEndpointAuthenticatedWithToken<RequestData: WPNRequestBase, ResponseData: WPNResponseBase>: WPNEndpoint<RequestData, ResponseData> {
+    
+    typealias Request = WPNHttpTokenAuthenticatedRequest<RequestData, ResponseData>
     
     /// Name of the PowerAuth token used for authorization.
     public let tokenName: String
     
-    /// Creates an endpoint signed with a PowerAuth token authorization header.
+    /// Creates an endpoint authenticated with a PowerAuth token authorization header.
     /// - Parameters:
     ///   - endpointURLPath: URL path for the endpoint. For example `"/my/custom/endpoint"`.
     ///   - tokenName: Name of the PowerAuth token used for authorization.
