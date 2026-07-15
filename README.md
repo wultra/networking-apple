@@ -408,7 +408,7 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 ## Changelog
 
-### TBA
+### 2.0.0-RC1
 - Requires PowerAuth SDK `2.0.0`.
 - Raised the minimum supported platform versions to iOS 13.0 and tvOS 13.0.
 - Added `async/await` counterparts to all public `WPNNetworkingService.post(...)` overloads.
