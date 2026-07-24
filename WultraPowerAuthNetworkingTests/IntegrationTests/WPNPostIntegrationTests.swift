@@ -168,13 +168,19 @@ final class WPNTokenTimeSyncIntegrationTests {
         #expect(warmUp.status == .ok)
         #expect(powerAuth.tokenStore.hasLocalToken(withName: TestEndpoints.tokenName))
 
-        // Second request must succeed while the token is already present locally.
+        // Reset the time synchronization to prove that the cached-token path does not
+        // trigger a new synchronization.
+        powerAuth.timeSynchronizationService.resetTimeSynchronization()
+        #expect(!powerAuth.timeSynchronizationService.isTimeSynchronized)
+
+        // Second request must succeed using the cached token, without synchronizing time again.
         let response = try await service.post(
             data: WPNRequestBase(),
             authenticatedWith: .possessionWithPassword(password: proxy.pin),
             to: TestEndpoints.OperationList.endpoint
         )
         #expect(response.status == .ok)
+        #expect(!powerAuth.timeSynchronizationService.isTimeSynchronized)
     }
 
     @Test("Token-authenticated POST when the token is missing and time is not synchronized")
