@@ -410,6 +410,7 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 ### TBA
 - Requires PowerAuth SDK `2.0.0`.
+- PowerAuth time is now synchronized before requesting a token-based authorization header, but only when the token is not already cached locally.
 - Raised the minimum supported platform versions to iOS 13.0 and tvOS 13.0.
 - Added `async/await` counterparts to all public `WPNNetworkingService.post(...)` overloads.
 - Added `network_e2eeError` and `network_tokenError` error reasons for more granular error handling.
