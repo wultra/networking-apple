@@ -183,6 +183,9 @@ final class WPNTokenTimeSyncIntegrationTests {
             to: TestEndpoints.OperationList.endpoint
         )
         #expect(response.status == .ok)
+        // Generating the token authorization header synchronizes the time internally,
+        // so the time ends up synchronized again even though our code skipped it.
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
     }
 
     @Test("Token-authenticated POST when the token is missing and time is not synchronized")
