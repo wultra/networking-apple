@@ -252,6 +252,34 @@ internal final class WPNHttpTokenAuthenticatedRequest<TRequest: WPNRequestBase, 
         bodyData: Data,
         completion: @escaping (WPNError?) -> Void
     ) {
+        // A cached local token can be used directly. Requesting a new token, on the other hand,
+        // requires the PowerAuth time to be synchronized with the server, so synchronize it first
+        // when the token is not yet available locally.
+        if powerAuth.tokenStore.hasLocalToken(withName: tokenName) || powerAuth.timeSynchronizationService.isTimeSynchronized {
+            requestToken(powerAuth: powerAuth, completion: completion)
+            return
+        }
+        let url = self.url
+        powerAuth.timeSynchronizationService.synchronizeTime(callback: { [weak self] error in
+            guard let self else {
+                completion(WPNError(reason: .network_tokenError))
+                return
+            }
+            if let error {
+                D.error("Failed to synchronize time before obtaining token '\(self.tokenName)' for \(url.absoluteString): \(error)")
+                completion(WPNError(reason: .network_tokenError, error: error))
+                return
+            }
+            self.requestToken(powerAuth: powerAuth, completion: completion)
+        }, callbackQueue: nil)
+    }
+
+    // MARK: - Helpers
+
+    private func requestToken(
+        powerAuth: PowerAuthSDK,
+        completion: @escaping (WPNError?) -> Void
+    ) {
         let tokenName = self.tokenName
         let url = self.url
         powerAuth.tokenStore.requestAccessToken(withName: tokenName, authentication: auth) { [weak self] token, tokenError in

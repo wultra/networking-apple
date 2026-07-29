@@ -143,6 +143,118 @@ final class WPNPostFailureIntegrationTests {
     }
 }
 
+// MARK: - Token time synchronization tests
+
+@Suite("Token time synchronization integration")
+final class WPNTokenTimeSyncIntegrationTests {
+
+    @Test("Token-authenticated POST when the token is already cached locally")
+    func tokenCached() async throws {
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
+        try await proxy.prepareActivation()
+        defer { Task { await proxy.cleanup() } }
+
+        let powerAuth = try #require(proxy.powerAuth)
+        let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
+
+        // Warm up so the token gets cached locally.
+        let warmUp = try await service.post(
+            data: WPNRequestBase(),
+            authenticatedWith: .possessionWithPassword(password: proxy.pin),
+            to: TestEndpoints.OperationList.endpoint
+        )
+        #expect(warmUp.status == .ok)
+        #expect(powerAuth.tokenStore.hasLocalToken(withName: TestEndpoints.tokenName))
+
+        // Reset the time synchronization so the request starts from an unsynchronized state.
+        // With a locally cached token present, the request must still be served through the
+        // cached-token branch (`hasLocalToken`) without our code triggering a synchronization,
+        // even though the time is not synchronized.
+        powerAuth.timeSynchronizationService.resetTimeSynchronization()
+        #expect(!powerAuth.timeSynchronizationService.isTimeSynchronized)
+        #expect(powerAuth.tokenStore.hasLocalToken(withName: TestEndpoints.tokenName))
+
+        // Second request must succeed using the cached token.
+        let response = try await service.post(
+            data: WPNRequestBase(),
+            authenticatedWith: .possessionWithPassword(password: proxy.pin),
+            to: TestEndpoints.OperationList.endpoint
+        )
+        #expect(response.status == .ok)
+        // Generating the token authorization header synchronizes the time internally,
+        // so the time ends up synchronized again even though our code skipped it.
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
+    }
+
+    @Test("Token-authenticated POST when the token is missing and time is not synchronized")
+    func tokenMissingTimeNotSynchronized() async throws {
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
+        try await proxy.prepareActivation()
+        defer { Task { await proxy.cleanup() } }
+
+        let powerAuth = try #require(proxy.powerAuth)
+        let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
+
+        powerAuth.tokenStore.removeAllLocalTokens()
+        powerAuth.timeSynchronizationService.resetTimeSynchronization()
+
+        #expect(!powerAuth.tokenStore.hasLocalToken(withName: TestEndpoints.tokenName))
+        #expect(!powerAuth.timeSynchronizationService.isTimeSynchronized)
+
+        let response = try await service.post(
+            data: WPNRequestBase(),
+            authenticatedWith: .possessionWithPassword(password: proxy.pin),
+            to: TestEndpoints.OperationList.endpoint
+        )
+        #expect(response.status == .ok)
+        // Obtaining the new token must have synchronized the time.
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
+    }
+
+    @Test("Token-authenticated POST when the token is missing but time is synchronized")
+    func tokenMissingTimeSynchronized() async throws {
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
+        try await proxy.prepareActivation()
+        defer { Task { await proxy.cleanup() } }
+
+        let powerAuth = try #require(proxy.powerAuth)
+        let service = try proxy.createNetworkingService(url: loaded.operationsServerUrl)
+
+        try await synchronizeTime(powerAuth)
+        powerAuth.tokenStore.removeAllLocalTokens()
+
+        #expect(!powerAuth.tokenStore.hasLocalToken(withName: TestEndpoints.tokenName))
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
+
+        let response = try await service.post(
+            data: WPNRequestBase(),
+            authenticatedWith: .possessionWithPassword(password: proxy.pin),
+            to: TestEndpoints.OperationList.endpoint
+        )
+        #expect(response.status == .ok)
+    }
+
+    // MARK: - Helpers
+
+    private func synchronizeTime(_ powerAuth: PowerAuthSDK) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            powerAuth.timeSynchronizationService.synchronizeTime(callback: { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }, callbackQueue: nil)
+        }
+    }
+}
+
 // MARK: - Shared helpers
 
 /// Records responses received through `WPNResponseDelegate` for test assertions.
@@ -163,6 +275,10 @@ private final class ResponseRecorder: WPNResponseDelegate, @unchecked Sendable {
 
 /// Endpoints reimplemented for testing, inspired by digital-onboarding and mtoken SDKs.
 private enum TestEndpoints {
+
+    /// Token name shared by the token-authenticated `OperationList` endpoint and the
+    /// time-synchronization tests that inspect the local token cache.
+    static let tokenName = "possession_universal"
 
     /// Plain endpoint for jsonplaceholder (no auth, no e2ee).
     enum Posts {
@@ -185,7 +301,7 @@ private enum TestEndpoints {
     /// Token-authenticated endpoint inspired by mtoken List.
     enum OperationList {
         typealias EndpointType = WPNEndpointAuthenticatedWithToken<WPNRequestBase, WPNResponseBase>
-        static let endpoint: EndpointType = .init(endpointURLPath: "/api/auth/token/app/operation/list", tokenName: "possession_universal")
+        static let endpoint: EndpointType = .init(endpointURLPath: "/api/auth/token/app/operation/list", tokenName: TestEndpoints.tokenName)
     }
 
     /// E2EE endpoint with a deliberately failing on wrong activation scope
