@@ -408,10 +408,6 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 ## Changelog
 
-### TBA
-
-- TBA
-
 ### 2.0.0
 - Requires PowerAuth SDK `2.0.0`.
 - PowerAuth time is now synchronized before requesting a token-based authorization header, but only when the token is not already cached locally.
