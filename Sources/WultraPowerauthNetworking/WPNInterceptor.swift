@@ -54,7 +54,11 @@ public extension PowerAuthHttpRequestInterceptor {
 extension Array where Element == WPNInterceptor {
     /// Applies all interceptors, in declaration order, to a copy of the given request.
     func apply(to request: URLRequest) -> URLRequest {
-        guard isEmpty == false, let mutableRequest = (request as NSURLRequest).mutableCopy() as? NSMutableURLRequest else {
+        guard isEmpty == false else {
+            return request
+        }
+        guard let mutableRequest = (request as NSURLRequest).mutableCopy() as? NSMutableURLRequest else {
+            D.error("Failed to create a mutable copy of the request for \(request.url?.absoluteString ?? "unknown URL") - request interceptors were not applied.")
             return request
         }
         for interceptor in self {
