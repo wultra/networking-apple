@@ -35,7 +35,11 @@ public struct WPNConfig {
     ///
     /// Note that this value can be override in each request by setting the User-Agent header.
     public let userAgent: WPNUserAgent
-    
+
+    /// Interceptors applied, in declaration order, to the final mutable request before it is sent
+    /// via `URLSession`. Default value is an empty array. See `WPNInterceptor` for details.
+    public let requestInterceptors: [WPNInterceptor]
+
     /// Create instance of the config
     /// - Parameters:
     ///   - baseUrl: Base URL for service requests.
@@ -47,11 +51,20 @@ public struct WPNConfig {
     ///   - userAgent: Default User-Agent request header.
     ///                Value can be override in each `post` call in the `WPNNetworkingService`  by setting the User-Agent header.
     ///                Default value is `.libraryDefault`
-    public init(baseUrl: URL, sslValidation: WPNSSLValidationStrategy = .default, timeoutIntervalForRequest: TimeInterval = 20, userAgent: WPNUserAgent = .libraryDefault) {
+    ///   - requestInterceptors: Interceptors applied, in declaration order, before the request is sent.
+    ///                          Default value is an empty array.
+    public init(
+        baseUrl: URL,
+        sslValidation: WPNSSLValidationStrategy = .default,
+        timeoutIntervalForRequest: TimeInterval = 20,
+        userAgent: WPNUserAgent = .libraryDefault,
+        requestInterceptors: [WPNInterceptor] = []
+    ) {
         self.baseUrl = baseUrl
         self.sslValidation = sslValidation
         self.timeoutIntervalForRequest = timeoutIntervalForRequest
         self.userAgent = userAgent
+        self.requestInterceptors = requestInterceptors
     }
     
     func buildURL(_ endpoint: String) -> URL {

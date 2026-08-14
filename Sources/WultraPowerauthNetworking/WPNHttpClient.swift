@@ -21,7 +21,8 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
     
     private let defaultTimeout: TimeInterval
     private let sslValidation: WPNSSLValidationStrategy
-    
+    private let requestInterceptors: [WPNInterceptor]
+
     private lazy var urlSession: URLSession = {
         guard let configuration = URLSessionConfiguration.ephemeral.copy() as? URLSessionConfiguration else {
             D.fatalError("Cannot create URLSessionConfiguration")
@@ -31,19 +32,22 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         configuration.timeoutIntervalForRequest = defaultTimeout
         return URLSession(configuration: configuration, delegate: self, delegateQueue: .main)
     }()
-    
-    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval) {
+
+    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor] = []) {
         self.sslValidation = sslValidation
         self.defaultTimeout = timeout
+        self.requestInterceptors = requestInterceptors
         super.init()
     }
-    
+
     func post(request: URLRequest, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
-        
+
+        let request = requestInterceptors.apply(to: request)
+
         if request.url?.absoluteString.hasPrefix("http://") == true {
             D.warning("Using HTTP for communication may create a serious security issue! Use HTTPS in production.")
         }
-        
+
         request.printToConsole()
         
         var observation: NSKeyValueObservation?

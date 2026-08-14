@@ -25,6 +25,7 @@ We use this SDK in our other open-source projects. You can use these as inspirat
 - [Raw Response Observer](#raw-response-observer)
 - [Parallel Requests](#parallel-requests)
 - [SSL validation](#ssl-validation)
+- [Request Interceptors](#request-interceptors)
 - [JSON encoder and decoder](#json-encoder-and-decoder)
 - [Error Handling](#error-handling)
 - [Language Configuration](#language-configuration)
@@ -124,7 +125,8 @@ let networking = WPNNetworkingService(
         baseUrl: "https://sandbox.company.com/my-service", // URL to my PowerAuth based service
         sslValidation: .default, // use default SSL error handling (more in SSL validation docs section)
         timeoutIntervalForRequest: 10, // give 10 seconds for the server to respond
-        userAgent: .libraryDefault // use library default HTTP User-Agent header
+        userAgent: .libraryDefault, // use library default HTTP User-Agent header
+        requestInterceptors: [] // interceptors for the final request, more in "Request Interceptors" docs section
         
     ), 
     serviceName: "MyProjectNetworkingService", // for better debugging
@@ -319,6 +321,43 @@ Possible values are:
 - `noValidation` - Trust HTTPS connections with invalid certificates.
 - `sslPinning(_ provider: WPNPinningProvider)` - Validates the server certificate with your own logic.
 
+## Request Interceptors
+
+You can modify the final `URLRequest` right before it is sent via `URLSession` by configuring the `WPNConfig.requestInterceptors` property. Interceptors are applied in declaration order, after headers, PowerAuth authorization, and E2EE encryption were already added to the request, and the request is logged (see [Logging](#logging)) afterwards.
+
+To create your own interceptor, implement the `WPNInterceptor` protocol:
+
+```swift
+public protocol WPNInterceptor {
+    func processRequest(_ request: NSMutableURLRequest)
+}
+```
+
+<!-- begin box warning -->
+Don't modify the `X-PowerAuth-*` headers in an interceptor - doing so could lead to the backend rejecting the request.
+<!-- end -->
+
+<!-- begin box info -->
+`PowerAuthHttpRequestInterceptor` instances (used by the PowerAuth SDK) can be used here too via their `asWPNInterceptor` property.
+<!-- end -->
+
+### Example: adding an X-Correlation-ID header
+
+A common use case is attaching a per-request correlation ID for tracing requests across your backend services:
+
+```swift
+class CorrelationIdInterceptor: WPNInterceptor {
+    func processRequest(_ request: NSMutableURLRequest) {
+        request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Correlation-ID")
+    }
+}
+
+let config = WPNConfig(
+    baseUrl: myBaseUrl,
+    requestInterceptors: [CorrelationIdInterceptor()]
+)
+```
+
 ## Error Handling
 
 Every error produced by this library is of type `WPNError`. This error contains the following information:
@@ -410,7 +449,7 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 ### TBA
 
-- TBA
+- Added `WPNConfig.requestInterceptors` for modifying the final request right before it is sent via `URLSession`. See the [Request Interceptors](#request-interceptors) docs section.
 
 ### 2.0.0
 - Requires PowerAuth SDK `2.0.0`.
