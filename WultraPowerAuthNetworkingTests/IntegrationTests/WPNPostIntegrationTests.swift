@@ -255,6 +255,45 @@ final class WPNTokenTimeSyncIntegrationTests {
     }
 }
 
+// MARK: - Request interceptor integration tests
+
+@Suite("Request interceptor integration")
+final class WPNRequestInterceptorIntegrationTests {
+
+    @Test("A request interceptor's User-Agent override is visible in the rejected operation's additionalData")
+    func requestInterceptorOverridesUserAgentOnRejectedOperation() async throws {
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
+        try await proxy.prepareActivation()
+        defer { Task { await proxy.cleanup() } }
+
+        let userAgentValue = "WPNInterceptorTest/\(UUID().uuidString)"
+        let service = try proxy.createNetworkingService(
+            url: loaded.operationsServerUrl,
+            requestInterceptors: [UserAgentInterceptor(value: userAgentValue)]
+        )
+
+        let created = try await proxy.createOperation()
+        
+        try await proxy.rejectOperation(operationId: created.operationId, using: service)
+
+        let detail = try await proxy.getOperation(operationId: created.operationId)
+        #expect(detail.status == "REJECTED")
+        #expect(detail.additionalData?.userAgent == userAgentValue)
+    }
+
+    // MARK: - Helpers
+
+    private final class UserAgentInterceptor: WPNInterceptor {
+        private let value: String
+        init(value: String) { self.value = value }
+        func processRequest(_ request: NSMutableURLRequest) {
+            request.setValue(value, forHTTPHeaderField: "User-Agent")
+        }
+    }
+}
+
 // MARK: - Shared helpers
 
 /// Records responses received through `WPNResponseDelegate` for test assertions.
@@ -270,6 +309,45 @@ private final class ResponseRecorder: WPNResponseDelegate, @unchecked Sendable {
 
     func responseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data?) {
         responses.append(Entry(url: url, statusCode: statusCode, body: body))
+    }
+}
+
+// MARK: - Networking service factory
+
+extension IntegrationProxy {
+
+    /// Creates a `WPNNetworkingService` pointed at the given URL using this
+    /// proxy's PowerAuth instance. Throws `IntegrationError.powerAuthNotInitialized`
+    /// when called before `initializePowerauth()`.
+    func createNetworkingService(url: String, serviceName: String = UUID().uuidString, requestInterceptors: [WPNInterceptor] = []) throws -> WPNNetworkingService {
+        guard let powerAuth else {
+            throw IntegrationError.powerAuthNotInitialized
+        }
+        WPNLogger.verboseLevel = .debug
+        return WPNNetworkingService(
+            powerAuth: powerAuth,
+            config: .init(baseUrl: try TestUtils.createURL(string: url), requestInterceptors: requestInterceptors),
+            serviceName: serviceName
+        )
+    }
+}
+
+// MARK: - Operation helpers
+
+extension IntegrationProxy {
+
+    /// Rejects an operation through the given `WPNNetworkingService`.
+    @discardableResult
+    fileprivate func rejectOperation(
+        operationId: String,
+        reason: String = "UNKNOWN",
+        using service: WPNNetworkingService
+    ) async throws -> WPNResponseBase {
+        try await service.post(
+            data: WPNRequest(TestEndpoints.OperationRejectRequest(id: operationId, reason: reason)),
+            authenticatedWith: .possession(),
+            to: TestEndpoints.OperationReject.endpoint
+        )
     }
 }
 
@@ -310,6 +388,12 @@ private enum TestEndpoints {
         static var endpoint: EndpointType { .init(endpointURLPath: "/api/onboarding/start", e2ee: .activationScope) }
     }
 
+    /// Authenticated endpoint inspired by mtoken Reject.
+    enum OperationReject {
+        typealias EndpointType = WPNEndpointAuthenticated<WPNRequest<OperationRejectRequest>, WPNResponseBase>
+        static let endpoint: EndpointType = .init(endpointURLPath: "/api/auth/token/app/operation/cancel", uriId: "/operation/cancel")
+    }
+
     // MARK: - Models
 
     struct StartRequest: Codable {
@@ -320,24 +404,9 @@ private enum TestEndpoints {
         let processId: String?
         let onboardingStatus: String?
     }
-}
 
-// MARK: - Networking service factory
-
-extension IntegrationProxy {
-
-    /// Creates a `WPNNetworkingService` pointed at the given URL using this
-    /// proxy's PowerAuth instance. Throws `IntegrationError.powerAuthNotInitialized`
-    /// when called before `initializePowerauth()`.
-    func createNetworkingService(url: String, serviceName: String = UUID().uuidString) throws -> WPNNetworkingService {
-        guard let powerAuth else {
-            throw IntegrationError.powerAuthNotInitialized
-        }
-        WPNLogger.verboseLevel = .debug
-        return WPNNetworkingService(
-            powerAuth: powerAuth,
-            config: .init(baseUrl: try TestUtils.createURL(string: url)),
-            serviceName: serviceName
-        )
+    struct OperationRejectRequest: Encodable {
+        let id: String
+        let reason: String
     }
 }

@@ -131,10 +131,10 @@ internal class WPNHttpPlainRequest<TRequest: WPNRequestBase, TResponse: WPNRespo
         }
     }
 
-    /// Assembles the final `URLRequest` from pre-encoded body data and optional encryptor.
-    private func assembleUrlRequest(bodyData: Data, encryptor: PowerAuthEncryptor?) throws -> URLRequest {
+    /// Assembles the final mutable request from pre-encoded body data and optional encryptor.
+    private func assembleUrlRequest(bodyData: Data, encryptor: PowerAuthEncryptor?) throws -> NSMutableURLRequest {
 
-        var request = URLRequest(url: url)
+        let request = NSMutableURLRequest(url: url)
 
         if let timeoutInterval {
             request.timeoutInterval = timeoutInterval
@@ -312,12 +312,13 @@ internal final class WPNHttpTokenAuthenticatedRequest<TRequest: WPNRequestBase, 
 
 /// Ready-to-send URL request produced by `WPNHttpPlainRequest.buildUrlRequest(...)`.
 ///
-/// Bundles the assembled `URLRequest` with the encryptor and decoder needed to process the response,
+/// Bundles the assembled request with the encryptor and decoder needed to process the response,
 /// so callers do not have to pass those dependencies separately.
 internal struct WPNUrlRequest<TResponse: WPNResponseBase> {
 
-    /// The assembled `URLRequest` ready to be sent via `WPNHttpClient`.
-    let urlRequest: URLRequest
+    /// The assembled, still-mutable request. `WPNHttpClient` applies `WPNConfig.requestInterceptors`
+    /// to this instance in place before sending it.
+    let urlRequest: NSMutableURLRequest
 
     /// The original endpoint URL (used for logging and response delegate callbacks).
     let url: URL
@@ -328,7 +329,7 @@ internal struct WPNUrlRequest<TResponse: WPNResponseBase> {
     private let encryptor: PowerAuthEncryptor?
     private let jsonDecoder: JSONDecoder
 
-    init(urlRequest: URLRequest, url: URL, encryptor: PowerAuthEncryptor?, jsonDecoder: JSONDecoder) {
+    init(urlRequest: NSMutableURLRequest, url: URL, encryptor: PowerAuthEncryptor?, jsonDecoder: JSONDecoder) {
         self.urlRequest = urlRequest
         self.url = url
         self.encryptor = encryptor

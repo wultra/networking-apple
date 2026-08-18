@@ -33,26 +33,26 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         return URLSession(configuration: configuration, delegate: self, delegateQueue: .main)
     }()
 
-    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor] = []) {
+    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor]) {
         self.sslValidation = sslValidation
         self.defaultTimeout = timeout
         self.requestInterceptors = requestInterceptors
         super.init()
     }
 
-    func post(request: URLRequest, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
+    func post(request: NSMutableURLRequest, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
 
-        let request = requestInterceptors.apply(to: request)
+        requestInterceptors.apply(to: request)
 
         if request.url?.absoluteString.hasPrefix("http://") == true {
             D.warning("Using HTTP for communication may create a serious security issue! Use HTTPS in production.")
         }
 
         request.printToConsole()
-        
+
         var observation: NSKeyValueObservation?
-        
-        let task = urlSession.dataTask(with: request) { responseData, response, error in
+
+        let task = urlSession.dataTask(with: request as URLRequest) { responseData, response, error in
             observation?.invalidate()
             observation = nil
             assert(Thread.isMainThread) // make sure we're on the right thread
@@ -79,7 +79,7 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
 
 // MARK: - Convenience logging methods
 
-private extension URLRequest {
+private extension NSMutableURLRequest {
     func printToConsole() {
         if D.logHttpTraffic {
             D.info("WPNHttpClient Request\n- URL: POST - \(url?.absoluteString ?? "no URL")\n- Headers: \(D.httpHeadersToSkip.filterHeaders(headers: allHTTPHeaderFields))")

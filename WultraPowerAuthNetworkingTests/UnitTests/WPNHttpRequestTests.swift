@@ -145,7 +145,7 @@ final class WPNHttpRequestTests {
 
     private func makePlainWpnRequest() -> WPNUrlRequest<TestResponse> {
         WPNUrlRequest(
-            urlRequest: URLRequest(url: url),
+            urlRequest: NSMutableURLRequest(url: url),
             url: url,
             encryptor: nil,
             jsonDecoder: JSONDecoder()

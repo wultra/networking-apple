@@ -26,14 +26,14 @@ final class WPNInterceptorTests {
 
     @Test("No interceptors leave the request untouched")
     func defaultBehaviorWithoutInterceptors() {
-        var request = URLRequest(url: url)
+        let request = NSMutableURLRequest(url: url)
         request.addValue("value", forHTTPHeaderField: "X-Original")
 
         let interceptors: [WPNInterceptor] = []
-        let result = interceptors.apply(to: request)
+        interceptors.apply(to: request)
 
-        #expect(result.allHTTPHeaderFields == ["X-Original": "value"])
-        #expect(result.url == url)
+        #expect(request.allHTTPHeaderFields == ["X-Original": "value"])
+        #expect(request.url == url)
     }
 
     @Test("Custom interceptor modifies the request")
@@ -41,10 +41,11 @@ final class WPNInterceptorTests {
         let interceptor = BlockInterceptor { request in
             request.addValue("abc-123", forHTTPHeaderField: "X-Correlation-ID")
         }
+        let request = NSMutableURLRequest(url: url)
 
-        let result = [interceptor].apply(to: URLRequest(url: url))
+        [interceptor].apply(to: request)
 
-        #expect(result.value(forHTTPHeaderField: "X-Correlation-ID") == "abc-123")
+        #expect(request.value(forHTTPHeaderField: "X-Correlation-ID") == "abc-123")
     }
 
     @Test("PowerAuth interceptor is compatible via its adapter")
@@ -52,10 +53,11 @@ final class WPNInterceptorTests {
         let paInterceptor = FakePowerAuthInterceptor { request in
             request.addValue("pa-value", forHTTPHeaderField: "X-PowerAuth-Custom")
         }
+        let request = NSMutableURLRequest(url: url)
 
-        let result = [paInterceptor.asWPNInterceptor].apply(to: URLRequest(url: url))
+        [paInterceptor.asWPNInterceptor].apply(to: request)
 
-        #expect(result.value(forHTTPHeaderField: "X-PowerAuth-Custom") == "pa-value")
+        #expect(request.value(forHTTPHeaderField: "X-PowerAuth-Custom") == "pa-value")
     }
 
     @Test("Interceptors are applied in declaration order")
@@ -69,25 +71,26 @@ final class WPNInterceptorTests {
             callOrder.append("second")
             request.setValue("second", forHTTPHeaderField: "X-Order")
         }
+        let request = NSMutableURLRequest(url: url)
 
-        let result = [first, second].apply(to: URLRequest(url: url))
+        [first, second].apply(to: request)
 
         #expect(callOrder == ["first", "second"])
-        #expect(result.value(forHTTPHeaderField: "X-Order") == "second")
+        #expect(request.value(forHTTPHeaderField: "X-Order") == "second")
     }
 
     @Test("Interceptor can override a header set during request construction")
     func interceptorCanOverrideExistingHeader() {
-        var request = URLRequest(url: url)
+        let request = NSMutableURLRequest(url: url)
         request.addValue("en", forHTTPHeaderField: "Accept-Language")
 
         let interceptor = BlockInterceptor { request in
             request.setValue("cs", forHTTPHeaderField: "Accept-Language")
         }
 
-        let result = [interceptor].apply(to: request)
+        [interceptor].apply(to: request)
 
-        #expect(result.value(forHTTPHeaderField: "Accept-Language") == "cs")
+        #expect(request.value(forHTTPHeaderField: "Accept-Language") == "cs")
     }
 
     // MARK: - Helpers

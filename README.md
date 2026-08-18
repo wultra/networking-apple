@@ -323,7 +323,7 @@ Possible values are:
 
 ## Request Interceptors
 
-You can modify the final `URLRequest` right before it is sent via `URLSession` by configuring the `WPNConfig.requestInterceptors` property. Interceptors are applied in declaration order, after headers, PowerAuth authorization, and E2EE encryption were already added to the request, and the request is logged (see [Logging](#logging)) afterwards.
+You can modify the final `URLRequest` right before it is sent via `URLSession` by configuring the `WPNConfig.requestInterceptors` property. Interceptors are applied in declaration order, after headers, PowerAuth authorization, E2EE encryption, and the request body were already set, and the request is logged (see [Logging](#logging)) afterwards.
 
 To create your own interceptor, implement the `WPNInterceptor` protocol:
 
@@ -334,7 +334,7 @@ public protocol WPNInterceptor {
 ```
 
 <!-- begin box warning -->
-Don't modify the `X-PowerAuth-*` headers in an interceptor - doing so could lead to the backend rejecting the request.
+Don't modify the `X-PowerAuth-*` headers or the request body in an interceptor - doing so could lead to the backend rejecting the request.
 <!-- end -->
 
 <!-- begin box info -->

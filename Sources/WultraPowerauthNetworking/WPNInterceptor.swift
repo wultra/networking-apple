@@ -20,10 +20,11 @@ import PowerAuth2
 /// Interceptor that can modify the final HTTP request right before it is sent via `URLSession`.
 ///
 /// Interceptors configured in `WPNConfig.requestInterceptors` are applied in declaration order,
-/// after headers, PowerAuth authorization, and E2EE encryption were already added to the request.
+/// after headers, PowerAuth authorization, E2EE encryption, and the request body were already set
+/// on the request.
 ///
-/// - Warning: Don't modify the `X-PowerAuth-*` headers - doing so could lead to the backend
-///   rejecting the request.
+/// - Warning: Don't modify the `X-PowerAuth-*` headers or the request body - doing so could lead
+///   to the backend rejecting the request.
 public protocol WPNInterceptor {
     /// Called before the request is executed. May be called from a background thread.
     /// - Parameter request: The final, mutable URL request to be modified.
@@ -51,19 +52,12 @@ public extension PowerAuthHttpRequestInterceptor {
     }
 }
 
+
 extension Array where Element == WPNInterceptor {
-    /// Applies all interceptors, in declaration order, to a copy of the given request.
-    func apply(to request: URLRequest) -> URLRequest {
-        guard isEmpty == false else {
-            return request
-        }
-        guard let mutableRequest = (request as NSURLRequest).mutableCopy() as? NSMutableURLRequest else {
-            D.error("Failed to create a mutable copy of the request for \(request.url?.absoluteString ?? "unknown URL") - request interceptors were not applied.")
-            return request
-        }
+    /// Applies all interceptors, in declaration order, to the given request, in place.
+    func apply(to request: NSMutableURLRequest) {
         for interceptor in self {
-            interceptor.processRequest(mutableRequest)
+            interceptor.processRequest(request)
         }
-        return mutableRequest as URLRequest
     }
 }
