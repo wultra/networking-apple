@@ -52,7 +52,6 @@ public extension PowerAuthHttpRequestInterceptor {
     }
 }
 
-
 extension Array where Element == WPNInterceptor {
     /// Applies all interceptors, in declaration order, to the given request, in place.
     func apply(to request: NSMutableURLRequest) {
