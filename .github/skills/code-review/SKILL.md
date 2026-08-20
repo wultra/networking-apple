@@ -1,3 +1,8 @@
+---
+name: code-review
+description: Review pull requests in the Wultra PowerAuth Networking Apple repository. Use when reviewing Swift APIs, transport security, serialization, concurrency, or release changes.
+---
+
 # Networking Apple code review
 
 Review only the pull request diff. First establish the repository, PR target branch,
