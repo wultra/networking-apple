@@ -27,8 +27,7 @@
       "description": "Xcode framework version.",
       "path": "WultraPowerAuthNetworking.xcodeproj/WultraPowerAuthNetworking_Info.plist",
       "type": "version_replace",
-      "match": "  <key>CFBundleShortVersionString</key>\n  <string>%VERSION%</string>",
-      "devChange": true
+      "match": "  <key>CFBundleShortVersionString</key>\n  <string>%VERSION%</string>"
     },
     {
       "description": "Changelog in README.",

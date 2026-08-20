@@ -82,7 +82,9 @@ For a release PR, `.prepare-release.json` requires matching version work in
 `Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the compatibility and
 `### version` changelog sections of `README.md`. For a release merged back to
 `develop`, every declared development version must be `0.0.1-dev`, including the
-podspec and `WPNConstants.sdkVersionName`; flag a different declared version.
+podspec and `WPNConstants.sdkVersionName`, while the Info.plist
+`CFBundleShortVersionString` must remain the numeric `0.0.1`; flag a different
+declared version.
 Do not require release metadata for ordinary feature PRs.
 
 Relevant tests are in `WultraPowerAuthNetworkingTests/UnitTests` and
