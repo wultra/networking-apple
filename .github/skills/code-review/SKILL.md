@@ -5,13 +5,17 @@ description: Review pull requests in the Wultra PowerAuth Networking Apple repos
 
 # Networking Apple code review
 
-Review only the pull request diff. First establish the repository, PR target branch,
-head branch, and current checkout; do not infer them from the working tree. This
-repository is **WultraPowerAuthNetworking**, an iOS 13+/tvOS 13+ Swift 5 library.
-It ships both `Package.swift` product `WultraPowerAuthNetworking` and
+Review only PR and repository content already available. Do not run or suggest
+commands, scripts, builds, tests, linters, formatters, validation tasks, or Git
+operations.
+
+Review only the available pull request diff, using available PR metadata for the
+repository, target branch, and head branch. This repository is
+**WultraPowerAuthNetworking**, an iOS 13+/tvOS 13+ Swift 5 library. It ships both
+`Package.swift` product `WultraPowerAuthNetworking` and
 `WultraPowerAuthNetworking.podspec`. Sources deliberately live at
-`Sources/WultraPowerauthNetworking` (lowercase `a`); do not suggest changing that
-historical path's case in isolation.
+`Sources/WultraPowerauthNetworking` (lowercase `a`); do not suggest changing
+that historical path's case in isolation.
 
 ## Review outcome and comments
 
@@ -71,7 +75,7 @@ honored. The async `post` overloads must preserve callback behavior, surface the
 same `WPNError`, resume exactly once, and connect Swift task cancellation to the
 underlying `Operation`.
 
-## Versions, documentation, and validation
+## Versions, documentation, and review evidence
 
 For a release PR, `.prepare-release.json` requires matching version work in
 `WultraPowerAuthNetworking.podspec`,
@@ -82,8 +86,8 @@ podspec and `WPNConstants.sdkVersionName`; flag a different declared version.
 Do not require release metadata for ordinary feature PRs.
 
 Relevant tests are in `WultraPowerAuthNetworkingTests/UnitTests` and
-`IntegrationTests`, using `TestUtils.createFakeService()`. The project’s actual
-validation is `scripts/swiftlint.sh`, `scripts/build.sh`, and `scripts/test.sh`
-against `WultraPowerAuthNetworking.xcodeproj`; CI selects Xcode through
-`scripts/xcodeselect.sh`. Treat test changes as evidence when assessing a proven
-behavioral regression, not as a checklist item.
+`IntegrationTests`, using `TestUtils.createFakeService()`. Tracked automation in
+`scripts/swiftlint.sh`, `scripts/build.sh`, `scripts/test.sh`, and
+`scripts/xcodeselect.sh` may be read for context only. Treat test changes as
+evidence when assessing a proven behavioral regression, not as a checklist
+item, and never suggest running them.
