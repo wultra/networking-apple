@@ -6,30 +6,40 @@
     "type": "ios-oss",
     "podspec": "WultraPowerAuthNetworking.podspec"
   },
+  "scriptVersion": 2,
+  "devVersion": "0.0.1-dev",
   "files": [
     {
       "description": "Cocoapods definition file.",
       "path": "WultraPowerAuthNetworking.podspec",
       "type": "version_replace",
-      "match": "\n  s.version             = '%VERSION%'\n"
+      "match": "\n  s.version             = '%VERSION%'\n",
+      "devChange": true
     },
     {
       "description": "Source constants.",
       "path": "Sources/WultraPowerauthNetworking/WPNConstants.swift",
       "type": "version_replace",
-      "match": "sdkVersionName = \"%VERSION%\""
+      "match": "sdkVersionName = \"%VERSION%\"",
+      "devChange": true
     },
     {
-      "description": "Compatibility in README.",
-      "path": "README.md",
-      "type": "versionstream_verify",
-      "match": "| `%VERSION_STREAM%`"
+      "description": "Xcode framework version.",
+      "path": "WultraPowerAuthNetworking.xcodeproj/WultraPowerAuthNetworking_Info.plist",
+      "type": "version_replace",
+      "match": "  <key>CFBundleShortVersionString</key>\n  <string>%VERSION%</string>"
     },
     {
       "description": "Changelog in README.",
       "path": "README.md",
-      "type": "version_verify",
-      "match": "### %VERSION%"
+      "type": "tba_replace",
+      "match": "### TBA"
+    },
+    {
+      "description": "Verify that the changelog does not contain a TBA placeholder.",
+      "path": "README.md",
+      "type": "verify_not_containing",
+      "match": "- TBA"
     }
   ],
   "scripts": [

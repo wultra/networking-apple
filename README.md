@@ -61,7 +61,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/wultra/networking-apple.git", .from("1.3.0"))
+        // Replace VERSION_DEFINITION with the actual package version.
+        .package(url: "https://github.com/wultra/networking-apple.git", .from("VERSION_DEFINITION"))
     ],
     targets: [
         .target(
@@ -85,16 +86,6 @@ platform :ios, '13.0'
 
 pod 'WultraPowerAuthNetworking'
 ```
-
-### Guaranteed PowerAuth Compatibility
-
-| WPN SDK           | PowerAuth SDK |  
-|-------------------|---------------|
-| `2.0.x`           | `2.0.0`       |
-| `1.5.x`           | `1.9.x`       |
-| `1.4.x`           | `1.8.x`       |
-| `1.3.x`           | `1.8.x`       |
-| `1.0.x` - `1.2.x` | `1.7.x`       |
 
 ### Xcode Compatibility
 
