@@ -56,6 +56,29 @@ final class WPNConfigTests {
 
         #expect(url.absoluteString == "https://example.com/api/v2/items")
     }
+
+    @Test("Request interceptors default to an empty array")
+    func requestInterceptorsDefaultToEmptyArray() {
+        let config = WPNConfig(baseUrl: URL(string: "https://example.com/api")!)
+
+        #expect(config.requestInterceptors.isEmpty)
+    }
+
+    @Test("Request interceptors are stored in declaration order")
+    func requestInterceptorsAreStoredInDeclarationOrder() {
+        final class NamedInterceptor: WPNInterceptor {
+            let name: String
+            init(_ name: String) { self.name = name }
+            func processRequest(_ request: NSMutableURLRequest) { }
+        }
+
+        let first = NamedInterceptor("first")
+        let second = NamedInterceptor("second")
+        let config = WPNConfig(baseUrl: URL(string: "https://example.com/api")!, requestInterceptors: [first, second])
+
+        let names = config.requestInterceptors.compactMap { ($0 as? NamedInterceptor)?.name }
+        #expect(names == ["first", "second"])
+    }
 }
 
 @Suite("SSL validation")

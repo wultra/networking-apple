@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D157DF4E011248E39A80C687 /* WPNInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25185C8186554B6B9580CB9E /* WPNInterceptor.swift */; };
 		DC67B2992FB1CF5A006D396A /* PowerAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = DC67B2982FB1CF5A006D396A /* PowerAuth2 */; };
 		DC67B36F2FB1D8BA006D396A /* PowerAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = DC67B36E2FB1D8BA006D396A /* PowerAuth2 */; };
 		DC67B3702FB1D8BA006D396A /* PowerAuth2 in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DC67B36E2FB1D8BA006D396A /* PowerAuth2 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -56,6 +57,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		25185C8186554B6B9580CB9E /* WPNInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNInterceptor.swift; sourceTree = "<group>"; };
 		DC7A273A2D9BEB0F00E9AE31 /* WPNLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPNLock.swift; sourceTree = "<group>"; };
 		DC7A27522D9D83EF00E9AE31 /* WultraPowerAuthNetworkingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WultraPowerAuthNetworkingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCB6614D28AA51FA00937FBA /* WPNUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WPNUtils.swift; path = Sources/WultraPowerauthNetworking/WPNUtils.swift; sourceTree = SOURCE_ROOT; };
@@ -162,6 +164,7 @@
 				DCB6615228AA564300937FBA /* WPNConstants.swift */,
 				DCBEBE3B2CADBCC3003CC08A /* WPNEncryptorScope.swift */,
 				DC7A273A2D9BEB0F00E9AE31 /* WPNLock.swift */,
+				25185C8186554B6B9580CB9E /* WPNInterceptor.swift */,
 			);
 			name = WultraPowerAuthNetworking;
 			path = Sources/WultraPowerauthNetworking;
@@ -313,6 +316,7 @@
 				DCB6614E28AA51FA00937FBA /* WPNUtils.swift in Sources */,
 				DCB6615028AA54B800937FBA /* WPNUserAgent.swift in Sources */,
 				DC7A273B2D9BEB0F00E9AE31 /* WPNLock.swift in Sources */,
+				D157DF4E011248E39A80C687 /* WPNInterceptor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -92,7 +92,7 @@ public class WPNNetworkingService {
     ) {
         self.acceptLanguage = acceptLanguage
         self.powerAuth = powerAuth
-        self.httpClient = WPNHttpClient(sslValidation: config.sslValidation, timeout: config.timeoutIntervalForRequest)
+        self.httpClient = WPNHttpClient(sslValidation: config.sslValidation, timeout: config.timeoutIntervalForRequest, requestInterceptors: config.requestInterceptors)
         self.config = config
         concurrentQueue.name = "\(serviceName)_concurrent"
     }
