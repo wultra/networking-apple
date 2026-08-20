@@ -31,12 +31,6 @@
       "devChange": true
     },
     {
-      "description": "Compatibility in README.",
-      "path": "README.md",
-      "type": "versionstream_verify",
-      "match": "| `%VERSION_STREAM%`"
-    },
-    {
       "description": "Changelog in README.",
       "path": "README.md",
       "type": "tba_replace",

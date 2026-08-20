@@ -61,7 +61,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/wultra/networking-apple.git", .from("1.3.0"))
+        // Replace VERSION_DEFINITION with the actual package version.
+        .package(url: "https://github.com/wultra/networking-apple.git", .from("VERSION_DEFINITION"))
     ],
     targets: [
         .target(
