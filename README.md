@@ -440,6 +440,10 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 ### TBA
 
+- TBA
+
+### 2.1.0
+
 - Added `WPNConfig.requestInterceptors` for modifying the final request right before it is sent via `URLSession`. See the [Request Interceptors](#request-interceptors) docs section.
 
 ### 2.0.0
