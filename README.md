@@ -440,7 +440,7 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 ### TBA
 
-- TBA
+- PowerAuth time is now synchronized before obtaining an ECIES encryptor for an encrypted (E2EE) endpoint, but only when the time is not already synchronized.
 
 ### 2.1.0
 

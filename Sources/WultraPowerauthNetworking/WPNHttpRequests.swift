@@ -123,12 +123,45 @@ internal class WPNHttpPlainRequest<TRequest: WPNRequestBase, TResponse: WPNRespo
     ) {
         switch e2ee {
         case .activationScope:
-            powerAuth.encryptorForActivationScope(callback: completion)
+            synchronizeTimeIfNeeded(powerAuth: powerAuth) { error in
+                if let error {
+                    completion(nil, error)
+                    return
+                }
+                powerAuth.encryptorForActivationScope(callback: completion)
+            }
         case .applicationScope:
-            powerAuth.encryptorForApplicationScope(callback: completion)
+            synchronizeTimeIfNeeded(powerAuth: powerAuth) { error in
+                if let error {
+                    completion(nil, error)
+                    return
+                }
+                powerAuth.encryptorForApplicationScope(callback: completion)
+            }
         case .notEncrypted:
             completion(nil, nil)
         }
+    }
+
+    /// Synchronizes the PowerAuth time with the server when it is not already synchronized.
+    ///
+    /// Obtaining an ECIES encryptor for an encrypted endpoint requires the PowerAuth time to be
+    /// synchronized with the server, so synchronize it first when it is not yet synchronized.
+    private func synchronizeTimeIfNeeded(
+        powerAuth: PowerAuthSDK,
+        completion: @escaping (Error?) -> Void
+    ) {
+        if powerAuth.timeSynchronizationService.isTimeSynchronized {
+            completion(nil)
+            return
+        }
+        let url = self.url
+        powerAuth.timeSynchronizationService.synchronizeTime(callback: { error in
+            if let error {
+                D.error("Failed to synchronize time before obtaining E2EE encryptor for \(url.absoluteString): \(error)")
+            }
+            completion(error)
+        }, callbackQueue: nil)
     }
 
     /// Assembles the final mutable request from pre-encoded body data and optional encryptor.

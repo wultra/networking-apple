@@ -255,6 +255,68 @@ final class WPNTokenTimeSyncIntegrationTests {
     }
 }
 
+// MARK: - Encrypted endpoint time synchronization tests
+
+@Suite("Encrypted endpoint time synchronization integration")
+final class WPNEncryptedTimeSyncIntegrationTests {
+
+    @Test("E2EE POST when time is not synchronized synchronizes time and succeeds")
+    func e2eeTimeNotSynchronized() async throws {
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
+        try await proxy.prepareActivation()
+        defer { Task { await proxy.cleanup() } }
+
+        let powerAuth = try #require(proxy.powerAuth)
+        let service = try proxy.createNetworkingService(url: loaded.enrollmentServerOnboardingUrl)
+
+        // Start from an unsynchronized state so obtaining the ECIES encryptor must synchronize first.
+        powerAuth.timeSynchronizationService.resetTimeSynchronization()
+        #expect(!powerAuth.timeSynchronizationService.isTimeSynchronized)
+
+        let request = WPNRequest(TestEndpoints.StartRequest(identification: ["clientNumber": UUID().uuidString]))
+        let response = try await service.post(data: request, to: TestEndpoints.Start.endpoint)
+        #expect(response.status == .ok)
+        // Obtaining the encryptor must have synchronized the time.
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
+    }
+
+    @Test("E2EE POST when time is already synchronized succeeds")
+    func e2eeTimeSynchronized() async throws {
+        let loaded = try #require(TestConfiguration.load())
+        let proxy = IntegrationProxy(config: loaded.config)
+        try await proxy.initializePowerauth()
+        try await proxy.prepareActivation()
+        defer { Task { await proxy.cleanup() } }
+
+        let powerAuth = try #require(proxy.powerAuth)
+        let service = try proxy.createNetworkingService(url: loaded.enrollmentServerOnboardingUrl)
+
+        try await synchronizeTime(powerAuth)
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
+
+        let request = WPNRequest(TestEndpoints.StartRequest(identification: ["clientNumber": UUID().uuidString]))
+        let response = try await service.post(data: request, to: TestEndpoints.Start.endpoint)
+        #expect(response.status == .ok)
+        #expect(powerAuth.timeSynchronizationService.isTimeSynchronized)
+    }
+
+    // MARK: - Helpers
+
+    private func synchronizeTime(_ powerAuth: PowerAuthSDK) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            powerAuth.timeSynchronizationService.synchronizeTime(callback: { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }, callbackQueue: nil)
+        }
+    }
+}
+
 // MARK: - Request interceptor integration tests
 
 @Suite("Request interceptor integration")
