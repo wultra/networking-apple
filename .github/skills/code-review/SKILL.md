@@ -89,7 +89,7 @@ Do not require release metadata for ordinary feature PRs.
 
 Relevant tests are in `WultraPowerAuthNetworkingTests/UnitTests` and
 `IntegrationTests`, using `TestUtils.createFakeService()`. Tracked automation in
-`scripts/swiftlint.sh`, `scripts/build.sh`, `scripts/test.sh`, and
-`scripts/xcodeselect.sh` may be read for context only. Treat test changes as
+`scripts/swiftlint.sh`, `scripts/build.sh`, and `scripts/test.sh`
+may be read for context only. Treat test changes as
 evidence when assessing a proven behavioral regression, not as a checklist
 item, and never suggest running them.

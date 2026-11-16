@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
-      - name: Set proper xcode version
-        run: sh ./scripts/xcodeselect.sh
       - name: Running Tests
         env:
           CONFIG: ${{ secrets.TESTS_CONFIG }}
