@@ -442,7 +442,6 @@ If you want to process logs on your own (for example, log them to a file or a cl
 
 - **Breaking:** Requires PowerAuth SDK `2.1.x` (`2.1.0` up to, but excluding, `2.2.0`).
 - **Breaking:** Raised the minimum supported platform versions to iOS 15.0 and tvOS 15.0 (required by PowerAuth SDK 2.1.x).
-- Suggested next SDK version: `3.0.0`, because the minimum platform versions were raised (breaking change).
 - PowerAuth time is now synchronized before obtaining an ECIES encryptor for an encrypted (E2EE) endpoint, but only when the time is not already synchronized.
 
 ### 2.1.0
