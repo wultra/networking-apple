@@ -5,8 +5,8 @@ import PackageDescription
 let package = Package(
     name: "WultraPowerAuthNetworking",
     platforms: [
-        .iOS(.v13),
-        .tvOS(.v13)
+        .iOS(.v15),
+        .tvOS(.v15)
     ],
     products: [
         .library(
@@ -15,7 +15,7 @@ let package = Package(
             targets: ["WultraPowerAuthNetworking"])
     ],
     dependencies: [
-        .package(url: "https://github.com/wultra/powerauth-mobile-sdk.git", .upToNextMinor(from: "2.0.0"))
+        .package(url: "https://github.com/wultra/powerauth-mobile-sdk.git", .upToNextMinor(from: "2.1.0"))
     ],
     targets: [
         .target(
