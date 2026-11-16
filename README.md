@@ -82,7 +82,7 @@ Add the following dependency to your Podfile:
 
 ```rb
 # CocoaPods integration currently targets iOS.
-platform :ios, '13.0'
+platform :ios, '15.0'
 
 pod 'WultraPowerAuthNetworking'
 ```
