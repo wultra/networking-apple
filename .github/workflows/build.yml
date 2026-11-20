@@ -10,11 +10,9 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: macos-26
+    runs-on: xcode-27
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
-      - name: Set proper xcode version
-        run: sh ./scripts/xcodeselect.sh
       - name: Building
         run: ./scripts/build.sh

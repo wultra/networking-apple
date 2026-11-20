@@ -28,7 +28,6 @@ xcrun xcodebuild \
   test
 ```
 
-- CI runs `sh ./scripts/xcodeselect.sh` before build and test. If local and CI behavior diverge, inspect that script and the selected Xcode version first.
 
 ## High-level architecture
 

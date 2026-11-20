@@ -11,7 +11,7 @@ operations.
 
 Review only the available pull request diff, using available PR metadata for the
 repository, target branch, and head branch. This repository is
-**WultraPowerAuthNetworking**, an iOS 13+/tvOS 13+ Swift 5 library. It ships both
+**WultraPowerAuthNetworking**, an iOS 15+/tvOS 15+ Swift 5 library. It ships both
 `Package.swift` product `WultraPowerAuthNetworking` and
 `WultraPowerAuthNetworking.podspec`. Sources deliberately live at
 `Sources/WultraPowerauthNetworking` (lowercase `a`); do not suggest changing
@@ -89,7 +89,7 @@ Do not require release metadata for ordinary feature PRs.
 
 Relevant tests are in `WultraPowerAuthNetworkingTests/UnitTests` and
 `IntegrationTests`, using `TestUtils.createFakeService()`. Tracked automation in
-`scripts/swiftlint.sh`, `scripts/build.sh`, `scripts/test.sh`, and
-`scripts/xcodeselect.sh` may be read for context only. Treat test changes as
+`scripts/swiftlint.sh`, `scripts/build.sh`, and `scripts/test.sh`
+may be read for context only. Treat test changes as
 evidence when assessing a proven behavioral regression, not as a checklist
 item, and never suggest running them.
