@@ -17,6 +17,12 @@
 import Foundation
 import PowerAuth2
 
+/// Decides whether to follow a redirect from the given response to the proposed request.
+///
+/// Called on the main queue for each redirect only if `WPNConfig.followRedirects` is enabled.
+/// Return `false` to stop the redirect; the proposed request will not be sent.
+public typealias WPNRedirectFilter = (HTTPURLResponse, URLRequest) -> Bool
+
 /// Strategy that decides if request will be put in serial or concurrent queue.
 ///
 /// For serial queue, `PowerAuthSDK.executeOperation` is used.
@@ -92,7 +98,12 @@ public class WPNNetworkingService {
     ) {
         self.acceptLanguage = acceptLanguage
         self.powerAuth = powerAuth
-        self.httpClient = WPNHttpClient(sslValidation: config.sslValidation, timeout: config.timeoutIntervalForRequest, requestInterceptors: config.requestInterceptors)
+        self.httpClient = WPNHttpClient(
+            sslValidation: config.sslValidation,
+            timeout: config.timeoutIntervalForRequest,
+            requestInterceptors: config.requestInterceptors,
+            followRedirects: config.followRedirects
+        )
         self.config = config
         concurrentQueue.name = "\(serviceName)_concurrent"
     }
@@ -105,6 +116,7 @@ public class WPNNetworkingService {
     ///   - headers: Custom headers to send along.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
+    ///   - redirectFilter: Optional filter for redirects enabled in `config`.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
@@ -116,6 +128,7 @@ public class WPNNetworkingService {
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
         timeoutInterval: TimeInterval? = nil,
+        redirectFilter: WPNRedirectFilter? = nil,
         progressCallback: ((Double) -> Void)? = nil,
         completionQueue: DispatchQueue = .main,
         completion: @escaping Endpoint.Completion
@@ -128,6 +141,7 @@ public class WPNNetworkingService {
             request: request,
             headers: headers,
             progressCallback: progressCallback,
+            redirectFilter: redirectFilter,
             completionQueue: completionQueue,
             completion: completion
         )
@@ -141,6 +155,7 @@ public class WPNNetworkingService {
     ///   - headers: Custom headers to send along.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
+    ///   - redirectFilter: Optional filter for redirects enabled in `config`.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
@@ -153,6 +168,7 @@ public class WPNNetworkingService {
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
         timeoutInterval: TimeInterval? = nil,
+        redirectFilter: WPNRedirectFilter? = nil,
         progressCallback: ((Double) -> Void)? = nil,
         completionQueue: DispatchQueue = .main,
         completion: @escaping Endpoint.Completion
@@ -165,6 +181,7 @@ public class WPNNetworkingService {
             request: request,
             headers: headers,
             progressCallback: progressCallback,
+            redirectFilter: redirectFilter,
             completionQueue: completionQueue,
             completion: completion
         )
@@ -178,6 +195,7 @@ public class WPNNetworkingService {
     ///   - headers: Custom headers to send along.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
+    ///   - redirectFilter: Optional filter for redirects enabled in `config`.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     ///   - completionQueue: Queue on wich the completion will be executed.
     ///                      Default value is .main
@@ -190,6 +208,7 @@ public class WPNNetworkingService {
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
         timeoutInterval: TimeInterval? = nil,
+        redirectFilter: WPNRedirectFilter? = nil,
         progressCallback: ((Double) -> Void)? = nil,
         completionQueue: DispatchQueue = .main,
         completion: @escaping Endpoint.Completion
@@ -202,6 +221,7 @@ public class WPNNetworkingService {
             request: request,
             headers: headers,
             progressCallback: progressCallback,
+            redirectFilter: redirectFilter,
             completionQueue: completionQueue,
             completion: completion
         )
@@ -216,6 +236,7 @@ public class WPNNetworkingService {
         request: WPNHttpPlainRequest<Req, Resp>,
         headers: [String: String]?,
         progressCallback: ((Double) -> Void)?,
+        redirectFilter: WPNRedirectFilter?,
         completionQueue: DispatchQueue,
         completion: @escaping Endpoint.Completion
     ) -> Operation {
@@ -255,6 +276,7 @@ public class WPNNetworkingService {
                 
                 self.httpClient.post(
                     request: wpnRequest.urlRequest,
+                    redirectFilter: redirectFilter,
                     progressCallback: progressCallback
                 ) { [weak self] data, urlResponse, error in
                     
@@ -262,19 +284,11 @@ public class WPNNetworkingService {
                         return
                     }
                     
-                    guard let data else {
-                        let reason = WPNErrorReason.resolve(error: error)
-                        D.error("Network request to \(endpoint.endpointURLPath) failed with no response data: \(reason.rawValue) - \(error?.localizedDescription ?? "unknown error")")
-                        let resultError = WPNError(reason: reason, error: error)
-                        resultError.httpUrlResponse = urlResponse
-                        completion(nil, resultError)
-                        return
-                    }
-                    
                     self.handleResponse(
                         wpnRequest: wpnRequest,
                         data: data,
                         urlResponse: urlResponse,
+                        error: error,
                         completion: completion
                     )
                 }
@@ -304,12 +318,31 @@ public class WPNNetworkingService {
     
     /// Decodes/decrypts the response body, notifies the response delegate,
     /// and calls the completion with the typed result or an appropriate error.
-    private func handleResponse<Resp: WPNResponseBase>(
+    func handleResponse<Resp: WPNResponseBase>(
         wpnRequest: WPNUrlRequest<Resp>,
-        data: Data,
+        data: Data?,
         urlResponse: HTTPURLResponse?,
+        error: Error?,
         completion: @escaping (Resp?, WPNError?) -> Void
     ) {
+        let isRedirectResponse = urlResponse.map { (300..<400).contains($0.statusCode) } ?? false
+        if isRedirectResponse, error == nil {
+            responseDelegate?.responseReceived(from: wpnRequest.url, statusCode: urlResponse?.statusCode, body: data ?? Data(), decrypted: nil)
+            let resultError = WPNError(reason: .network_errorStatusCode)
+            resultError.httpUrlResponse = urlResponse
+            completion(nil, resultError)
+            return
+        }
+
+        guard let data, !isRedirectResponse else {
+            let reason = WPNErrorReason.resolve(error: error)
+            D.error("Network request to \(wpnRequest.url.path) failed: \(reason.rawValue) - \(error?.localizedDescription ?? "no response data")")
+            let resultError = WPNError(reason: reason, error: error)
+            resultError.httpUrlResponse = urlResponse
+            completion(nil, resultError)
+            return
+        }
+
         switch wpnRequest.processResult(data: data) {
         case .success(let envelope, let decryptedData):
             
@@ -405,6 +438,7 @@ public extension WPNNetworkingService {
     ///   - headers: Custom headers to send along.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
+    ///   - redirectFilter: Optional filter for redirects enabled in `config`.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     /// - Returns: Decoded response envelope.
     /// - Throws: `WPNError`
@@ -413,6 +447,7 @@ public extension WPNNetworkingService {
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
         timeoutInterval: TimeInterval? = nil,
+        redirectFilter: WPNRedirectFilter? = nil,
         progressCallback: ((Double) -> Void)? = nil
     ) async throws -> Resp {
         return try await asyncPost { completion in
@@ -421,6 +456,7 @@ public extension WPNNetworkingService {
                 to: endpoint,
                 with: headers,
                 timeoutInterval: timeoutInterval,
+                redirectFilter: redirectFilter,
                 progressCallback: progressCallback,
                 completion: completion
             )
@@ -436,6 +472,7 @@ public extension WPNNetworkingService {
     ///   - headers: Custom headers to send along.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
+    ///   - redirectFilter: Optional filter for redirects enabled in `config`.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     /// - Returns: Decoded response envelope.
     /// - Throws: `WPNError`
@@ -445,6 +482,7 @@ public extension WPNNetworkingService {
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
         timeoutInterval: TimeInterval? = nil,
+        redirectFilter: WPNRedirectFilter? = nil,
         progressCallback: ((Double) -> Void)? = nil
     ) async throws -> Resp {
         return try await asyncPost { completion in
@@ -454,6 +492,7 @@ public extension WPNNetworkingService {
                 to: endpoint,
                 with: headers,
                 timeoutInterval: timeoutInterval,
+                redirectFilter: redirectFilter,
                 progressCallback: progressCallback,
                 completion: completion
             )
@@ -469,6 +508,7 @@ public extension WPNNetworkingService {
     ///   - headers: Custom headers to send along.
     ///   - timeoutInterval: Timeout interval of the request.
     ///                      Value from `config` will be used when nil.
+    ///   - redirectFilter: Optional filter for redirects enabled in `config`.
     ///   - progressCallback: Reports fraction of how much data was already transferred.
     /// - Returns: Decoded response envelope.
     /// - Throws: `WPNError`
@@ -478,6 +518,7 @@ public extension WPNNetworkingService {
         to endpoint: Endpoint,
         with headers: [String: String]? = nil,
         timeoutInterval: TimeInterval? = nil,
+        redirectFilter: WPNRedirectFilter? = nil,
         progressCallback: ((Double) -> Void)? = nil
     ) async throws -> Resp {
         return try await asyncPost { completion in
@@ -487,6 +528,7 @@ public extension WPNNetworkingService {
                 to: endpoint,
                 with: headers,
                 timeoutInterval: timeoutInterval,
+                redirectFilter: redirectFilter,
                 progressCallback: progressCallback,
                 completion: completion
             )

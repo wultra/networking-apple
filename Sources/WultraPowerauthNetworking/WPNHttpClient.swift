@@ -17,11 +17,12 @@
 import Foundation
 import PowerAuth2
 
-class WPNHttpClient: NSObject, URLSessionDelegate {
+class WPNHttpClient: NSObject, URLSessionTaskDelegate {
     
     private let defaultTimeout: TimeInterval
     private let sslValidation: WPNSSLValidationStrategy
     private let requestInterceptors: [WPNInterceptor]
+    private let followRedirects: Bool
 
     private lazy var urlSession: URLSession = {
         guard let configuration = URLSessionConfiguration.ephemeral.copy() as? URLSessionConfiguration else {
@@ -33,14 +34,20 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         return URLSession(configuration: configuration, delegate: self, delegateQueue: .main)
     }()
 
-    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor]) {
+    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor], followRedirects: Bool) {
         self.sslValidation = sslValidation
         self.defaultTimeout = timeout
         self.requestInterceptors = requestInterceptors
+        self.followRedirects = followRedirects
         super.init()
     }
 
-    func post(request: NSMutableURLRequest, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
+    func post(
+        request: NSMutableURLRequest,
+        redirectFilter: WPNRedirectFilter?,
+        progressCallback: ((Double) -> Void)?,
+        completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void
+    ) {
 
         requestInterceptors.apply(to: request)
 
@@ -62,6 +69,8 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
             
         }
         
+        task.delegate = redirectDelegate(for: redirectFilter)
+
         if let progressCallback = progressCallback {
             observation = task.progress.observe(\.fractionCompleted) { progress, _ in
                 progressCallback(progress.fractionCompleted)
@@ -69,11 +78,48 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         }
         task.resume()
     }
+
+    func redirectDelegate(for filter: WPNRedirectFilter?) -> WPNRedirectDelegate? {
+        guard followRedirects, let filter else { return nil }
+        return WPNRedirectDelegate(filter: filter)
+    }
     
     // URLSessionDelegate
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         sslValidation.validate(challenge: challenge, completionHandler: completionHandler)
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        completionHandler(followRedirects ? request : nil)
+    }
+}
+
+// MARK: - Helpers
+
+// Task-specific delegates implement only redirection; other callbacks fall back to the session delegate.
+final class WPNRedirectDelegate: NSObject, URLSessionTaskDelegate {
+
+    private let filter: WPNRedirectFilter
+
+    init(filter: @escaping WPNRedirectFilter) {
+        self.filter = filter
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        completionHandler(filter(response, request) ? request : nil)
     }
 }
 
