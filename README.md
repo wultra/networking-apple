@@ -260,6 +260,10 @@ The SDK uses the system `URLSession` under the hood.
 
 All responses can be observed with `WPNResponseDelegate` in `WPNNetworkingService.responseDelegate`.
 
+Redirects are disabled by default. If you opt in through `WPNConfig.followRedirects`, implement
+`WPNResponseDelegate.shouldFollowRedirect(_:to:)` to veto individual hops before the next request
+is sent. The delegate cannot enable redirects when the service has not opted in.
+
 An example implementation of the delegate:
 
 ```swift
@@ -443,7 +447,7 @@ If you want to process logs on your own (for example, log them to a file or a cl
 - **Breaking:** Requires PowerAuth SDK `2.1.x` (`2.1.0` up to, but excluding, `2.2.0`).
 - **Breaking:** Raised the minimum supported platform versions to iOS 15.0 and tvOS 15.0 (required by PowerAuth SDK 2.1.x).
 - PowerAuth time is now synchronized before obtaining an ECIES encryptor for an encrypted (E2EE) endpoint, but only when the time is not already synchronized.
-- **Behavior change:** HTTP redirects are not followed by default. Set `WPNConfig.followRedirects` to `true` when creating the service to opt in to standard `URLSession` redirects, and use the per-request `redirectFilter` to restrict them.
+- **Behavior change:** HTTP redirects are not followed by default. Set `WPNConfig.followRedirects` to `true` when creating the service to opt in to standard `URLSession` redirects, and use `WPNResponseDelegate` to restrict them.
 
 ### 2.1.0
 

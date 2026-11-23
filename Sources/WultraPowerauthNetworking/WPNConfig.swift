@@ -43,6 +43,7 @@ public struct WPNConfig {
     /// Enables standard `URLSession` redirects. Defaults to `false`; an unfollowed redirect
     /// is reported as `WPNErrorReason.network_errorStatusCode`. Prefer pointing `baseUrl`
     /// and endpoint paths directly at the final destination.
+    /// A `WPNResponseDelegate` can veto individual redirects when enabled.
     ///
     /// - Warning: When enabled, custom headers (including `X-PowerAuth-*`) may be forwarded
     ///   to another host or over plain HTTP if allowed by `URLSession` and App Transport Security.

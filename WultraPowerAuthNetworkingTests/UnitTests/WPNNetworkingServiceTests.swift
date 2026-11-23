@@ -52,30 +52,29 @@ final class WPNNetworkingServiceTests {
         defer { session.invalidateAndCancel() }
         let task = session.dataTask(with: redirect.request)
 
-        #expect(client.redirectDelegate(for: nil) == nil)
-        let perRequestDelegate = client.redirectDelegate(for: { _, _ in true })
-        #expect((perRequestDelegate != nil) == followRedirects)
-        client.urlSession(session, task: task, willPerformHTTPRedirection: redirect.response, newRequest: redirect.request) {
-            #expect($0 == (followRedirects ? redirect.request : nil))
+        let delegate = ResponseDelegate()
+        client.responseDelegate = delegate
+        withExtendedLifetime(delegate) {
+            client.urlSession(session, task: task, willPerformHTTPRedirection: redirect.response, newRequest: redirect.request) {
+                #expect($0 == (followRedirects ? redirect.request : nil))
+            }
         }
     }
 
-    @Test("An opted-in request filter can veto an individual redirect", arguments: [false, true])
-    func requestRedirectFilter(allow: Bool) throws {
+    @Test("The response delegate can veto a redirect only when opted in", arguments: [false, true], [false, true])
+    func responseDelegateRedirectPolicy(followRedirects: Bool, allow: Bool) throws {
         let redirect = try Self.makeRedirect()
-        let client = WPNHttpClient(sslValidation: .default, timeout: 20, requestInterceptors: [], followRedirects: true)
+        let client = WPNHttpClient(sslValidation: .default, timeout: 20, requestInterceptors: [], followRedirects: followRedirects)
         let session = URLSession(configuration: .ephemeral)
         defer { session.invalidateAndCancel() }
         let task = session.dataTask(with: redirect.request)
-        let filter: WPNRedirectFilter = { response, request in
-            #expect(response == redirect.response)
-            #expect(request == redirect.request)
-            return allow
+        let delegate = RedirectDecisionDelegate(allow: allow)
+        client.responseDelegate = delegate
+        client.urlSession(session, task: task, willPerformHTTPRedirection: redirect.response, newRequest: redirect.request) {
+            #expect($0 == (followRedirects && allow ? redirect.request : nil))
         }
-        let delegate = try #require(client.redirectDelegate(for: filter))
-        delegate.urlSession(session, task: task, willPerformHTTPRedirection: redirect.response, newRequest: redirect.request) {
-            #expect($0 == (allow ? redirect.request : nil))
-        }
+        #expect(delegate.redirectStatuses == (followRedirects ? [302] : []))
+        #expect(delegate.proposedRequests == (followRedirects ? [redirect.request] : []))
     }
 
     @Test("Unfollowed redirects preserve status and never decode a success body", arguments: [false, true])
@@ -135,5 +134,23 @@ final class WPNNetworkingServiceTests {
             bodies.append(body)
             #expect(decrypted == nil)
         }
+    }
+
+    private final class RedirectDecisionDelegate: WPNResponseDelegate {
+        let allow: Bool
+        var redirectStatuses: [Int] = []
+        var proposedRequests: [URLRequest] = []
+
+        init(allow: Bool) {
+            self.allow = allow
+        }
+
+        func shouldFollowRedirect(_ response: HTTPURLResponse, to request: URLRequest) -> Bool {
+            redirectStatuses.append(response.statusCode)
+            proposedRequests.append(request)
+            return allow
+        }
+
+        func responseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data?) {}
     }
 }

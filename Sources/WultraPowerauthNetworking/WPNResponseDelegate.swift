@@ -16,8 +16,14 @@
 
 import Foundation
 
-/// Delegate for tapping into the communication and receiving raw data .
+/// Observes responses and can restrict opted-in redirects.
 public protocol WPNResponseDelegate: AnyObject {
+    /// Decides whether to send the proposed follow-up request after a redirect response.
+    ///
+    /// Called on the main queue for each hop, only when `WPNConfig.followRedirects` is enabled.
+    /// Return `false` to stop the redirect. The default implementation returns `true`.
+    func shouldFollowRedirect(_ response: HTTPURLResponse, to request: URLRequest) -> Bool
+
     /// Called when response is received
     ///
     /// - Parameters:
@@ -26,4 +32,10 @@ public protocol WPNResponseDelegate: AnyObject {
     ///   - body: Data retrieved from the response
     ///   - decrypted: If the request was encrypted, this will contain decrypted body
     func responseReceived(from url: URL, statusCode: Int?, body: Data, decrypted: Data?)
+}
+
+public extension WPNResponseDelegate {
+    func shouldFollowRedirect(_ response: HTTPURLResponse, to request: URLRequest) -> Bool {
+        return true
+    }
 }
