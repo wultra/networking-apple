@@ -79,8 +79,9 @@ underlying `Operation`.
 
 For a release PR, `.prepare-release.json` requires matching version work in
 `WultraPowerAuthNetworking.podspec`,
-`Sources/WultraPowerauthNetworking/WPNConstants.swift`, and the compatibility and
-`### version` changelog sections of `README.md`. For a release merged back to
+`Sources/WultraPowerauthNetworking/WPNConstants.swift`, the compatibility
+requirements in `docs/SDK-Integration.md`, and the `## version` section in
+`docs/Changelog.md`. For a release merged back to
 `develop`, every declared development version must be `0.0.1-dev`, including the
 podspec and `WPNConstants.sdkVersionName`, while the Info.plist
 `CFBundleShortVersionString` must remain the numeric `0.0.1`; flag a different

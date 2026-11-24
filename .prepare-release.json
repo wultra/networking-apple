@@ -30,14 +30,14 @@
       "match": "  <key>CFBundleShortVersionString</key>\n  <string>%VERSION%</string>"
     },
     {
-      "description": "Changelog in README.",
-      "path": "README.md",
+      "description": "Changelog for the Wultra documentation.",
+      "path": "docs/Changelog.md",
       "type": "tba_replace",
-      "match": "### TBA"
+      "match": "## TBA"
     },
     {
       "description": "Verify that the changelog does not contain a TBA placeholder.",
-      "path": "README.md",
+      "path": "docs/Changelog.md",
       "type": "verify_not_containing",
       "match": "- TBA"
     }
