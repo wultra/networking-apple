@@ -1,9 +1,5 @@
 # Changelog
 
-## TBA
-
--
-
 ## 3.0.0
 
 - Split the SDK documentation into topic guides under `docs/`.
