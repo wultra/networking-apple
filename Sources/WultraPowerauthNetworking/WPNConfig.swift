@@ -40,6 +40,16 @@ public struct WPNConfig {
     /// via `URLSession`. Default value is an empty array. See `WPNInterceptor` for details.
     public let requestInterceptors: [WPNInterceptor]
 
+    /// Enables standard `URLSession` redirects. Defaults to `false`; an unfollowed redirect
+    /// is reported as `WPNErrorReason.network_errorStatusCode`. Prefer pointing `baseUrl`
+    /// and endpoint paths directly at the final destination.
+    /// A `WPNResponseDelegate` can veto individual redirects when enabled.
+    ///
+    /// - Warning: When enabled, custom headers (including `X-PowerAuth-*`) may be forwarded
+    ///   to another host or over plain HTTP if allowed by `URLSession` and App Transport Security.
+    ///   `URLSession` may also change the request method. Enable this only for trusted destinations.
+    public let followRedirects: Bool
+
     /// Create instance of the config
     /// - Parameters:
     ///   - baseUrl: Base URL for service requests.
@@ -53,18 +63,21 @@ public struct WPNConfig {
     ///                Default value is `.libraryDefault`
     ///   - requestInterceptors: Interceptors applied, in declaration order, before the request is sent.
     ///                          Default value is an empty array.
+    ///   - followRedirects: Whether to opt in to standard `URLSession` redirects. Defaults to `false`.
     public init(
         baseUrl: URL,
         sslValidation: WPNSSLValidationStrategy = .default,
         timeoutIntervalForRequest: TimeInterval = 20,
         userAgent: WPNUserAgent = .libraryDefault,
-        requestInterceptors: [WPNInterceptor] = []
+        requestInterceptors: [WPNInterceptor] = [],
+        followRedirects: Bool = false
     ) {
         self.baseUrl = baseUrl
         self.sslValidation = sslValidation
         self.timeoutIntervalForRequest = timeoutIntervalForRequest
         self.userAgent = userAgent
         self.requestInterceptors = requestInterceptors
+        self.followRedirects = followRedirects
     }
     
     func buildURL(_ endpoint: String) -> URL {

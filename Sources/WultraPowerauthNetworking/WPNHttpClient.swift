@@ -17,11 +17,14 @@
 import Foundation
 import PowerAuth2
 
-class WPNHttpClient: NSObject, URLSessionDelegate {
+class WPNHttpClient: NSObject, URLSessionTaskDelegate {
     
+    weak var responseDelegate: WPNResponseDelegate?
+
     private let defaultTimeout: TimeInterval
     private let sslValidation: WPNSSLValidationStrategy
     private let requestInterceptors: [WPNInterceptor]
+    private let followRedirects: Bool
 
     private lazy var urlSession: URLSession = {
         guard let configuration = URLSessionConfiguration.ephemeral.copy() as? URLSessionConfiguration else {
@@ -33,14 +36,19 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         return URLSession(configuration: configuration, delegate: self, delegateQueue: .main)
     }()
 
-    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor]) {
+    init(sslValidation: WPNSSLValidationStrategy, timeout: TimeInterval, requestInterceptors: [WPNInterceptor], followRedirects: Bool) {
         self.sslValidation = sslValidation
         self.defaultTimeout = timeout
         self.requestInterceptors = requestInterceptors
+        self.followRedirects = followRedirects
         super.init()
     }
 
-    func post(request: NSMutableURLRequest, progressCallback: ((Double) -> Void)?, completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void) {
+    func post(
+        request: NSMutableURLRequest,
+        progressCallback: ((Double) -> Void)?,
+        completion: @escaping (Data?, HTTPURLResponse?, Error?) -> Void
+    ) {
 
         requestInterceptors.apply(to: request)
 
@@ -69,11 +77,26 @@ class WPNHttpClient: NSObject, URLSessionDelegate {
         }
         task.resume()
     }
-    
+
     // URLSessionDelegate
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         sslValidation.validate(challenge: challenge, completionHandler: completionHandler)
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        guard followRedirects else {
+            completionHandler(nil)
+            return
+        }
+        let shouldFollow = responseDelegate?.shouldFollowRedirect(response, to: request) ?? true
+        completionHandler(shouldFollow ? request : nil)
     }
 }
 

@@ -4,6 +4,10 @@
 
 All responses can be observed with `WPNResponseDelegate` in `WPNNetworkingService.responseDelegate`.
 
+Redirects are disabled by default. If you opt in through `WPNConfig.followRedirects`, implement
+`WPNResponseDelegate.shouldFollowRedirect(_:to:)` to veto individual hops before the next request
+is sent. The delegate cannot enable redirects when the service has not opted in.
+
 An example implementation of the delegate:
 
 ```swift

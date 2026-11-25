@@ -49,8 +49,11 @@ public class WPNNetworkingService {
     /// Configuration of the service
     public let config: WPNConfig
     
-    /// Response delegate is called on each received response
-    public weak var responseDelegate: WPNResponseDelegate?
+    /// Weakly held delegate that observes responses and can restrict opted-in redirects.
+    public var responseDelegate: WPNResponseDelegate? {
+        get { httpClient.responseDelegate }
+        set { httpClient.responseDelegate = newValue }
+    }
     
     /// Strategy that decides if request will be put in serial or concurrent queue.
     ///
@@ -92,7 +95,12 @@ public class WPNNetworkingService {
     ) {
         self.acceptLanguage = acceptLanguage
         self.powerAuth = powerAuth
-        self.httpClient = WPNHttpClient(sslValidation: config.sslValidation, timeout: config.timeoutIntervalForRequest, requestInterceptors: config.requestInterceptors)
+        self.httpClient = WPNHttpClient(
+            sslValidation: config.sslValidation,
+            timeout: config.timeoutIntervalForRequest,
+            requestInterceptors: config.requestInterceptors,
+            followRedirects: config.followRedirects
+        )
         self.config = config
         concurrentQueue.name = "\(serviceName)_concurrent"
     }
@@ -262,19 +270,11 @@ public class WPNNetworkingService {
                         return
                     }
                     
-                    guard let data else {
-                        let reason = WPNErrorReason.resolve(error: error)
-                        D.error("Network request to \(endpoint.endpointURLPath) failed with no response data: \(reason.rawValue) - \(error?.localizedDescription ?? "unknown error")")
-                        let resultError = WPNError(reason: reason, error: error)
-                        resultError.httpUrlResponse = urlResponse
-                        completion(nil, resultError)
-                        return
-                    }
-                    
                     self.handleResponse(
                         wpnRequest: wpnRequest,
                         data: data,
                         urlResponse: urlResponse,
+                        error: error,
                         completion: completion
                     )
                 }
@@ -304,12 +304,31 @@ public class WPNNetworkingService {
     
     /// Decodes/decrypts the response body, notifies the response delegate,
     /// and calls the completion with the typed result or an appropriate error.
-    private func handleResponse<Resp: WPNResponseBase>(
+    func handleResponse<Resp: WPNResponseBase>(
         wpnRequest: WPNUrlRequest<Resp>,
-        data: Data,
+        data: Data?,
         urlResponse: HTTPURLResponse?,
+        error: Error?,
         completion: @escaping (Resp?, WPNError?) -> Void
     ) {
+        let isRedirectResponse = urlResponse.map { (300..<400).contains($0.statusCode) } ?? false
+        if isRedirectResponse, error == nil {
+            responseDelegate?.responseReceived(from: wpnRequest.url, statusCode: urlResponse?.statusCode, body: data ?? Data(), decrypted: nil)
+            let resultError = WPNError(reason: .network_errorStatusCode)
+            resultError.httpUrlResponse = urlResponse
+            completion(nil, resultError)
+            return
+        }
+
+        guard let data, !isRedirectResponse else {
+            let reason = WPNErrorReason.resolve(error: error)
+            D.error("Network request to \(wpnRequest.url.path) failed: \(reason.rawValue) - \(error?.localizedDescription ?? "no response data")")
+            let resultError = WPNError(reason: reason, error: error)
+            resultError.httpUrlResponse = urlResponse
+            completion(nil, resultError)
+            return
+        }
+
         switch wpnRequest.processResult(data: data) {
         case .success(let envelope, let decryptedData):
             
