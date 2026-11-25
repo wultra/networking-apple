@@ -2,6 +2,10 @@
 
 ## TBA
 
+-
+
+## 3.0.0
+
 - Split the SDK documentation into topic guides under `docs/`.
 - **Breaking:** Requires PowerAuth SDK `2.1.x` (`2.1.0` up to, but excluding, `2.2.0`).
 - **Breaking:** Raised the minimum supported platform versions to iOS 15.0 and tvOS 15.0 (required by PowerAuth SDK 2.1.x).
